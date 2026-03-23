@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pH Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        
+        .status-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .status-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status-normal { color: #10b981; }
+        .status-waiting { color: #f59e0b; }
+        .status-alert { color: #ef4444; }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .chart-container h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        .chart-scroll-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .chart-scroll-controls button {
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .chart-scroll-controls button:hover {
+            background: #5568d3;
+        }
+        
+        .chart-scroll-controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .chart-scroll-info {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .alerts-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .alert-item {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        
+        .alert-normal {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .alert-waiting {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        
+        .alert-low {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .alert-high {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hệ thống Giám sát pH Ao</h1>
+            <p>Hệ thống Giám sát và Cảnh báo pH dựa trên AI</p>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-card">
+                <h3>Trạng thái hiện tại</h3>
+                <div class="value" id="currentStatus">Đang tải...</div>
+            </div>
+            <div class="status-card">
+                <h3>pH hiện tại</h3>
+                <div class="value" id="currentPH">--</div>
+            </div>
+            <div class="status-card">
+                <h3>pH dự đoán</h3>
+                <div class="value" id="predictedPH">--</div>
+            </div>
+            <div class="status-card">
+                <h3>Tổng số lần đọc</h3>
+                <div class="value" id="totalReadings">0</div>
+            </div>
+            <div class="status-card">
+                <h3>🤖 AI Model</h3>
+                <div class="value" id="aiModel" style="font-size: 18px;">--</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="chart-container">
+                <h2>Biểu đồ pH theo thời gian</h2>
+                <div class="chart-wrapper">
+                    <canvas id="phChart"></canvas>
+                </div>
+                <div class="chart-scroll-controls" id="chartControls" style="display: none;">
+                    <button onclick="scrollChart('prev')" id="prevBtn">◀ Trước</button>
+                    <div class="chart-scroll-info">
+                        <span id="chartRange">Hiển thị: 1-20 / Tổng: 0</span>
+                    </div>
+                    <button onclick="scrollChart('next')" id="nextBtn">Tiếp ▶</button>
+                </div>
+                <div style="margin-top: 10px; font-size: 11px; color: #666; text-align: center;">
+                    💡 Pinch/Scroll để zoom | Kéo để di chuyển biểu đồ
+                </div>
+            </div>
+            
+            <div class="alerts-panel">
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <h3 style="margin-bottom: 10px;">📊 AI Model Metrics</h3>
+                    <div id="modelMetrics">
+                        <div class="loading">Đang tải metrics...</div>
+                    </div>
+                    <button 
+                        onclick="retrainModel()" 
+                        id="retrainBtn"
+                        style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;"
+                    >
+                        🔄 Retrain Model
+                    </button>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <h3 style="margin-bottom: 10px;">📈 Độ quan trọng của đặc trưng</h3>
+                    <div id="featureImportance">
+                        <div class="loading">Đang tải...</div>
+                    </div>
+                </div>
+            
+                <h2>Cảnh báo</h2>
+                <div id="alertsContainer">
+                    <div class="loading">Đang tải dữ liệu...</div>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                    <h3>🔮 Cảnh báo sớm từ AI</h3>
+                    <div id="earlyWarningContainer" style="margin-top: 10px;">
+                        <div class="alert-item alert-normal">
+                            <strong>✓ Chưa có cảnh báo sớm</strong>
+                            <p>AI đang phân tích dữ liệu...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                    <h3>Lịch sử cảnh báo</h3>
+                    <div id="alertHistoryContainer" style="margin-top: 10px; max-height: 300px; overflow-y: auto;">
+                        <div class="loading">Đang tải...</div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                        <strong>Thống kê:</strong> <span id="alertStats">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Chart data storage
+        const allChartData = {
+            labels: [],
+            phValues: [],
+            predictedValues: []
+        };
+        let chartDataStartIndex = 0;
+        const CHART_DISPLAY_LIMIT = 20;
+        
+        // Initialize Chart.js
+        const ctx = document.getElementById('phChart').getContext('2d');
+        const phChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'pH thực tế',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'pH dự đoán',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderDash: [5, 5],
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Ngưỡng thấp (7.0)',
+                        data: [],
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderDash: [2, 2],
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Ngưỡng cao (8.5)',
+                        data: [],
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderDash: [2, 2],
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 6.0,
+                        max: 9.0,
+                        title: {
+                            display: true,
+                            text: 'pH Value'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Thời gian'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    zoom: {
+                        zoom: {
+                            wheel: {
+                                enabled: true,
+                                speed: 0.05,
+                                modifierKey: 'ctrl'  // Ctrl + scroll để zoom
+                            },
+                            pinch: {
+                                enabled: true  // Pinch gesture trên trackpad
+                            },
+                            mode: 'x',
+                            limits: {
+                                x: {
+                                    min: 'original',
+                                    max: 'original'
+                                }
+                            }
+                        },
+                        pan: {
+                            enabled: true,
+                            mode: 'x',
+                            limits: {
+                                x: {
+                                    min: 'original',
+                                    max: 'original'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Update status
+        async function updateStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/status`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const status = await response.json();
+                
+                document.getElementById('totalReadings').textContent = status.total_readings;
+                document.getElementById('currentStatus').textContent = getStatusText(status.current_status);
+                document.getElementById('currentStatus').className = `value status-${getStatusClass(status.current_status)}`;
+                
+                // Hiển thị thông tin AI Model
+                const modelInfo = status.model_info;
+                const modelType = modelInfo.model_type || 'Đang khởi tạo';
+                const isTrained = modelInfo.is_trained ? '✓ Đã train' : '⏳ Đang train';
+                const historySize = modelInfo.history_size || 0;
+                document.getElementById('aiModel').innerHTML = `
+                    <div style="font-size: 14px; color: #666; margin-bottom: 4px;">${modelType}</div>
+                    <div style="font-size: 12px; color: #999;">${isTrained} (${historySize} mẫu)</div>
+                `;
+            } catch (error) {
+                console.error('Error fetching status:', error);
+            }
+        }
+        
+        // Cập nhật cảnh báo sớm (early warning)
+        function renderEarlyWarning(reading) {
+            const container = document.getElementById('earlyWarningContainer');
+            if (!container) return;
+            
+            if (reading.has_early_warning) {
+                container.innerHTML = `
+                    <div class="alert-item alert-warning">
+                        <strong>⚠️ Cảnh báo sớm</strong>
+                        <p>${reading.warning_message || 'Dự báo sẽ vượt ngưỡng trong thời gian tới.'}</p>
+                        <p style="font-size:12px;color:#555;">Dự báo +10s: ${reading.predicted_ph ? reading.predicted_ph.toFixed(2) : 'N/A'}</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="alert-item alert-normal">
+                        <strong>✓ Chưa có cảnh báo sớm</strong>
+                        <p>AI đang phân tích dữ liệu...</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update current reading
+        async function updateCurrentReading() {
+            try {
+                const response = await fetch(`${API_BASE}/api/current`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const reading = await response.json();
+                
+                document.getElementById('currentPH').textContent = reading.ph_value.toFixed(2);
+                
+                // Luôn hiển thị predicted_ph, nếu không có thì dùng giá trị hiện tại
+                if (reading.predicted_ph !== null && reading.predicted_ph !== undefined) {
+                    document.getElementById('predictedPH').textContent = `${reading.predicted_ph.toFixed(2)} (+10s)`;
+                } else {
+                    // Nếu chưa có dự đoán, hiển thị giá trị hiện tại với dấu ~
+                    document.getElementById('predictedPH').textContent = `${reading.ph_value.toFixed(2)} ~ (+10s)`;
+                }
+                
+                renderEarlyWarning(reading);
+            } catch (error) {
+                console.error('Error fetching current reading:', error);
+            }
+        }
+        
+        // Update chart
+        async function updateChart() {
+            try {
+                const response = await fetch(`${API_BASE}/api/history?limit=100`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const data = await response.json();
+                
+                if (data.readings.length === 0) return;
+                
+                // Lưu tất cả dữ liệu
+                // pH hiện tại: timestamp gốc
+                // pH dự đoán: sẽ hiển thị ở vị trí +10 giây (đi trước)
+                allChartData.labels = data.readings.map(r => {
+                    const date = new Date(r.timestamp);
+                    return date.toLocaleTimeString('vi-VN');
+                });
+                allChartData.phValues = data.readings.map(r => r.ph_value);
+                
+                // pH dự đoán: mỗi prediction sẽ được đặt ở vị trí +10 giây
+                // Tạo mảng predicted values với offset
+                allChartData.predictedValues = [];
+                const readingInterval = 5; // 5 giây giữa các readings
+                
+                data.readings.forEach((r, index) => {
+                    // Đảm bảo mảng predictedValues có đủ chiều dài cho vị trí hiện tại
+                    while (allChartData.predictedValues.length <= index) {
+                        allChartData.predictedValues.push(null);
+                    }
+                    if (!r.predicted_ph) {
+                        return;
+                    }
+                    
+                    // Tính toán vị trí tương ứng với timestamp + 10 giây
+                    // Readings cách nhau 5 giây, nên prediction tại index i sẽ hiển thị tại index i+2 (10 giây = 2 readings)
+                    const predictedIndex = index + 2; // Offset 2 vị trí (tương đương 10 giây)
+                    
+                    // Nếu predictedIndex vượt quá độ dài hiện tại, mở rộng tất cả các mảng để hiển thị điểm dự đoán nằm trước dữ liệu pH hiện tại
+                    while (allChartData.labels.length <= predictedIndex) {
+                        const baseDate = new Date(r.predicted_timestamp || r.timestamp);
+                        // thêm 5s cho mỗi bước còn thiếu
+                        const extraDate = new Date(baseDate.getTime() + 5000 * (allChartData.labels.length - index));
+                        allChartData.labels.push(extraDate.toLocaleTimeString('vi-VN'));
+                        allChartData.phValues.push(null);
+                        allChartData.predictedValues.push(null);
+                    }
+                    
+                    if (allChartData.predictedValues[predictedIndex] === null || allChartData.predictedValues[predictedIndex] === undefined) {
+                        allChartData.predictedValues[predictedIndex] = r.predicted_ph;
+                    }
+                });
+                
+                // Đảm bảo độ dài bằng với labels
+                while (allChartData.predictedValues.length < allChartData.labels.length) {
+                    allChartData.predictedValues.push(null);
+                }
+                
+                // Hiển thị controls nếu có >= 20 điểm
+                const controls = document.getElementById('chartControls');
+                const total = allChartData.labels.length;
+                
+                if (total >= CHART_DISPLAY_LIMIT) {
+                    controls.style.display = 'flex';
+                    // Tự động scroll về cuối (dữ liệu mới nhất) chỉ khi mới load hoặc đang ở cuối
+                    const currentEnd = chartDataStartIndex + CHART_DISPLAY_LIMIT;
+                    // Nếu đang xem phần cuối (trong vòng 2 điểm), tự động cập nhật để xem dữ liệu mới nhất
+                    if (currentEnd >= total - 2 || chartDataStartIndex === 0) {
+                        chartDataStartIndex = Math.max(0, total - CHART_DISPLAY_LIMIT);
+                    }
+                    updateChartDisplay();
+                } else {
+                    controls.style.display = 'none';
+                    // Hiển thị tất cả nếu < 20 điểm
+                    phChart.data.labels = allChartData.labels;
+                    phChart.data.datasets[0].data = allChartData.phValues;
+                    phChart.data.datasets[1].data = allChartData.predictedValues;
+                    
+                    const thresholdLow = Array(allChartData.labels.length).fill(7.0);
+                    const thresholdHigh = Array(allChartData.labels.length).fill(8.5);
+                    phChart.data.datasets[2].data = thresholdLow;
+                    phChart.data.datasets[3].data = thresholdHigh;
+                    
+                    phChart.update('none');
+                }
+            } catch (error) {
+                console.error('Error fetching history:', error);
+            }
+        }
+        
+        // Update chart display based on scroll position
+        function updateChartDisplay() {
+            const total = allChartData.labels.length;
+            if (total === 0) return;
+            
+            // Tính toán đúng: startIndex là điểm bắt đầu, endIndex là điểm kết thúc
+            const startIndex = Math.max(0, Math.min(chartDataStartIndex, total - CHART_DISPLAY_LIMIT));
+            const endIndex = Math.min(startIndex + CHART_DISPLAY_LIMIT, total);
+            
+            // Extract data for current view
+            const displayLabels = allChartData.labels.slice(startIndex, endIndex);
+            const displayPhValues = allChartData.phValues.slice(startIndex, endIndex);
+            const displayPredictedValues = allChartData.predictedValues.slice(startIndex, endIndex);
+            
+            // Update chart
+            phChart.data.labels = displayLabels;
+            phChart.data.datasets[0].data = displayPhValues;
+            phChart.data.datasets[1].data = displayPredictedValues;
+            
+            // Add threshold lines
+            const thresholdLow = Array(displayLabels.length).fill(7.0);
+            const thresholdHigh = Array(displayLabels.length).fill(8.5);
+            phChart.data.datasets[2].data = thresholdLow;
+            phChart.data.datasets[3].data = thresholdHigh;
+            
+            phChart.update('none');
+            
+            // Update controls
+            document.getElementById('prevBtn').disabled = (startIndex === 0);
+            document.getElementById('nextBtn').disabled = (endIndex >= total);
+            document.getElementById('chartRange').textContent = 
+                `Hiển thị: ${startIndex + 1}-${endIndex} / Tổng: ${total}`;
+        }
+        
+        // Scroll chart
+        function scrollChart(direction) {
+            const total = allChartData.labels.length;
+            if (total === 0) return;
+            
+            if (direction === 'next') {
+                // Scroll về phía trước (xem tiếp - dữ liệu mới hơn)
+                chartDataStartIndex = Math.min(
+                    chartDataStartIndex + CHART_DISPLAY_LIMIT,
+                    total - CHART_DISPLAY_LIMIT
+                );
+            } else if (direction === 'prev') {
+                // Scroll về phía sau (xem cũ - dữ liệu cũ hơn)
+                chartDataStartIndex = Math.max(
+                    chartDataStartIndex - CHART_DISPLAY_LIMIT,
+                    0
+                );
+            }
+            
+            updateChartDisplay();
+        }
+        
+        // Update alerts
+        async function updateAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/alerts`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const alerts = await response.json();
+                
+                const container = document.getElementById('alertsContainer');
+                
+                if (alerts.is_alerting) {
+                    container.innerHTML = `
+                        <div class="alert-item alert-${alerts.status.toLowerCase().replace('_', '-')}">
+                            <strong>⚠️ ${getStatusText(alerts.status)}</strong>
+                            <p>${alerts.summary.last_alert_time ? 'Thời gian: ' + new Date(alerts.summary.last_alert_time).toLocaleString('vi-VN') : ''}</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="alert-item alert-normal">
+                            <strong>✓ Hệ thống hoạt động bình thường</strong>
+                            <p>pH trong khoảng an toàn</p>
+                        </div>
+                    `;
+                }
+                
+                // Update early warning từ AI
+                await updateEarlyWarning();
+            } catch (error) {
+                console.error('Error fetching alerts:', error);
+            }
+        }
+        
+        // Update early warning từ AI
+        async function updateEarlyWarning() {
+            try {
+                const response = await fetch(`${API_BASE}/api/current`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const reading = await response.json();
+                
+                const container = document.getElementById('earlyWarningContainer');
+                
+                if (reading.has_early_warning && reading.warning_message) {
+                    // Cảnh báo sớm từ AI
+                    const isLow = reading.predicted_ph < 7.0;
+                    container.innerHTML = `
+                        <div class="alert-item ${isLow ? 'alert-low' : 'alert-high'}">
+                            <strong>🔮 ${reading.warning_message}</strong>
+                            <p>Dự đoán: pH = ${reading.predicted_ph ? reading.predicted_ph.toFixed(2) : 'N/A'}</p>
+                        </div>
+                    `;
+                } else if (reading.predicted_ph) {
+                    // Không có cảnh báo sớm
+                    container.innerHTML = `
+                        <div class="alert-item alert-normal">
+                            <strong>✓ AI dự đoán an toàn</strong>
+                            <p>pH dự đoán: ${reading.predicted_ph.toFixed(2)} (trong khoảng an toàn)</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="alert-item alert-normal">
+                            <strong>⏳ AI đang phân tích</strong>
+                            <p>Chưa đủ dữ liệu để dự đoán</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching early warning:', error);
+            }
+        }
+        
+        // Helper functions
+        function getStatusText(status) {
+            const statusMap = {
+                'NORMAL': 'Bình thường',
+                'WAITING': 'Đang chờ xác nhận',
+                'ALERT_LOW_PH': '⚠️ Cảnh báo pH thấp',
+                'ALERT_HIGH_PH': '⚠️ Cảnh báo pH cao'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function getStatusClass(status) {
+            if (status === 'NORMAL') return 'normal';
+            if (status === 'WAITING') return 'waiting';
+            return 'alert';
+        }
+        
+        // Update model metrics
+        async function updateModelMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/api/model-metrics`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const metrics = await response.json();
+                
+                const container = document.getElementById('modelMetrics');
+                const retrainBtn = document.getElementById('retrainBtn');
+                
+                if (!metrics.is_trained) {
+                    container.innerHTML = `
+                        <div style="color: #666; font-size: 14px;">
+                            ⏳ Model chưa được train<br>
+                            Cần: ${metrics.history_size || 0} readings
+                        </div>
+                    `;
+                    retrainBtn.disabled = true;
+                    retrainBtn.style.opacity = '0.5';
+                    return;
+                }
+                
+                retrainBtn.disabled = false;
+                retrainBtn.style.opacity = '1';
+                
+                let accuracyHtml = '';
+                if (metrics.accuracy) {
+                    const acc = metrics.accuracy;
+                    accuracyHtml = `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                            <div>
+                                <strong>MAE:</strong> ${acc.mae ? acc.mae.toFixed(4) : 'N/A'}<br>
+                                <strong>RMSE:</strong> ${acc.rmse ? acc.rmse.toFixed(4) : 'N/A'}
+                            </div>
+                            <div>
+                                <strong>R²:</strong> ${acc.r2 ? acc.r2.toFixed(4) : 'N/A'}<br>
+                                <strong>Samples:</strong> ${acc.samples || metrics.history_size || 0}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = `
+                    <div style="font-size: 14px;">
+                        <strong>Model:</strong> ${metrics.model_type}<br>
+                        <strong>Status:</strong> <span style="color: #10b981;">✓ Trained</span><br>
+                        <strong>Data:</strong> ${metrics.history_size} readings
+                        ${accuracyHtml}
+                    </div>
+                `;
+                
+                // Update feature importance
+                updateFeatureImportance(metrics.feature_importance);
+            } catch (error) {
+                console.error('Error fetching model metrics:', error);
+            }
+        }
+        
+        // Update feature importance
+        function updateFeatureImportance(featureData) {
+            const container = document.getElementById('featureImportance');
+            
+            if (!featureData || !featureData.values || featureData.values.length === 0) {
+                container.innerHTML = '<div style="color: #666;">Chưa có dữ liệu</div>';
+                return;
+            }
+            
+            const maxImportance = Math.max(...featureData.values);
+            let html = '<div style="font-size: 12px;">';
+            
+            // Show top 10 most important features
+            const features = featureData.values.map((val, idx) => ({
+                label: featureData.labels[idx] || `Feature ${idx + 1}`,
+                importance: val
+            })).sort((a, b) => b.importance - a.importance).slice(0, 10);
+            
+            features.forEach(feature => {
+                const percentage = (feature.importance / maxImportance) * 100;
+                html += `
+                    <div style="margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>${feature.label}</span>
+                            <span style="color: #666;">${(feature.importance * 100).toFixed(2)}%</span>
+                        </div>
+                        <div style="background: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div style="background: #667eea; height: 100%; width: ${percentage}%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        // Retrain model
+        async function retrainModel() {
+            const btn = document.getElementById('retrainBtn');
+            const originalText = btn.textContent;
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Đang train...';
+            btn.style.opacity = '0.5';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/retrain-model`, {
+                    method: 'POST'
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
+                }
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✓ Model đã được retrain thành công!');
+                    updateModelMetrics();
+                } else {
+                    alert(`⚠️ ${result.message}`);
+                }
+            } catch (error) {
+                alert(`❌ Lỗi: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                btn.style.opacity = '1';
+            }
+        }
+        
+        // Update alert history
+        async function updateAlertHistory() {
+            try {
+                const response = await fetch(`${API_BASE}/api/alert-history?limit=10`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                const data = await response.json();
+                
+                const container = document.getElementById('alertHistoryContainer');
+                const statsSpan = document.getElementById('alertStats');
+                
+                // Update statistics
+                if (data.statistics) {
+                    const stats = data.statistics;
+                    statsSpan.textContent = `Tổng: ${stats.total_alerts} | Thấp: ${stats.low_ph_alerts} | Cao: ${stats.high_ph_alerts}`;
+                }
+                
+                // Display recent alerts
+                if (data.alerts && data.alerts.length > 0) {
+                    let html = '';
+                    data.alerts.slice(0, 5).forEach(alert => {
+                        const isLow = alert.alert_type === 'ALERT_LOW_PH';
+                        const alertClass = isLow ? 'alert-low' : 'alert-high';
+                        const date = new Date(alert.timestamp);
+                        html += `
+                            <div class="alert-item ${alertClass}" style="margin-bottom: 8px; padding: 8px; font-size: 12px;">
+                                <strong>⚠️ ${isLow ? 'pH Thấp' : 'pH Cao'}: ${alert.ph_value}</strong><br>
+                                <span style="color: #666;">${date.toLocaleString('vi-VN')}</span>
+                                ${alert.predicted_ph ? `<br>Dự đoán: ${alert.predicted_ph}` : ''}
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div style="color: #666; font-size: 12px;">Chưa có cảnh báo nào</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching alert history:', error);
+            }
+        }
+        
+        // Update all data
+        async function updateAll() {
+            await Promise.all([
+                updateStatus(),
+                updateCurrentReading(),
+                updateChart(),
+                updateAlerts(),
+                updateModelMetrics(),
+                updateAlertHistory()
+            ]);
+        }
+        
+        // Initial load
+        updateAll();
+        
+        // Auto-refresh every 5 seconds
+        setInterval(updateAll, 5000);
+    </script>
+</body>
+</html>
+
