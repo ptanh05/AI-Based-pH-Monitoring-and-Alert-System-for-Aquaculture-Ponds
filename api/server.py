@@ -16,6 +16,8 @@ from datetime import datetime, timedelta
 import threading
 import time
 import sys
+import os
+import json
 import platform
 import traceback
 
@@ -54,12 +56,14 @@ from edge.inference_engine import (
     OPENVINO_AVAILABLE, SKL2ONNX_AVAILABLE,
 )
 from ai.features import FeatureEngineer
+from data.real_data_loader import RealDataLoader
 
 # ── Global State ──
 monitoring_system = None
 system_thread = None
 is_running = False
 use_simulator = True
+current_data_source = "demo"  # "demo" | "real_validation" | "live_sensor"
 recent_readings = []
 MAX_RECENT_READINGS = 200
 manual_ph_queue = []
@@ -328,7 +332,7 @@ def process_ph_reading(timestamp: datetime, ph_value: float):
 
 
 def run_monitoring_system():
-    global monitoring_system, is_running, use_simulator, manual_ph_queue
+    global monitoring_system, is_running, use_simulator, current_data_source, manual_ph_queue
 
     if monitoring_system is None:
         monitoring_system = PHMonitoringSystem()
@@ -336,16 +340,23 @@ def run_monitoring_system():
     is_running = True
 
     try:
-        if use_simulator:
+        if current_data_source == "real_validation":
+            loader = RealDataLoader()
+            for timestamp, ph_value, ctx in loader.stream_real_readings():
+                if not is_running or current_data_source != "real_validation":
+                    break
+                process_ph_reading(timestamp, ph_value)
+                time.sleep(monitoring_system.reading_interval_seconds)
+        elif use_simulator:
             for timestamp, ph_value in monitoring_system.simulator.stream_readings(
                 interval_seconds=monitoring_system.reading_interval_seconds,
                 max_readings=None,
             ):
-                if not is_running:
+                if not is_running or current_data_source != "demo":
                     break
                 process_ph_reading(timestamp, ph_value)
         else:
-            while is_running:
+            while is_running and current_data_source == "live_sensor":
                 if manual_ph_queue:
                     ph_data = manual_ph_queue.pop(0)
                     ts = (
@@ -594,22 +605,124 @@ async def submit_ph(input_data: ManualPHInput):
 
 @app.post("/api/set-mode")
 async def set_mode(mode: str = "auto"):
-    global use_simulator
+    """Legacy endpoint for switching auto/manual mode."""
+    global use_simulator, current_data_source
     if mode.lower() == "manual":
         use_simulator = False
+        current_data_source = "live_sensor"
         return {"success": True, "mode": "manual"}
     elif mode.lower() == "auto":
         use_simulator = True
+        current_data_source = "demo"
         return {"success": True, "mode": "auto"}
     raise HTTPException(status_code=400, detail="Mode must be 'auto' or 'manual'")
 
+
 @app.get("/api/source-info")
 async def get_source_info():
+    """Legacy endpoint returning data source provenance."""
     return {
         "current_mode": "auto" if use_simulator else "manual",
-        "data_source": "simulator (synthetic)" if use_simulator else "manual_input",
-        "disclaimer": "All data is currently from a software simulator, not real sensors.",
+        "data_source": "simulator (synthetic)" if current_data_source == "demo" else "real_world_validation" if current_data_source == "real_validation" else "manual_input",
+        "active_source": current_data_source,
+        "disclaimer": "Data provenance: " + ("Software simulator" if current_data_source == "demo" else "Mendeley Data DOI 10.17632/8s73jfvgr5.2" if current_data_source == "real_validation" else "Live manual/sensor input"),
     }
+
+
+@app.get("/api/data-sources")
+async def get_data_sources():
+    """Return available data sources and active mode."""
+    return {
+        "active_source": current_data_source,
+        "available_sources": [
+            {
+                "id": "demo",
+                "name": "Competition Demo (Synthetic Simulator)",
+                "description": "Deterministic competition scenarios with synthetic mathematical generation.",
+                "provenance": "SIMULATED",
+            },
+            {
+                "id": "real_validation",
+                "name": "Real-World Validation (Mendeley Data)",
+                "description": "37,284 high-resolution IoT observations from Tilapia ponds in Montería, Colombia (2024).",
+                "provenance": "REAL-WORLD DATASET (DOI: 10.17632/8s73jfvgr5.2)",
+            },
+            {
+                "id": "live_sensor",
+                "name": "Live Sensor / Manual Input",
+                "description": "Accepts live HTTP payload from hardware probe gateways or manual input.",
+                "provenance": "LIVE SENSOR / MANUAL",
+            },
+        ],
+    }
+
+
+@app.post("/api/select-source")
+async def select_source(source: str = "demo"):
+    """Switch active data source mode (demo | real_validation | live_sensor)."""
+    global current_data_source, use_simulator, is_running, recent_readings, system_thread
+    source = source.lower()
+    if source not in ["demo", "real_validation", "live_sensor"]:
+        raise HTTPException(status_code=400, detail="Invalid source. Must be 'demo', 'real_validation', or 'live_sensor'")
+
+    is_running = False
+    time.sleep(1.0)
+    current_data_source = source
+    recent_readings = []
+
+    if source == "demo":
+        use_simulator = True
+    elif source == "real_validation":
+        use_simulator = True
+    else:  # live_sensor
+        use_simulator = False
+
+    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
+    system_thread.start()
+
+    return {
+        "success": True,
+        "active_source": current_data_source,
+        "mode": "auto" if use_simulator else "manual",
+    }
+
+
+@app.get("/api/real-data/status")
+async def get_real_data_status():
+    """Get metadata about the real-world dataset."""
+    reports_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reports")
+    quality_path = os.path.join(reports_dir, "real_data_quality.json")
+    if os.path.exists(quality_path):
+        with open(quality_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {
+        "dataset_name": "Environmental Parameters in Aquaculture",
+        "doi": "10.17632/8s73jfvgr5.2",
+        "license": "CC BY 4.0",
+        "status": "Loaded in data/real/",
+    }
+
+
+@app.get("/api/real-data/validation")
+async def get_real_data_validation():
+    """Get 3-way evaluation results comparing synthetic vs real data."""
+    reports_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reports")
+    res_path = os.path.join(reports_dir, "three_way_comparison.json")
+    if os.path.exists(res_path):
+        with open(res_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"message": "Run python scripts/evaluate_real_forecasting.py to generate."}
+
+
+@app.get("/api/real-data/multisensor")
+async def get_real_multisensor():
+    """Get cross-parameter correlation analysis from real dataset."""
+    reports_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reports")
+    res_path = os.path.join(reports_dir, "multisensor_analysis.json")
+    if os.path.exists(res_path):
+        with open(res_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"message": "Run python scripts/analyze_multisensor.py to generate."}
 
 
 if __name__ == "__main__":

@@ -186,3 +186,34 @@ def test_set_mode_endpoint(client):
     response = client.post("/api/set-mode?mode=auto")
     assert response.status_code == 200
     assert response.json()["mode"] == "auto"
+
+
+def test_data_sources_endpoint(client):
+    response = client.get("/api/data-sources")
+    assert response.status_code == 200
+    data = response.json()
+    assert "active_source" in data
+    assert "available_sources" in data
+    assert len(data["available_sources"]) == 3
+
+
+def test_select_source_endpoint(client):
+    response = client.post("/api/select-source?source=real_validation")
+    assert response.status_code == 200
+    assert response.json()["active_source"] == "real_validation"
+
+    # Switch back to demo
+    response = client.post("/api/select-source?source=demo")
+    assert response.status_code == 200
+    assert response.json()["active_source"] == "demo"
+
+
+def test_real_data_endpoints(client):
+    res_status = client.get("/api/real-data/status")
+    assert res_status.status_code == 200
+
+    res_val = client.get("/api/real-data/validation")
+    assert res_val.status_code == 200
+
+    res_multi = client.get("/api/real-data/multisensor")
+    assert res_multi.status_code == 200

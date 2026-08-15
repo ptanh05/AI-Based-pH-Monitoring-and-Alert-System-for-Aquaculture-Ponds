@@ -18,6 +18,7 @@ class SensorParameter(str, Enum):
     TEMPERATURE = "temperature"
     DISSOLVED_OXYGEN = "dissolved_oxygen"
     TURBIDITY = "turbidity"
+    SALINITY = "salinity"
     AMMONIA = "ammonia"
 
 
@@ -44,6 +45,7 @@ PHYSICAL_RANGES = {
     SensorParameter.TEMPERATURE: (-5.0, 50.0),
     SensorParameter.DISSOLVED_OXYGEN: (0.0, 25.0),
     SensorParameter.TURBIDITY: (0.0, 4000.0),
+    SensorParameter.SALINITY: (0.0, 50.0),
     SensorParameter.AMMONIA: (0.0, 100.0),
 }
 
@@ -53,13 +55,14 @@ MAX_JUMP = {
     SensorParameter.TEMPERATURE: 5.0,
     SensorParameter.DISSOLVED_OXYGEN: 5.0,
     SensorParameter.TURBIDITY: 500.0,
+    SensorParameter.SALINITY: 10.0,
     SensorParameter.AMMONIA: 10.0,
 }
 
 
 @dataclass
 class SensorReading:
-    """A single sensor measurement."""
+    """A single sensor measurement with optional multi-sensor context."""
     timestamp: datetime
     sensor_id: str
     pond_id: str
@@ -68,9 +71,13 @@ class SensorReading:
     unit: str
     source: str = "simulator"
     quality: str = "good"
+    temperature: Optional[float] = None
+    dissolved_oxygen: Optional[float] = None
+    turbidity: Optional[float] = None
+    salinity: Optional[float] = None
 
     def to_dict(self) -> dict:
-        return {
+        d = {
             "timestamp": self.timestamp.isoformat(),
             "sensor_id": self.sensor_id,
             "pond_id": self.pond_id,
@@ -80,6 +87,15 @@ class SensorReading:
             "source": self.source,
             "quality": self.quality,
         }
+        if self.temperature is not None:
+            d["temperature"] = self.temperature
+        if self.dissolved_oxygen is not None:
+            d["dissolved_oxygen"] = self.dissolved_oxygen
+        if self.turbidity is not None:
+            d["turbidity"] = self.turbidity
+        if self.salinity is not None:
+            d["salinity"] = self.salinity
+        return d
 
 
 class ValidationResult:

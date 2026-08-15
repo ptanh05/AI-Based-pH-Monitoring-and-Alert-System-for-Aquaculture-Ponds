@@ -58,9 +58,34 @@ Features are computed using **strictly past observation history** ($t \le \text{
 | Horizon | Model MAE | Model RMSE | Model $R^2$ | Baseline (Persistence) MAE | Baseline (Persistence) $R^2$ |
 |---|---|---|---|---|---|
 | **1-step** | 0.003770 | 0.007558 | **0.999830** | 0.055833 | 0.958059 |
-| **5-step** | 0.003144 | 0.004730 | **0.999934** | 0.150316 | 0.783717 |
-| **15-step** | 0.003329 | 0.005818 | **0.999901** | 0.429140 | 0.015422 |
-| **30-step** | 0.003985 | 0.006787 | **0.999868** | 0.845333 | -1.564055 |
+| **5-step** | 0.024874 | 0.038769 | **0.995537** | 0.174167 | 0.592591 |
+| **15-step** | 0.063851 | 0.089851 | **0.976008** | 0.443750 | -1.650849 |
+| **30-step** | 0.092109 | 0.117185 | **0.959265** | 0.707708 | -5.748301 |
+
+---
+
+## 5. Real-World Dataset Benchmark (Mendeley Data DOI: 10.17632/8s73jfvgr5.2)
+
+Evaluated against **37,284 high-resolution IoT observations** from commercial Tilapia aquaculture in Montería, Colombia (CC BY 4.0 License), using a strict chronological 70% Train / 15% Val / 15% Test split:
+
+### Three-Way Model Generalization Matrix
+
+| Experiment | Setup | 1-step MAE (5 min) | 1-step $R^2$ | 5-step MAE (25 min) | 5-step $R^2$ | 15-step MAE (75 min) | 15-step $R^2$ |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **A** | Synthetic $\to$ Synthetic | 0.0002 | 1.0000 | 0.0003 | 1.0000 | 0.0005 | 1.0000 |
+| **B** | **Real $\to$ Real (Montería)** | **0.0432** | **0.8798** | **0.0770** | **0.6930** | **0.1145** | **0.2125** |
+| — | *Persistence Baseline (Real)* | *0.0469* | *0.8405* | *0.1240* | *0.3177* | *0.1927* | *-0.5998* |
+| **C** | Synthetic $\to$ Real (Zero-Shot) | 0.1249 | 0.4934 | 0.2365 | -1.0442 | 0.3516 | -3.6923 |
+
+### Domain Shift Transparency
+Direct zero-shot transfer from mathematical synthetic simulators onto real tropical aquaculture dynamics exhibits significant domain shift at longer horizons ($R^2 < 0$), proving why real-world calibration and edge fine-tuning (Experiment B) are indispensable for real deployments.
+
+---
+
+## 6. Environmental & Ethics Considerations
+
+- **Hardware Footprint**: Model size is < 2.5 MB, inference latency < 1.0 ms on edge CPUs, enabling solar-powered, battery-backed IoT deployments.
+- **Fail-Safe Mechanism**: The platform distinguishes sensor transmission dropouts/stuck probes from genuine biological water quality crises to prevent false alarms.
 
 ### Scenario: `heavy_rain` (Seed=42)
 

@@ -1,0 +1,260 @@
+{
+  "dataset_name": "mendeley_aquaculture",
+  "dataset_source": "Mendeley Data",
+  "doi": "10.17632/8s73jfvgr5.2",
+  "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+  "training_timestamp": "2026-08-15T14:20:44.049675",
+  "random_seed": 42,
+  "sampling_interval_seconds": 300.0,
+  "sampling_interval_minutes": 5.0,
+  "validation_report": {
+    "dataset_name": "mendeley_aquaculture",
+    "total_raw_rows": 37284,
+    "clean_rows": 3362,
+    "duplicate_timestamps": 33922,
+    "missing_values_by_col": {
+      "id": 0,
+      "ph": 0,
+      "turbidity": 0,
+      "hour": 0,
+      "day": 0,
+      "month": 0,
+      "temperature": 0,
+      "dissolved_oxygen": 0,
+      "timestamp": 0
+    },
+    "missing_pct_by_col": {
+      "id": 0.0,
+      "ph": 0.0,
+      "turbidity": 0.0,
+      "hour": 0.0,
+      "day": 0.0,
+      "month": 0.0,
+      "temperature": 0.0,
+      "dissolved_oxygen": 0.0,
+      "timestamp": 0.0
+    },
+    "physical_violations_by_col": {
+      "ph": 0,
+      "temperature": 0,
+      "dissolved_oxygen": 0,
+      "turbidity": 0
+    },
+    "outliers_iqr_by_col": {
+      "ph": 114,
+      "temperature": 18,
+      "dissolved_oxygen": 0,
+      "turbidity": 0
+    },
+    "detected_sensors": [
+      "ph",
+      "temperature",
+      "dissolved_oxygen",
+      "turbidity"
+    ],
+    "time_start": "2024-01-01T00:00:00",
+    "time_end": "2024-06-28T23:10:00",
+    "estimated_sampling_interval_seconds": 300.0,
+    "is_valid_for_training": true,
+    "issues": [
+      "Found 33922 duplicate timestamps."
+    ]
+  },
+  "resampling_metadata": {
+    "original_samples": 3362,
+    "resampled_samples": 51831,
+    "native_observed_samples": 3362,
+    "interpolated_samples": 48469,
+    "interpolated_pct": 93.51,
+    "target_frequency": "5min",
+    "interpolation_method": "time",
+    "time_range_start": "2024-01-01T00:00:00",
+    "time_range_end": "2024-06-28T23:10:00"
+  },
+  "horizons_evaluated": {
+    "1_step": {
+      "steps": 1,
+      "estimated_duration_minutes": 5,
+      "split_info": {
+        "total_samples": 51811,
+        "train_samples": 36267,
+        "val_samples": 7772,
+        "test_samples": 7772,
+        "train_ratio": 0.7,
+        "val_ratio": 0.15,
+        "test_ratio": 0.15,
+        "split_strategy": "STRICT_CHRONOLOGICAL_NO_SHUFFLE"
+      },
+      "baseline": {
+        "mae": 0.01353,
+        "rmse": 0.047729,
+        "r2": 0.936174
+      },
+      "models": {
+        "Persistence Baseline": {
+          "mae": 0.01353,
+          "rmse": 0.047729,
+          "r2": 0.936174,
+          "improvement_vs_baseline_pct": 0.0
+        },
+        "Linear Regression": {
+          "mae": 0.0143,
+          "rmse": 0.046581,
+          "r2": 0.939207,
+          "improvement_vs_baseline_pct": -5.7
+        },
+        "HistGradientBoosting": {
+          "mae": 0.011753,
+          "rmse": 0.040599,
+          "r2": 0.95382,
+          "improvement_vs_baseline_pct": 13.13
+        },
+        "Random Forest": {
+          "mae": 0.0135,
+          "rmse": 0.043601,
+          "r2": 0.946736,
+          "improvement_vs_baseline_pct": 0.22
+        }
+      },
+      "best_model": "HistGradientBoosting"
+    },
+    "5_step": {
+      "steps": 5,
+      "estimated_duration_minutes": 25,
+      "split_info": {
+        "total_samples": 51807,
+        "train_samples": 36264,
+        "val_samples": 7771,
+        "test_samples": 7772,
+        "train_ratio": 0.7,
+        "val_ratio": 0.15,
+        "test_ratio": 0.15,
+        "split_strategy": "STRICT_CHRONOLOGICAL_NO_SHUFFLE"
+      },
+      "baseline": {
+        "mae": 0.05903,
+        "rmse": 0.119424,
+        "r2": 0.600404
+      },
+      "models": {
+        "Persistence Baseline": {
+          "mae": 0.05903,
+          "rmse": 0.119424,
+          "r2": 0.600404,
+          "improvement_vs_baseline_pct": 0.0
+        },
+        "Linear Regression": {
+          "mae": 0.061789,
+          "rmse": 0.108563,
+          "r2": 0.669784,
+          "improvement_vs_baseline_pct": -4.67
+        },
+        "HistGradientBoosting": {
+          "mae": 0.034557,
+          "rmse": 0.070679,
+          "r2": 0.860036,
+          "improvement_vs_baseline_pct": 41.46
+        },
+        "Random Forest": {
+          "mae": 0.032767,
+          "rmse": 0.070559,
+          "r2": 0.860511,
+          "improvement_vs_baseline_pct": 44.49
+        }
+      },
+      "best_model": "Random Forest"
+    },
+    "15_step": {
+      "steps": 15,
+      "estimated_duration_minutes": 75,
+      "split_info": {
+        "total_samples": 51797,
+        "train_samples": 36257,
+        "val_samples": 7770,
+        "test_samples": 7770,
+        "train_ratio": 0.7,
+        "val_ratio": 0.15,
+        "test_ratio": 0.15,
+        "split_strategy": "STRICT_CHRONOLOGICAL_NO_SHUFFLE"
+      },
+      "baseline": {
+        "mae": 0.130767,
+        "rmse": 0.20804,
+        "r2": -0.21287
+      },
+      "models": {
+        "Persistence Baseline": {
+          "mae": 0.130767,
+          "rmse": 0.20804,
+          "r2": -0.21287,
+          "improvement_vs_baseline_pct": 0.0
+        },
+        "Linear Regression": {
+          "mae": 0.116809,
+          "rmse": 0.165293,
+          "r2": 0.234352,
+          "improvement_vs_baseline_pct": 10.67
+        },
+        "HistGradientBoosting": {
+          "mae": 0.06285,
+          "rmse": 0.098776,
+          "r2": 0.726587,
+          "improvement_vs_baseline_pct": 51.94
+        },
+        "Random Forest": {
+          "mae": 0.060456,
+          "rmse": 0.098706,
+          "r2": 0.726973,
+          "improvement_vs_baseline_pct": 53.77
+        }
+      },
+      "best_model": "Random Forest"
+    },
+    "30_step": {
+      "steps": 30,
+      "estimated_duration_minutes": 150,
+      "split_info": {
+        "total_samples": 51782,
+        "train_samples": 36247,
+        "val_samples": 7767,
+        "test_samples": 7768,
+        "train_ratio": 0.7,
+        "val_ratio": 0.15,
+        "test_ratio": 0.15,
+        "split_strategy": "STRICT_CHRONOLOGICAL_NO_SHUFFLE"
+      },
+      "baseline": {
+        "mae": 0.173799,
+        "rmse": 0.258347,
+        "r2": -0.870779
+      },
+      "models": {
+        "Persistence Baseline": {
+          "mae": 0.173799,
+          "rmse": 0.258347,
+          "r2": -0.870779,
+          "improvement_vs_baseline_pct": 0.0
+        },
+        "Linear Regression": {
+          "mae": 0.123619,
+          "rmse": 0.17652,
+          "r2": 0.12662,
+          "improvement_vs_baseline_pct": 28.87
+        },
+        "HistGradientBoosting": {
+          "mae": 0.066771,
+          "rmse": 0.106218,
+          "r2": 0.683764,
+          "improvement_vs_baseline_pct": 61.58
+        },
+        "Random Forest": {
+          "mae": 0.067657,
+          "rmse": 0.107718,
+          "r2": 0.67477,
+          "improvement_vs_baseline_pct": 61.07
+        }
+      },
+      "best_model": "HistGradientBoosting"
+    }
+  }
+}

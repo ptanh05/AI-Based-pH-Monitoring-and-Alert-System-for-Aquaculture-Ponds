@@ -1,0 +1,23 @@
+# Configuration for Synthetic Competition Demo Scenarios
+simulator:
+  scenario: "competition_demo"
+  seed: 42
+  sample_count: 500
+  low_threshold: 7.0
+  high_threshold: 8.5
+  sampling_interval_seconds: 60
+
+features:
+  window_size: 20
+  include_multisensor: false
+
+models:
+  random_forest:
+    n_estimators: 100
+    max_depth: 12
+    random_state: 42
+
+output:
+  model_dir: "models/synthetic"
+  artifact_dir: "artifacts"
+  version: "demo_v1"

@@ -1,0 +1,352 @@
+{
+  "evaluation_timestamp": "2026-08-15T14:34:59.820437",
+  "dataset_doi": "10.17632/8s73jfvgr5.2",
+  "total_observations_analyzed": 5000,
+  "anomaly_statistics": {
+    "total_anomalies_flagged": 447,
+    "anomaly_percentage": 8.94,
+    "anomaly_score_mean": 0.4395,
+    "anomaly_score_max": 0.794,
+    "disclaimer": "Detected anomalies are model-generated observations and do not represent confirmed physical events unless validated against ground truth."
+  },
+  "risk_score_distribution": {
+    "mean_risk_score": 12.82,
+    "median_risk_score": 10.7,
+    "max_risk_score": 74.8,
+    "level_counts": {
+      "LOW": 4513,
+      "MODERATE": 361,
+      "ELEVATED": 75,
+      "HIGH": 51,
+      "CRITICAL": 0
+    },
+    "level_percentages": {
+      "LOW": 90.26,
+      "MODERATE": 7.22,
+      "ELEVATED": 1.5,
+      "HIGH": 1.02,
+      "CRITICAL": 0.0
+    }
+  },
+  "sample_anomalies": [
+    {
+      "timestamp": "2024-01-01T00:24:27",
+      "reading_id": 5252,
+      "ph": 7.480635160803488,
+      "temperature": 26.91985197219674,
+      "dissolved_oxygen": 8.332256577114766,
+      "turbidity": 4.853239963717142,
+      "anomaly_score": 0.2919,
+      "z_score": 2.8774,
+      "reasons": [
+        "pH value is 2.9 standard deviations above recent mean"
+      ]
+    },
+    {
+      "timestamp": "2024-01-01T00:32:36",
+      "reading_id": 6496,
+      "ph": 7.75270616360968,
+      "temperature": 26.993897429614,
+      "dissolved_oxygen": 8.133849909134772,
+      "turbidity": 3.331065403954484,
+      "anomaly_score": 0.5247,
+      "z_score": 13.1864,
+      "reasons": [
+        "pH value is 13.2 standard deviations above recent mean",
+        "Rapid upward pH change"
+      ]
+    },
+    {
+      "timestamp": "2024-01-01T00:35:19",
+      "reading_id": 6564,
+      "ph": 7.811374773643628,
+      "temperature": 26.98358210453611,
+      "dissolved_oxygen": 8.060912984914543,
+      "turbidity": 3.4282834397306825,
+      "anomaly_score": 0.3199,
+      "z_score": 3.8928,
+      "reasons": [
+        "pH value is 3.9 standard deviations above recent mean"
+      ]
+    },
+    {
+      "timestamp": "2024-01-01T00:38:02",
+      "reading_id": 6655,
+      "ph": 7.808430106674974,
+      "temperature": 27.01766718516173,
+      "dissolved_oxygen": 8.200060576245981,
+      "turbidity": 3.312158444266599,
+      "anomaly_score": 0.2228,
+      "z_score": 2.5286,
+      "reasons": [
+        "pH value is 2.5 standard deviations above recent mean"
+      ]
+    },
+    {
+      "timestamp": "2024-01-01T01:00:00",
+      "reading_id": 5390,
+      "ph": 7.579537203045436,
+      "temperature": 26.98058356639571,
+      "dissolved_oxygen": 8.290847637040786,
+      "turbidity": 4.735857011686797,
+      "anomaly_score": 0.1178,
+      "z_score": -0.1914,
+      "reasons": [
+        "Rapid downward pH change"
+      ]
+    }
+  ],
+  "sample_xai_explanations": [
+    {
+      "timestamp": "2024-01-01T09:00:00",
+      "ph": 7.284401934209384,
+      "risk_score": 50.1,
+      "risk_level": "ELEVATED",
+      "components": {
+        "current_value": 18.6,
+        "forecast": 59.4,
+        "trend": 100.0,
+        "anomaly": 33.5
+      },
+      "summary": "Elevated water quality risk detected. Increased attention recommended.",
+      "reasons": [
+        "Current pH (7.28) is approaching the lower safety threshold (7.0)",
+        "AI forecasts pH dropping to 6.79, which is below the lower safe threshold (7.0)",
+        "pH is falling rapidly (rate: -0.495 per reading)",
+        "pH value is 2.6 standard deviations below recent mean",
+        "Rapid downward pH change"
+      ],
+      "risk_drivers": [
+        {
+          "factor": "trend",
+          "contribution": 100.0,
+          "description": "pH trend contributes 100 points to risk"
+        },
+        {
+          "factor": "forecast",
+          "contribution": 59.4,
+          "description": "AI forecast contributes 59 points to risk"
+        },
+        {
+          "factor": "anomaly",
+          "contribution": 33.5,
+          "description": "Anomaly detection contributes 34 points to risk"
+        },
+        {
+          "factor": "current_value",
+          "contribution": 18.6,
+          "description": "Current pH deviation contributes 19 points"
+        }
+      ]
+    },
+    {
+      "timestamp": "2024-01-01T15:00:00",
+      "ph": 7.927410709189772,
+      "risk_score": 40.3,
+      "risk_level": "ELEVATED",
+      "components": {
+        "current_value": 7.1,
+        "forecast": 25.1,
+        "trend": 100.0,
+        "anomaly": 53.2
+      },
+      "summary": "Elevated water quality risk detected. Increased attention recommended.",
+      "reasons": [
+        "AI forecasts pH approaching the upper threshold (8.38)",
+        "pH is rising rapidly (rate: +0.450 per reading)",
+        "Rapid upward pH change"
+      ],
+      "risk_drivers": [
+        {
+          "factor": "trend",
+          "contribution": 100.0,
+          "description": "pH trend contributes 100 points to risk"
+        },
+        {
+          "factor": "anomaly",
+          "contribution": 53.2,
+          "description": "Anomaly detection contributes 53 points to risk"
+        },
+        {
+          "factor": "forecast",
+          "contribution": 25.1,
+          "description": "AI forecast contributes 25 points to risk"
+        },
+        {
+          "factor": "current_value",
+          "contribution": 7.1,
+          "description": "Current pH deviation contributes 7 points"
+        }
+      ]
+    },
+    {
+      "timestamp": "2024-01-02T09:00:00",
+      "ph": 7.254700919126768,
+      "risk_score": 60.0,
+      "risk_level": "ELEVATED",
+      "components": {
+        "current_value": 19.8,
+        "forecast": 70.8,
+        "trend": 100.0,
+        "anomaly": 64.2
+      },
+      "summary": "Elevated water quality risk detected. Increased attention recommended.",
+      "reasons": [
+        "Current pH (7.25) is approaching the lower safety threshold (7.0)",
+        "AI forecasts pH dropping to 6.71, which is below the lower safe threshold (7.0)",
+        "pH is falling rapidly (rate: -0.546 per reading)",
+        "pH value is 3.8 standard deviations below recent mean",
+        "Rapid downward pH change",
+        "Isolation Forest flagged unusual pattern"
+      ],
+      "risk_drivers": [
+        {
+          "factor": "trend",
+          "contribution": 100.0,
+          "description": "pH trend contributes 100 points to risk"
+        },
+        {
+          "factor": "forecast",
+          "contribution": 70.8,
+          "description": "AI forecast contributes 71 points to risk"
+        },
+        {
+          "factor": "anomaly",
+          "contribution": 64.2,
+          "description": "Anomaly detection contributes 64 points to risk"
+        },
+        {
+          "factor": "current_value",
+          "contribution": 19.8,
+          "description": "Current pH deviation contributes 20 points"
+        }
+      ]
+    },
+    {
+      "timestamp": "2024-01-02T20:00:00",
+      "ph": 8.47344165862684,
+      "risk_score": 73.9,
+      "risk_level": "HIGH",
+      "components": {
+        "current_value": 28.9,
+        "forecast": 100.0,
+        "trend": 100.0,
+        "anomaly": 76.3
+      },
+      "summary": "High water quality risk. AI predicts elevated probability of exceeding the safe pH range.",
+      "reasons": [
+        "Current pH (8.47) is approaching the upper safety threshold (8.5)",
+        "AI forecasts pH rising to 9.26, which exceeds the upper safe threshold (8.5)",
+        "pH is rising rapidly (rate: +0.791 per reading)",
+        "pH value is 8.9 standard deviations above recent mean",
+        "Rapid upward pH change",
+        "Isolation Forest flagged unusual pattern"
+      ],
+      "risk_drivers": [
+        {
+          "factor": "forecast",
+          "contribution": 100.0,
+          "description": "AI forecast contributes 100 points to risk"
+        },
+        {
+          "factor": "trend",
+          "contribution": 100.0,
+          "description": "pH trend contributes 100 points to risk"
+        },
+        {
+          "factor": "anomaly",
+          "contribution": 76.3,
+          "description": "Anomaly detection contributes 76 points to risk"
+        },
+        {
+          "factor": "current_value",
+          "contribution": 28.9,
+          "description": "Current pH deviation contributes 29 points"
+        }
+      ]
+    },
+    {
+      "timestamp": "2024-01-02T22:00:00",
+      "ph": 7.552858673283302,
+      "risk_score": 54.7,
+      "risk_level": "ELEVATED",
+      "components": {
+        "current_value": 7.9,
+        "forecast": 81.5,
+        "trend": 100.0,
+        "anomaly": 39.3
+      },
+      "summary": "Elevated water quality risk detected. Increased attention recommended.",
+      "reasons": [
+        "AI forecasts pH dropping to 6.63, which is below the lower safe threshold (7.0)",
+        "pH is falling rapidly (rate: -0.921 per reading)",
+        "Rapid downward pH change"
+      ],
+      "risk_drivers": [
+        {
+          "factor": "trend",
+          "contribution": 100.0,
+          "description": "pH trend contributes 100 points to risk"
+        },
+        {
+          "factor": "forecast",
+          "contribution": 81.5,
+          "description": "AI forecast contributes 82 points to risk"
+        },
+        {
+          "factor": "anomaly",
+          "contribution": 39.3,
+          "description": "Anomaly detection contributes 39 points to risk"
+        },
+        {
+          "factor": "current_value",
+          "contribution": 7.9,
+          "description": "Current pH deviation contributes 8 points"
+        }
+      ]
+    },
+    {
+      "timestamp": "2024-01-02T23:00:00",
+      "ph": 8.485241912388423,
+      "risk_score": 72.4,
+      "risk_level": "HIGH",
+      "components": {
+        "current_value": 29.4,
+        "forecast": 100.0,
+        "trend": 100.0,
+        "anomaly": 67.9
+      },
+      "summary": "High water quality risk. AI predicts elevated probability of exceeding the safe pH range.",
+      "reasons": [
+        "Current pH (8.49) is approaching the upper safety threshold (8.5)",
+        "AI forecasts pH rising to 9.50, which exceeds the upper safe threshold (8.5)",
+        "pH is rising rapidly (rate: +1.016 per reading)",
+        "pH value is 4.6 standard deviations above recent mean",
+        "Rapid upward pH change",
+        "Isolation Forest flagged unusual pattern"
+      ],
+      "risk_drivers": [
+        {
+          "factor": "forecast",
+          "contribution": 100.0,
+          "description": "AI forecast contributes 100 points to risk"
+        },
+        {
+          "factor": "trend",
+          "contribution": 100.0,
+          "description": "pH trend contributes 100 points to risk"
+        },
+        {
+          "factor": "anomaly",
+          "contribution": 67.9,
+          "description": "Anomaly detection contributes 68 points to risk"
+        },
+        {
+          "factor": "current_value",
+          "contribution": 29.4,
+          "description": "Current pH deviation contributes 29 points"
+        }
+      ]
+    }
+  ]
+}

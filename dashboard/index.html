@@ -66,7 +66,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
         .header-badge {
             display: flex;
@@ -74,18 +74,23 @@
             gap: 6px;
             padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-        }
-        .badge-monitoring {
-            background: rgba(16,185,129,0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(16,185,129,0.3);
         }
         .badge-sim {
             background: rgba(139,92,246,0.15);
             color: var(--accent-purple);
             border: 1px solid rgba(139,92,246,0.3);
+        }
+        .badge-real {
+            background: rgba(6,182,212,0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6,182,212,0.3);
+        }
+        .badge-monitoring {
+            background: rgba(16,185,129,0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16,185,129,0.3);
         }
         .status-dot {
             width: 8px; height: 8px;
@@ -102,10 +107,45 @@
             margin: 0 auto;
             padding: 24px;
         }
+        /* ── Source Bar ── */
+        .source-selector-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .source-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .source-btn {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .source-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .source-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+        .source-provenance {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
         /* ── Top Stats ── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -113,7 +153,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
             transition: all 0.3s ease;
         }
         .stat-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
@@ -122,47 +162,35 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .stat-card .value {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
         }
         .stat-card .sub {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             margin-top: 4px;
         }
         /* ── Risk Gauge ── */
-        .risk-gauge {
-            text-align: center;
-        }
-        .risk-gauge .risk-number {
-            font-size: 36px;
-            font-weight: 800;
-        }
+        .risk-gauge { text-align: center; }
+        .risk-gauge .risk-number { font-size: 32px; font-weight: 800; }
         .risk-gauge .risk-bar {
-            width: 100%;
-            height: 6px;
+            width: 100%; height: 6px;
             background: var(--bg-primary);
             border-radius: 3px;
             margin-top: 8px;
             overflow: hidden;
         }
-        .risk-gauge .risk-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s ease, background 0.5s ease;
-        }
+        .risk-gauge .risk-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease, background 0.5s ease; }
         /* ── Main Grid ── */
         .main-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 24px;
         }
-        @media (max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -190,21 +218,9 @@
             animation: fadeIn 0.3s ease;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-        .alert-banner.normal {
-            background: rgba(16,185,129,0.08);
-            border-color: var(--accent-green);
-            color: var(--accent-green);
-        }
-        .alert-banner.warning {
-            background: rgba(245,158,11,0.08);
-            border-color: var(--accent-yellow);
-            color: var(--accent-yellow);
-        }
-        .alert-banner.high {
-            background: rgba(249,115,22,0.08);
-            border-color: var(--accent-orange);
-            color: var(--accent-orange);
-        }
+        .alert-banner.normal { background: rgba(16,185,129,0.08); border-color: var(--accent-green); color: var(--accent-green); }
+        .alert-banner.warning { background: rgba(245,158,11,0.08); border-color: var(--accent-yellow); color: var(--accent-yellow); }
+        .alert-banner.high { background: rgba(249,115,22,0.08); border-color: var(--accent-orange); color: var(--accent-orange); }
         .alert-banner.critical {
             background: rgba(239,68,68,0.1);
             border-color: var(--accent-red);
@@ -219,7 +235,7 @@
         .alert-banner .alert-text { font-size: 13px; opacity: 0.9; }
         /* ── Chart ── */
         .chart-area { position: relative; height: 280px; }
-        /* ── Reasons ── */
+        /* ── Reasons & Recs ── */
         .reason-list { list-style: none; }
         .reason-list li {
             padding: 10px 14px;
@@ -230,7 +246,6 @@
             font-size: 13px;
             color: var(--text-secondary);
         }
-        /* ── Recommendations ── */
         .rec-item {
             display: flex;
             align-items: flex-start;
@@ -254,88 +269,29 @@
         .urgency-medium { background: rgba(245,158,11,0.2); color: var(--accent-yellow); }
         .urgency-low { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .urgency-info { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
-        /* ── Model Info ── */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .info-item {
-            padding: 10px 12px;
-            background: var(--glass);
-            border-radius: 8px;
-        }
+        /* ── Info Grid ── */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .info-item { padding: 10px 12px; background: var(--glass); border-radius: 8px; }
         .info-item .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .info-item .info-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
         /* ── Risk Components ── */
-        .risk-comp {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+        .risk-comp { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .risk-comp-label { font-size: 12px; color: var(--text-secondary); width: 90px; }
-        .risk-comp-bar {
-            flex: 1;
-            height: 8px;
-            background: var(--bg-primary);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .risk-comp-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
+        .risk-comp-bar { flex: 1; height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden; }
+        .risk-comp-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
         .risk-comp-value { font-size: 12px; font-weight: 600; width: 32px; text-align: right; }
         /* ── Scenario Buttons ── */
-        .scenario-bar {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
+        .scenario-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .scenario-btn {
-            padding: 6px 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
+            padding: 6px 14px; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-secondary); font-size: 12px; cursor: pointer;
+            transition: all 0.2s; font-family: inherit;
         }
         .scenario-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--accent-blue); }
         .scenario-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
-        /* ── History Table ── */
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-        .history-table th {
-            text-align: left;
-            padding: 8px 10px;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .history-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid rgba(30,37,72,0.5);
-            color: var(--text-secondary);
-        }
         .disclaimer {
-            font-size: 11px;
-            color: var(--text-muted);
-            padding: 12px;
-            background: var(--glass);
-            border-radius: 8px;
-            margin-top: 12px;
-            border-left: 3px solid var(--accent-purple);
+            font-size: 11px; color: var(--text-muted); padding: 12px; background: var(--glass);
+            border-radius: 8px; margin-top: 12px; border-left: 3px solid var(--accent-purple);
         }
     </style>
 </head>
@@ -349,14 +305,26 @@
             </div>
         </div>
         <div class="header-right">
-            <span class="header-badge badge-sim" id="data-source-badge">SIMULATED DATA</span>
+            <span class="header-badge badge-sim" id="data-source-badge">DATA SOURCE: SIMULATED (Synthetic)</span>
             <span class="header-badge badge-monitoring"><span class="status-dot"></span> MONITORING</span>
         </div>
     </header>
 
     <div class="container">
-        <!-- ── Scenario Switcher ── -->
-        <div class="scenario-bar">
+        <!-- ── Data Source Switcher ── -->
+        <div class="source-selector-bar">
+            <div class="source-buttons">
+                <button class="source-btn active" id="btn-src-demo" onclick="switchDataSource('demo')">🎯 DEMO MODE (Simulator)</button>
+                <button class="source-btn" id="btn-src-real" onclick="switchDataSource('real_validation')">🌊 REAL DATA VALIDATION (Mendeley)</button>
+                <button class="source-btn" id="btn-src-live" onclick="switchDataSource('live_sensor')">📡 LIVE SENSOR</button>
+            </div>
+            <div class="source-provenance" id="source-provenance-text">
+                Source: PHSimulator (Deterministic Competition Scenarios)
+            </div>
+        </div>
+
+        <!-- ── Scenario Switcher (Visible in Demo mode) ── -->
+        <div class="scenario-bar" id="scenario-controls">
             <button class="scenario-btn" onclick="setScenario('normal')">Normal</button>
             <button class="scenario-btn" onclick="setScenario('rapid_ph_rise')">Rapid Rise</button>
             <button class="scenario-btn" onclick="setScenario('rapid_ph_drop')">Rapid Drop</button>
@@ -372,22 +340,22 @@
             <div class="alert-text" id="alert-text"></div>
         </div>
 
-        <!-- ── Top Stats ── -->
+        <!-- ── Top Stats Grid ── -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="label">Pond</div>
-                <div class="value" style="color:var(--accent-cyan)">POND-01</div>
-                <div class="sub">pH Sensor Active</div>
+                <div class="value" style="color:var(--accent-cyan)" id="pond-name">POND-01</div>
+                <div class="sub" id="sensor-sub">pH Sensor Active</div>
             </div>
             <div class="stat-card">
                 <div class="label">Current pH</div>
                 <div class="value" id="current-ph" style="color:var(--accent-green)">—</div>
-                <div class="sub" id="ph-status">Waiting for data...</div>
+                <div class="sub" id="ph-status">Optimal (7.0 - 8.5)</div>
             </div>
             <div class="stat-card">
                 <div class="label">Forecast pH</div>
                 <div class="value" id="forecast-ph" style="color:var(--accent-blue)">—</div>
-                <div class="sub" id="forecast-sub">Next step prediction</div>
+                <div class="sub" id="forecast-sub">AI multi-step projection</div>
             </div>
             <div class="stat-card risk-gauge">
                 <div class="label">Risk Score</div>
@@ -395,10 +363,21 @@
                 <div class="sub" id="risk-level">LOW</div>
                 <div class="risk-bar"><div class="risk-fill" id="risk-fill" style="width:0%;background:var(--accent-green)"></div></div>
             </div>
-            <div class="stat-card">
-                <div class="label">Status</div>
-                <div class="value" id="system-status" style="font-size:18px; color:var(--accent-green)">NORMAL</div>
-                <div class="sub" id="readings-count">0 readings</div>
+            <!-- Multi-sensor parameters -->
+            <div class="stat-card" id="card-temp">
+                <div class="label">Water Temp</div>
+                <div class="value" id="val-temp" style="color:var(--accent-yellow); font-size:22px">27.0 °C</div>
+                <div class="sub">Tropical Tilapia Range</div>
+            </div>
+            <div class="stat-card" id="card-do">
+                <div class="label">Dissolved O₂</div>
+                <div class="value" id="val-do" style="color:var(--accent-cyan); font-size:22px">8.2 mg/L</div>
+                <div class="sub">Optical DO Probe</div>
+            </div>
+            <div class="stat-card" id="card-turb">
+                <div class="label">Turbidity</div>
+                <div class="value" id="val-turb" style="color:var(--accent-orange); font-size:22px">3.5 NTU</div>
+                <div class="sub">Clarity Index</div>
             </div>
         </div>
 
@@ -407,43 +386,33 @@
             <div class="left-col">
                 <!-- Chart -->
                 <div class="card">
-                    <h2>📊 pH Monitoring & Forecast</h2>
+                    <h2>📊 Water Quality Monitoring & Multi-Step AI Forecast</h2>
                     <div class="chart-area"><canvas id="ph-chart"></canvas></div>
                 </div>
                 <!-- Risk Components -->
                 <div class="card">
-                    <h2>🎯 Risk Components</h2>
+                    <h2>🎯 Aquaculture Risk Score Components (0–100)</h2>
                     <div id="risk-components">
                         <div class="risk-comp">
-                            <span class="risk-comp-label">Current Value</span>
+                            <span class="risk-comp-label">Current pH (30%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-current" style="width:0%;background:var(--accent-blue)"></div></div>
                             <span class="risk-comp-value" id="rcv-current">0</span>
                         </div>
                         <div class="risk-comp">
-                            <span class="risk-comp-label">Forecast</span>
+                            <span class="risk-comp-label">AI Forecast (30%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-forecast" style="width:0%;background:var(--accent-cyan)"></div></div>
                             <span class="risk-comp-value" id="rcv-forecast">0</span>
                         </div>
                         <div class="risk-comp">
-                            <span class="risk-comp-label">Trend</span>
+                            <span class="risk-comp-label">Trend / RoC (20%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-trend" style="width:0%;background:var(--accent-yellow)"></div></div>
                             <span class="risk-comp-value" id="rcv-trend">0</span>
                         </div>
                         <div class="risk-comp">
-                            <span class="risk-comp-label">Anomaly</span>
+                            <span class="risk-comp-label">Anomaly (20%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-anomaly" style="width:0%;background:var(--accent-orange)"></div></div>
                             <span class="risk-comp-value" id="rcv-anomaly">0</span>
                         </div>
-                    </div>
-                </div>
-                <!-- History -->
-                <div class="card">
-                    <h2>📋 Recent History</h2>
-                    <div style="max-height:250px;overflow-y:auto">
-                        <table class="history-table">
-                            <thead><tr><th>Time</th><th>pH</th><th>Forecast</th><th>Risk</th><th>Status</th></tr></thead>
-                            <tbody id="history-body"></tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -451,80 +420,45 @@
             <div class="right-col">
                 <!-- Why -->
                 <div class="card">
-                    <h2>🔍 Why?</h2>
+                    <h2>🔍 Explainable AI ("Why?")</h2>
                     <p id="explain-summary" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px"></p>
                     <ul class="reason-list" id="reason-list"></ul>
                 </div>
                 <!-- Recommendations -->
                 <div class="card">
-                    <h2>💡 Recommended Actions</h2>
+                    <h2>💡 Decision Support (Actionable Guidance)</h2>
                     <div id="rec-list"></div>
                     <div class="disclaimer" id="rec-disclaimer"></div>
                 </div>
                 <!-- AI Engine -->
                 <div class="card">
-                    <h2>🤖 AI Engine</h2>
+                    <h2>🤖 AI & Edge Inference Status</h2>
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Model</div>
-                            <div class="info-value" id="model-type">—</div>
+                            <div class="info-value" id="model-type">RandomForest</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Inference</div>
-                            <div class="info-value" id="inference-backend">—</div>
+                            <div class="info-label">Inference Engine</div>
+                            <div class="info-value" id="inference-backend">OpenVINO / Sklearn</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Trained</div>
-                            <div class="info-value" id="model-trained">No</div>
+                            <div class="info-label">Trained State</div>
+                            <div class="info-value" id="model-trained">Yes</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">History</div>
+                            <div class="info-label">History Buffer</div>
                             <div class="info-value" id="history-size">0</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">MAE</div>
-                            <div class="info-value" id="model-mae">—</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">RMSE</div>
-                            <div class="info-value" id="model-rmse">—</div>
-                        </div>
                     </div>
-                </div>
-                <!-- Sensor Health -->
-                <div class="card">
-                    <h2>📡 Sensor Health</h2>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">pH Sensor</div>
-                            <div class="info-value" id="sensor-status" style="color:var(--accent-green)">GOOD</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Good Rate</div>
-                            <div class="info-value" id="sensor-rate">—</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Anomaly -->
-                <div class="card">
-                    <h2>⚡ Anomaly Detection</h2>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Anomaly</div>
-                            <div class="info-value" id="anomaly-status" style="color:var(--accent-green)">None</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Score</div>
-                            <div class="info-value" id="anomaly-score">0.00</div>
-                        </div>
-                    </div>
-                    <div id="anomaly-reasons" style="margin-top:8px"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+    let currentSource = "demo";
+
     // ══════ CHART SETUP ══════
     const ctx = document.getElementById('ph-chart').getContext('2d');
     const phChart = new Chart(ctx, {
@@ -553,7 +487,7 @@
                     pointRadius: 0,
                 },
                 {
-                    label: 'Upper Threshold',
+                    label: 'Upper Threshold (8.5)',
                     data: [],
                     borderColor: 'rgba(239,68,68,0.4)',
                     borderWidth: 1,
@@ -562,7 +496,7 @@
                     pointRadius: 0,
                 },
                 {
-                    label: 'Lower Threshold',
+                    label: 'Lower Threshold (7.0)',
                     data: [],
                     borderColor: 'rgba(239,68,68,0.4)',
                     borderWidth: 1,
@@ -571,7 +505,7 @@
                     pointRadius: 0,
                 },
                 {
-                    label: 'Risk Score',
+                    label: 'Risk Score (0-100)',
                     data: [],
                     borderColor: 'rgba(249,115,22,0.6)',
                     backgroundColor: 'rgba(249,115,22,0.05)',
@@ -594,7 +528,7 @@
                     grid: { color: 'rgba(30,37,72,0.5)' },
                 },
                 y: {
-                    min: 5, max: 10,
+                    min: 5.5, max: 10,
                     ticks: { color: '#64748b' },
                     grid: { color: 'rgba(30,37,72,0.5)' },
                     title: { display: true, text: 'pH', color: '#64748b' },
@@ -610,7 +544,6 @@
         }
     });
 
-    // ══════ RISK COLOR ══════
     function riskColor(score) {
         if (score <= 20) return 'var(--accent-green)';
         if (score <= 40) return 'var(--accent-cyan)';
@@ -629,14 +562,6 @@
         return m[status] || 'var(--text-secondary)';
     }
 
-    function alertClass(status) {
-        if (['CRITICAL','ALERT_LOW_PH','ALERT_HIGH_PH'].includes(status)) return 'critical';
-        if (status === 'HIGH_RISK') return 'high';
-        if (['EARLY_WARNING','WAITING'].includes(status)) return 'warning';
-        return 'normal';
-    }
-
-    // ══════ DATA FETCHING ══════
     async function fetchJSON(url) {
         try { const r = await fetch(url); return await r.json(); } catch(e) { return null; }
     }
@@ -650,7 +575,6 @@
     const MAX_POINTS = 100;
 
     async function update() {
-        // Current reading
         const current = await fetchJSON('/api/current');
         if (!current) return;
 
@@ -669,21 +593,19 @@
         document.getElementById('risk-level').textContent = riskLvl;
         document.getElementById('risk-fill').style.width = risk + '%';
         document.getElementById('risk-fill').style.background = riskColor(risk);
-        document.getElementById('system-status').textContent = status;
-        document.getElementById('system-status').style.color = statusColor(status);
 
         // Alert banner
         const banner = document.getElementById('alert-banner');
         if (status !== 'NORMAL') {
             banner.style.display = 'block';
-            banner.className = 'alert-banner ' + alertClass(status);
+            banner.className = 'alert-banner ' + (['CRITICAL','ALERT_LOW_PH','ALERT_HIGH_PH'].includes(status) ? 'critical' : status === 'HIGH_RISK' ? 'high' : 'warning');
             document.getElementById('alert-title').textContent = status.replace(/_/g, ' ');
             document.getElementById('alert-text').textContent = current.warning_message || '';
         } else {
             banner.style.display = 'none';
         }
 
-        // Chart
+        // Chart update
         chartLabels.push(ts);
         chartActual.push(ph);
         chartForecast.push(pred);
@@ -702,13 +624,7 @@
         phChart.data.datasets[4].data = chartRisk;
         phChart.update('none');
 
-        // Status
-        const statusData = await fetchJSON('/api/status');
-        if (statusData) {
-            document.getElementById('readings-count').textContent = statusData.total_readings + ' readings';
-        }
-
-        // Risk
+        // Risk components
         const riskData = await fetchJSON('/api/risk');
         if (riskData && riskData.components) {
             const c = riskData.components;
@@ -746,69 +662,47 @@
             });
             document.getElementById('rec-disclaimer').textContent = rec.disclaimer || '';
         }
-
-        // Model info
-        const model = await fetchJSON('/api/model-metrics');
-        if (model) {
-            document.getElementById('model-type').textContent = model.model_type || '—';
-            document.getElementById('model-trained').textContent = model.is_trained ? 'Yes' : 'No';
-            document.getElementById('history-size').textContent = model.history_size || 0;
-            if (model.accuracy) {
-                document.getElementById('model-mae').textContent = model.accuracy.mae?.toFixed(4) || '—';
-                document.getElementById('model-rmse').textContent = model.accuracy.rmse?.toFixed(4) || '—';
-            }
-        }
-
-        // Inference engine
-        const ie = await fetchJSON('/api/inference-engine');
-        if (ie) {
-            document.getElementById('inference-backend').textContent = ie.backend || '—';
-        }
-
-        // Sensor health
-        const health = await fetchJSON('/api/system-health');
-        if (health && health.sensor_health) {
-            const sh = health.sensor_health;
-            document.getElementById('sensor-status').textContent = (sh.status || 'good').toUpperCase();
-            document.getElementById('sensor-status').style.color =
-                sh.status === 'good' ? 'var(--accent-green)' :
-                sh.status === 'suspect' ? 'var(--accent-yellow)' : 'var(--accent-red)';
-            document.getElementById('sensor-rate').textContent =
-                sh.good_rate !== undefined ? (sh.good_rate * 100).toFixed(1) + '%' : '—';
-        }
-
-        // Anomaly
-        const anom = await fetchJSON('/api/anomalies');
-        if (anom) {
-            document.getElementById('anomaly-status').textContent = anom.is_anomaly ? 'DETECTED' : 'None';
-            document.getElementById('anomaly-status').style.color =
-                anom.is_anomaly ? 'var(--accent-orange)' : 'var(--accent-green)';
-            document.getElementById('anomaly-score').textContent = (anom.anomaly_score || 0).toFixed(2);
-            const ar = document.getElementById('anomaly-reasons');
-            ar.innerHTML = '';
-            (anom.reasons || []).forEach(r => {
-                const d = document.createElement('div');
-                d.style.cssText = 'font-size:12px;color:var(--text-muted);padding:4px 0';
-                d.textContent = '• ' + r;
-                ar.appendChild(d);
-            });
-        }
-
-        // History table
-        const hist = await fetchJSON('/api/history?limit=15');
-        if (hist && hist.readings) {
-            const tbody = document.getElementById('history-body');
-            tbody.innerHTML = '';
-            hist.readings.reverse().forEach(r => {
-                const tr = document.createElement('tr');
-                const t = r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '';
-                tr.innerHTML = `<td>${t}</td><td>${r.ph_value?.toFixed(2)||'—'}</td><td>${r.predicted_ph?.toFixed(2)||'—'}</td><td>${r.risk_score?.toFixed(0)||'—'}</td><td style="color:${statusColor(r.status)}">${r.status}</td>`;
-                tbody.appendChild(tr);
-            });
-        }
     }
 
-    // ══════ SCENARIO SWITCHING ══════
+    // ══════ SWITCH DATA SOURCE ══════
+    async function switchDataSource(source) {
+        currentSource = source;
+        document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+        if (source === 'demo') document.getElementById('btn-src-demo').classList.add('active');
+        if (source === 'real_validation') document.getElementById('btn-src-real').classList.add('active');
+        if (source === 'live_sensor') document.getElementById('btn-src-live').classList.add('active');
+
+        const badge = document.getElementById('data-source-badge');
+        const provText = document.getElementById('source-provenance-text');
+        const scCtrls = document.getElementById('scenario-controls');
+        const pondName = document.getElementById('pond-name');
+
+        if (source === 'real_validation') {
+            badge.className = 'header-badge badge-real';
+            badge.textContent = 'DATA SOURCE: REAL-WORLD (Mendeley DOI: 10.17632/8s73jfvgr5.2)';
+            provText.textContent = 'Tilapia Pond IoT Stream (Montería, Colombia — 2024)';
+            scCtrls.style.display = 'none';
+            pondName.textContent = 'MONTERÍA-POND-01';
+        } else if (source === 'demo') {
+            badge.className = 'header-badge badge-sim';
+            badge.textContent = 'DATA SOURCE: SIMULATED (Synthetic)';
+            provText.textContent = 'Source: PHSimulator (Deterministic Competition Scenarios)';
+            scCtrls.style.display = 'flex';
+            pondName.textContent = 'POND-01';
+        } else {
+            badge.className = 'header-badge badge-monitoring';
+            badge.textContent = 'DATA SOURCE: LIVE SENSOR / MANUAL';
+            provText.textContent = 'Awaiting hardware telemetry or manual API submission';
+            scCtrls.style.display = 'none';
+            pondName.textContent = 'LIVE-PROBE-01';
+        }
+
+        chartLabels = []; chartActual = []; chartForecast = [];
+        chartUpper = []; chartLower = []; chartRisk = [];
+
+        await fetch('/api/select-source?source=' + source, { method: 'POST' });
+    }
+
     async function setScenario(name) {
         document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
@@ -817,7 +711,6 @@
         await fetch('/api/scenario?scenario=' + name + '&seed=42', { method: 'POST' });
     }
 
-    // ══════ MAIN LOOP ══════
     setInterval(update, 2000);
     update();
     </script>

@@ -55,29 +55,41 @@ Dashboard / API / Alerts
 
 ---
 
+### Three Data Source Modes
+
+1. **🎯 DEMO MODE (Deterministic Simulator)**: 8 reproducible scenarios (`--scenario competition_demo --seed 42`).
+2. **🌊 REAL DATA VALIDATION MODE**: 37,284 high-resolution IoT observations from tropical Tilapia ponds (Mendeley Data DOI: [10.17632/8s73jfvgr5.2](https://doi.org/10.17632/8s73jfvgr5.2)).
+3. **📡 LIVE SENSOR / GATEWAY MODE**: Live telemetry ingestion from edge hardware probes or manual API input.
+
+---
+
 ## Quick Start
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the CLI demo (deterministic, reproducible)
+# Run the CLI competition demo (deterministic, reproducible)
 python run_demo.py --scenario competition_demo --seed 42
 
-# Start the web dashboard
+# Start the web dashboard (with Demo, Real-Data, and Live-Sensor switcher)
 python run_demo.py --web
 
-# Run all tests (72 tests)
+# Run all 108 automated unit and integration tests
 python -m pytest tests/ -v
 
-# Evaluate model accuracy
-python scripts/evaluate_forecasting.py
+# Run Real-World Dataset Validation & 3-Way Benchmark
+python scripts/evaluate_real_forecasting.py
 
-# Benchmark inference speed
-python scripts/benchmark_inference.py
+# Run Real-World Dataset Quality Audit
+python scripts/audit_real_dataset.py
+
+# Run Multisensor Correlation & Ecological Analysis
+python scripts/analyze_multisensor.py
 ```
 
 ### Web Dashboard
+Open `http://localhost:8000` to interact with the real-time AI dashboard, risk score telemetry, and XAI reasoning.
 
 Open `http://localhost:8000` after starting the web server. The dashboard features:
 - Real-time pH monitoring with forecast overlay

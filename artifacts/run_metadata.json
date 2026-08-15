@@ -1,0 +1,45 @@
+{
+  "run_id": "RUN-AQUA-20260815-142105",
+  "dataset_name": "mendeley_aquaculture",
+  "dataset_source": "Mendeley Data",
+  "doi": "10.17632/8s73jfvgr5.2",
+  "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+  "seed": 42,
+  "target": "ph",
+  "feature_window": 20,
+  "feature_names": [
+    "current_value",
+    "rolling_mean",
+    "rolling_std",
+    "rolling_min",
+    "rolling_max",
+    "trend",
+    "rate_of_change",
+    "recent_delta",
+    "acceleration",
+    "hour_sin",
+    "hour_cos",
+    "day_sin",
+    "day_cos",
+    "temperature_current",
+    "temperature_rolling_mean",
+    "temperature_trend",
+    "dissolved_oxygen_current",
+    "dissolved_oxygen_rolling_mean",
+    "dissolved_oxygen_trend",
+    "turbidity_current",
+    "turbidity_rolling_mean",
+    "turbidity_trend"
+  ],
+  "train_val_test_split": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "software": {
+    "python": "3.12.10",
+    "numpy": "2.4.4",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.0"
+  }
+}

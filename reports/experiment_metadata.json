@@ -1,0 +1,27 @@
+{
+  "experiment_id": "EXP-AQUA-REAL-2026-V1",
+  "dataset_name": "Environmental Parameters in Aquaculture (Mendeley Data)",
+  "doi": "10.17632/8s73jfvgr5.2",
+  "dataset_version": 2,
+  "random_seed": 42,
+  "train_val_test_split": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "model": "RandomForestRegressor (n_estimators=100, max_depth=12)",
+  "feature_window": 20,
+  "horizons_evaluated": [
+    1,
+    5,
+    15,
+    30
+  ],
+  "preprocessing": "5-minute time-regularized resampling + min-max physical mapping",
+  "software_versions": {
+    "python": "3.12.10",
+    "numpy": "2.4.4",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.0"
+  }
+}

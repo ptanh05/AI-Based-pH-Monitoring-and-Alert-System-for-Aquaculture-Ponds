@@ -1,0 +1,141 @@
+{
+  "dataset_name": "Environmental Parameters in Aquaculture (Mendeley Data)",
+  "doi": "10.17632/8s73jfvgr5.2",
+  "license": "CC BY 4.0",
+  "resampling_metadata": {
+    "original_samples": 37284,
+    "resampled_samples": 51840,
+    "native_observed_samples": 21644,
+    "interpolated_samples": 30196,
+    "interpolated_pct": 58.25,
+    "target_frequency": "5min",
+    "interpolation_method": "time",
+    "max_gap_limit": 6,
+    "time_range_start": "2024-01-01T00:00:00",
+    "time_range_end": "2024-06-28T23:55:00"
+  },
+  "results_by_horizon": {
+    "1_step": {
+      "horizon": 1,
+      "model_rf": {
+        "mae": 0.043151,
+        "rmse": 0.073469,
+        "r2": 0.879766
+      },
+      "persistence_baseline": {
+        "mae": 0.046914,
+        "rmse": 0.084613,
+        "r2": 0.840522
+      },
+      "train_samples": 3485,
+      "test_samples": 747
+    },
+    "5_step": {
+      "horizon": 5,
+      "model_rf": {
+        "mae": 0.077017,
+        "rmse": 0.117388,
+        "r2": 0.693049
+      },
+      "persistence_baseline": {
+        "mae": 0.124036,
+        "rmse": 0.175021,
+        "r2": 0.317656
+      },
+      "train_samples": 3482,
+      "test_samples": 747
+    },
+    "15_step": {
+      "horizon": 15,
+      "model_rf": {
+        "mae": 0.114506,
+        "rmse": 0.188181,
+        "r2": 0.212456
+      },
+      "persistence_baseline": {
+        "mae": 0.19271,
+        "rmse": 0.268207,
+        "r2": -0.599803
+      },
+      "train_samples": 3475,
+      "test_samples": 745
+    },
+    "30_step": {
+      "horizon": 30,
+      "model_rf": {
+        "mae": 0.116417,
+        "rmse": 0.181697,
+        "r2": 0.266115
+      },
+      "persistence_baseline": {
+        "mae": 0.241028,
+        "rmse": 0.317739,
+        "r2": -1.244257
+      },
+      "train_samples": 3465,
+      "test_samples": 743
+    }
+  },
+  "cross_domain_results": {
+    "1_step": {
+      "horizon": 1,
+      "model_rf": {
+        "mae": 0.124857,
+        "rmse": 0.157017,
+        "r2": 0.493428
+      },
+      "persistence_baseline": {
+        "mae": 0.046388,
+        "rmse": 0.087352,
+        "r2": 0.843218
+      },
+      "train_samples": 3983,
+      "test_samples": 996
+    },
+    "5_step": {
+      "horizon": 5,
+      "model_rf": {
+        "mae": 0.236514,
+        "rmse": 0.315531,
+        "r2": -1.044195
+      },
+      "persistence_baseline": {
+        "mae": 0.126005,
+        "rmse": 0.183266,
+        "r2": 0.310395
+      },
+      "train_samples": 3980,
+      "test_samples": 995
+    },
+    "15_step": {
+      "horizon": 15,
+      "model_rf": {
+        "mae": 0.351568,
+        "rmse": 0.478482,
+        "r2": -3.69226
+      },
+      "persistence_baseline": {
+        "mae": 0.20033,
+        "rmse": 0.28306,
+        "r2": -0.642132
+      },
+      "train_samples": 3972,
+      "test_samples": 993
+    },
+    "30_step": {
+      "horizon": 30,
+      "model_rf": {
+        "mae": 0.445655,
+        "rmse": 0.627558,
+        "r2": -7.04734
+      },
+      "persistence_baseline": {
+        "mae": 0.243952,
+        "rmse": 0.326317,
+        "r2": -1.17583
+      },
+      "train_samples": 3960,
+      "test_samples": 990
+    }
+  }
+}

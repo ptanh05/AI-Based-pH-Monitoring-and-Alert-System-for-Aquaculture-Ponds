@@ -1,0 +1,205 @@
+{
+  "metadata": {
+    "evaluation_timestamp": "2026-08-15T14:35:01.692596",
+    "dataset_doi": "10.17632/8s73jfvgr5.2",
+    "dataset_license": "CC BY 4.0",
+    "real_samples_used": 5000,
+    "synthetic_samples_used": 5000,
+    "split_ratio": "70% Train, 15% Validation, 15% Test (Strict Chronological)",
+    "feature_window": 20,
+    "horizons": [
+      1,
+      5,
+      15,
+      30
+    ]
+  },
+  "experiments": {
+    "synthetic_to_synthetic": {
+      "1_step": {
+        "horizon": 1,
+        "model_rf": {
+          "mae": 0.000204,
+          "rmse": 0.000492,
+          "r2": 0.999999
+        },
+        "persistence_baseline": {
+          "mae": 0.052771,
+          "rmse": 0.10724,
+          "r2": 0.964085
+        },
+        "train_samples": 3485,
+        "test_samples": 747
+      },
+      "5_step": {
+        "horizon": 5,
+        "model_rf": {
+          "mae": 0.000315,
+          "rmse": 0.000971,
+          "r2": 0.999997
+        },
+        "persistence_baseline": {
+          "mae": 0.133735,
+          "rmse": 0.240775,
+          "r2": 0.818953
+        },
+        "train_samples": 3482,
+        "test_samples": 747
+      },
+      "15_step": {
+        "horizon": 15,
+        "model_rf": {
+          "mae": 0.00054,
+          "rmse": 0.001659,
+          "r2": 0.999991
+        },
+        "persistence_baseline": {
+          "mae": 0.367812,
+          "rmse": 0.515901,
+          "r2": 0.171011
+        },
+        "train_samples": 3475,
+        "test_samples": 745
+      },
+      "30_step": {
+        "horizon": 30,
+        "model_rf": {
+          "mae": 0.000166,
+          "rmse": 0.000474,
+          "r2": 0.999999
+        },
+        "persistence_baseline": {
+          "mae": 0.683217,
+          "rmse": 0.830485,
+          "r2": -1.142641
+        },
+        "train_samples": 3465,
+        "test_samples": 743
+      }
+    },
+    "real_to_real": {
+      "1_step": {
+        "horizon": 1,
+        "model_rf": {
+          "mae": 0.043151,
+          "rmse": 0.073469,
+          "r2": 0.879766
+        },
+        "persistence_baseline": {
+          "mae": 0.046914,
+          "rmse": 0.084613,
+          "r2": 0.840522
+        },
+        "train_samples": 3485,
+        "test_samples": 747
+      },
+      "5_step": {
+        "horizon": 5,
+        "model_rf": {
+          "mae": 0.077017,
+          "rmse": 0.117388,
+          "r2": 0.693049
+        },
+        "persistence_baseline": {
+          "mae": 0.124036,
+          "rmse": 0.175021,
+          "r2": 0.317656
+        },
+        "train_samples": 3482,
+        "test_samples": 747
+      },
+      "15_step": {
+        "horizon": 15,
+        "model_rf": {
+          "mae": 0.114506,
+          "rmse": 0.188181,
+          "r2": 0.212456
+        },
+        "persistence_baseline": {
+          "mae": 0.19271,
+          "rmse": 0.268207,
+          "r2": -0.599803
+        },
+        "train_samples": 3475,
+        "test_samples": 745
+      },
+      "30_step": {
+        "horizon": 30,
+        "model_rf": {
+          "mae": 0.116417,
+          "rmse": 0.181697,
+          "r2": 0.266115
+        },
+        "persistence_baseline": {
+          "mae": 0.241028,
+          "rmse": 0.317739,
+          "r2": -1.244257
+        },
+        "train_samples": 3465,
+        "test_samples": 743
+      }
+    },
+    "synthetic_to_real_generalization": {
+      "1_step": {
+        "horizon": 1,
+        "model_rf": {
+          "mae": 0.124857,
+          "rmse": 0.157017,
+          "r2": 0.493428
+        },
+        "persistence_baseline": {
+          "mae": 0.046388,
+          "rmse": 0.087352,
+          "r2": 0.843218
+        },
+        "train_samples": 3983,
+        "test_samples": 996
+      },
+      "5_step": {
+        "horizon": 5,
+        "model_rf": {
+          "mae": 0.236514,
+          "rmse": 0.315531,
+          "r2": -1.044195
+        },
+        "persistence_baseline": {
+          "mae": 0.126005,
+          "rmse": 0.183266,
+          "r2": 0.310395
+        },
+        "train_samples": 3980,
+        "test_samples": 995
+      },
+      "15_step": {
+        "horizon": 15,
+        "model_rf": {
+          "mae": 0.351568,
+          "rmse": 0.478482,
+          "r2": -3.69226
+        },
+        "persistence_baseline": {
+          "mae": 0.20033,
+          "rmse": 0.28306,
+          "r2": -0.642132
+        },
+        "train_samples": 3972,
+        "test_samples": 993
+      },
+      "30_step": {
+        "horizon": 30,
+        "model_rf": {
+          "mae": 0.445655,
+          "rmse": 0.627558,
+          "r2": -7.04734
+        },
+        "persistence_baseline": {
+          "mae": 0.243952,
+          "rmse": 0.326317,
+          "r2": -1.17583
+        },
+        "train_samples": 3960,
+        "test_samples": 990
+      }
+    }
+  }
+}

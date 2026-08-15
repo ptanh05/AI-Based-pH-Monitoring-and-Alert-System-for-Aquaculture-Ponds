@@ -1,0 +1,140 @@
+{
+  "audit_timestamp": "2026-08-15T14:06:31.112700",
+  "dataset_name": "Environmental Parameters in Aquaculture: Temperature, pH, Oxygen, and Turbidity Measurements",
+  "doi": "10.17632/8s73jfvgr5.2",
+  "license": "CC BY 4.0",
+  "location": "Montería, Colombia (Tilapia farming)",
+  "collection_period": "2024 (January - June)",
+  "total_readings": 37284,
+  "time_span": {
+    "start": "2024-01-01T00:00:00",
+    "end": "2024-06-28T23:57:38",
+    "days": 180.0,
+    "median_interval_seconds": 144.0,
+    "mean_interval_seconds": 417.13
+  },
+  "missing_values": {
+    "timestamp": 0,
+    "ph": 0,
+    "temperature": 0,
+    "dissolved_oxygen": 0,
+    "turbidity": 0,
+    "month": 0,
+    "day": 0,
+    "hour": 0,
+    "reading_id": 0,
+    "is_interpolated_timestamp": 0
+  },
+  "missing_percentages": {
+    "timestamp": 0.0,
+    "ph": 0.0,
+    "temperature": 0.0,
+    "dissolved_oxygen": 0.0,
+    "turbidity": 0.0,
+    "month": 0.0,
+    "day": 0.0,
+    "hour": 0.0,
+    "reading_id": 0.0,
+    "is_interpolated_timestamp": 0.0
+  },
+  "duplicate_timestamps": 0,
+  "physical_boundary_violations": {
+    "ph_outside_0_14": 0,
+    "temperature_outside_0_50": 0,
+    "do_outside_0_25": 0,
+    "turbidity_outside_0_1000": 0
+  },
+  "parameter_statistics": {
+    "ph": {
+      "mean": 7.6405,
+      "std": 0.1562,
+      "min": 6.9926,
+      "p25": 7.5124,
+      "median": 7.6451,
+      "p75": 7.7523,
+      "max": 8.5645,
+      "skewness": 1.16,
+      "kurtosis": 5.2342
+    },
+    "temperature": {
+      "mean": 26.9534,
+      "std": 0.2018,
+      "min": 20.0,
+      "p25": 26.8645,
+      "median": 26.9564,
+      "p75": 27.0485,
+      "max": 27.5,
+      "skewness": -17.6571,
+      "kurtosis": 585.0696
+    },
+    "dissolved_oxygen": {
+      "mean": 8.1709,
+      "std": 0.2129,
+      "min": 7.3,
+      "p25": 8.0273,
+      "median": 8.1715,
+      "p75": 8.3141,
+      "max": 9.0,
+      "skewness": -0.0,
+      "kurtosis": 0.0188
+    },
+    "turbidity": {
+      "mean": 3.7948,
+      "std": 1.0487,
+      "min": 2.1513,
+      "p25": 3.1171,
+      "median": 3.3941,
+      "p75": 4.6771,
+      "max": 7.6011,
+      "skewness": 1.1401,
+      "kurtosis": 1.2605
+    }
+  },
+  "spikes_and_jumps": {
+    "ph": {
+      "spike_threshold_delta": 0.5372,
+      "spikes_count": 547,
+      "spikes_pct": 1.4671
+    },
+    "temperature": {
+      "spike_threshold_delta": 1.1005,
+      "spikes_count": 36,
+      "spikes_pct": 0.0966
+    },
+    "dissolved_oxygen": {
+      "spike_threshold_delta": 0.955,
+      "spikes_count": 53,
+      "spikes_pct": 0.1422
+    },
+    "turbidity": {
+      "spike_threshold_delta": 2.3098,
+      "spikes_count": 458,
+      "spikes_pct": 1.2284
+    }
+  },
+  "stuck_sensor_runs": {
+    "ph": {
+      "stuck_sequences_gte_10": 0,
+      "max_consecutive_identical": 1
+    },
+    "temperature": {
+      "stuck_sequences_gte_10": 0,
+      "max_consecutive_identical": 0
+    },
+    "dissolved_oxygen": {
+      "stuck_sequences_gte_10": 0,
+      "max_consecutive_identical": 0
+    },
+    "turbidity": {
+      "stuck_sequences_gte_10": 0,
+      "max_consecutive_identical": 0
+    }
+  },
+  "data_quality_verdict": {
+    "completeness": "100.0% (Zero missing values in raw records)",
+    "physical_validity": "100.0% (All readings inside valid biological bounds)",
+    "temporal_regularity": "High (Evenly grouped by month, day, hour)",
+    "sensor_noise_profile": "Low to moderate, typical of field-deployed optical/galvanic probes",
+    "suitability_for_ml": "EXCELLENT (Continuous, rich multi-modal time series for validation)"
+  }
+}
