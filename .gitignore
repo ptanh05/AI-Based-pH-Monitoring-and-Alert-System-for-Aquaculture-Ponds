@@ -30,5 +30,13 @@ env/
 .DS_Store
 Thumbs.db
 
-# Logs
+# Logs & Cache
 *.log
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment & Secrets
+.env
+.env.*
+*.local

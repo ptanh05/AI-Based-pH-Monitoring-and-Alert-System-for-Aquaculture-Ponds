@@ -1,257 +1,250 @@
-# Hệ thống Giám sát và Cảnh báo pH dựa trên AI cho Ao Nuôi Thủy Sản
+# AI Aquaculture Guardian
+## AI-Powered Early Warning System for Sustainable Aquaculture
 
-Hệ thống phần mềm giám sát và cảnh báo độ pH trong ao nuôi thủy sản sử dụng AI. Tự động mô phỏng dữ liệu pH, dự đoán xu hướng và phát cảnh báo khi pH vượt ngưỡng an toàn.
-
----
-
-## 📋 Đặc điểm chính
-
-- ✅ **Mô phỏng dữ liệu pH thực tế** với các sự kiện tự nhiên
-- ✅ **Cảnh báo thông minh** khi pH vượt ngưỡng liên tiếp
-- ✅ **Dự đoán bằng AI** (Random Forest/LSTM) - dự đoán 10 giây trước
-- ✅ **Web Dashboard** với biểu đồ real-time
-- ✅ **REST API** đầy đủ
-- ✅ **Lưu trữ lịch sử** cảnh báo tự động
-
-### Phạm vi pH an toàn
-- **An toàn**: 7.0 ≤ pH ≤ 8.5
-- **Cảnh báo thấp**: pH < 7.0
-- **Cảnh báo cao**: pH > 8.5
+> Submission for **Intel® Vietnam AI Impact Festival 2026**
+> Theme: *"Enriching Lives with AI Innovation"*
 
 ---
 
-## 💻 Yêu cầu hệ thống
+## Overview
 
-- Python 3.10+ ([Tải Python](https://www.python.org/downloads/))
-- RAM: Tối thiểu 2GB
-- Ổ cứng: 500MB trống
+AI Aquaculture Guardian is an intelligent monitoring system that uses machine learning to predict water quality problems in aquaculture ponds **before they occur**, enabling farmers to protect their livestock and livelihoods through early intervention.
+
+### The Problem
+
+pH fluctuations in aquaculture ponds can cause mass fish die-offs within hours. Traditional monitoring only alerts farmers **after** dangerous conditions have already developed — often too late to prevent losses.
+
+### Our Solution
+
+A complete AI pipeline that:
+1. **Forecasts** pH changes 5-30 steps ahead using Random Forest models
+2. **Detects anomalies** using hybrid Z-Score + Isolation Forest analysis
+3. **Scores risk** transparently on a 0-100 scale with component breakdown
+4. **Explains** every alert in human-readable language
+5. **Recommends** safe, conservative actions for farmers
+6. **Runs efficiently** on edge hardware via Intel® OpenVINO™ optimization
 
 ---
 
-## 📦 Cài đặt
+## Architecture
 
-### Bước 1: Cài đặt thư viện
+```
+Sensor Data → Validation → Feature Engineering → Forecasting
+                                                      ↓
+Risk Scoring ← Anomaly Detection ← Isolation Forest / Z-Score
+      ↓
+Early Warning Engine → Explainability → Recommendations
+      ↓
+Dashboard / API / Alerts
+```
+
+### AI Pipeline Modules
+
+| Module | File | Purpose |
+|--------|------|---------|
+| Sensor Schema | `ai/sensor_schema.py` | Input validation, quality monitoring |
+| Feature Engineering | `ai/features.py` | Rolling stats, trend, acceleration, time encoding |
+| Forecasting | `ai/forecasting.py` | Multi-step pH prediction with Random Forest |
+| Anomaly Detection | `ai/anomaly.py` | Hybrid Z-Score + Isolation Forest |
+| Risk Scoring | `ai/risk.py` | Transparent 0-100 risk score |
+| Explainability | `ai/explainability.py` | Human-readable alert reasoning |
+| Recommendations | `ai/recommendations.py` | Safe, actionable guidance |
+| Edge Inference | `edge/inference_engine.py` | OpenVINO integration with sklearn fallback |
+| Alert Engine | `alerts/ph_alert_engine.py` | Multi-state early warning system |
+| Simulator | `simulator/ph_simulator.py` | 8 deterministic scenarios |
+
+---
+
+## Quick Start
 
 ```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the CLI demo (deterministic, reproducible)
+python run_demo.py --scenario competition_demo --seed 42
+
+# Start the web dashboard
+python run_demo.py --web
+
+# Run all tests (72 tests)
+python -m pytest tests/ -v
+
+# Evaluate model accuracy
+python scripts/evaluate_forecasting.py
+
+# Benchmark inference speed
+python scripts/benchmark_inference.py
 ```
 
-### Bước 2: Xác nhận cài đặt
+### Web Dashboard
+
+Open `http://localhost:8000` after starting the web server. The dashboard features:
+- Real-time pH monitoring with forecast overlay
+- Risk score gauge with component breakdown
+- AI explainability panel ("Why is this alert happening?")
+- Actionable recommendations for farmers
+- Scenario switcher for live demos
+- Sensor health monitoring
+- Model performance metrics
+
+---
+
+## Demo Scenarios
+
+| Scenario | Description |
+|----------|-------------|
+| `normal` | Stable pH around 7.5 |
+| `rapid_ph_rise` | pH climbs toward/above upper threshold |
+| `rapid_ph_drop` | pH drops toward/below lower threshold |
+| `heavy_rain` | Simulates acidic rain event |
+| `heat_event` | Algal bloom pH increase |
+| `sensor_anomaly` | Stuck sensor + glitch readings |
+| `recovery` | pH returns to normal after stress |
+| `competition_demo` | Full arc: normal → rise → critical → recovery |
+
+All scenarios are **deterministic** with the same seed, ensuring reproducible demos.
+
+---
+
+## Model Performance
+
+> **IMPORTANT**: All metrics below are evaluated on **synthetic simulator data**, not real-world sensor data. They demonstrate the model's ability to learn patterns from the simulator, not real-world aquaculture performance.
+
+### Forecasting Accuracy (competition_demo scenario, seed=42)
+
+| Horizon | Model MAE | Model RMSE | Model R² | Baseline MAE | Baseline R² |
+|---------|-----------|------------|----------|--------------|-------------|
+| 1-step  | 0.0038    | 0.0076     | 0.9998   | 0.0558       | 0.9581      |
+| 5-step  | 0.0031    | 0.0047     | 0.9999   | 0.1503       | 0.7837      |
+| 15-step | 0.0033    | 0.0058     | 0.9999   | 0.4291       | 0.0154      |
+| 30-step | 0.0040    | 0.0068     | 0.9999   | 0.8453       | -1.5641     |
+
+The Random Forest model significantly outperforms the persistence baseline at all horizons, particularly at longer prediction windows where the baseline fails.
+
+---
+
+## Intel® OpenVINO™ Integration
+
+The system includes an honest OpenVINO integration:
+
+- **Architecture**: `sklearn → ONNX (via skl2onnx) → OpenVINO IR → CPU Inference`
+- **Current Status**: Tree ensemble models (RandomForest) are not yet natively supported by OpenVINO's ONNX frontend. The system **gracefully falls back to sklearn** when conversion fails.
+- **Future Path**: When OpenVINO adds tree model support, or if we migrate to neural network models, the inference engine will automatically use OpenVINO acceleration.
+- **Abstraction**: The `BaseInferenceEngine` interface allows swapping backends without changing application code.
+
+We do **not** fake OpenVINO benchmarks or claim unsupported optimizations.
+
+---
+
+## Ethical Commitments
+
+1. **No fabricated metrics**: All accuracy claims are backed by reproducible evaluation scripts
+2. **Synthetic data transparency**: The system clearly labels all data as simulated
+3. **Safe recommendations**: Never prescribes chemical dosages or claims veterinary authority
+4. **Prediction vs. measurement**: The system never confuses "AI predicts" with "pH has exceeded"
+5. **Sensor validation**: Distinguishes sensor problems from water quality issues
+6. **Honest edge AI**: Reports actual OpenVINO conversion status, doesn't fake acceleration
+
+---
+
+## Project Structure
+
+```
+AI-Based-pH-Monitoring-and-Alert-System-for-Aquaculture-Ponds/
+├── ai/                          # AI Pipeline
+│   ├── sensor_schema.py         # Sensor validation & quality monitoring
+│   ├── features.py              # Feature engineering pipeline
+│   ├── forecasting.py           # Multi-step forecasting engine
+│   ├── anomaly.py               # Anomaly detection (Z-Score + IF)
+│   ├── risk.py                  # Risk scoring engine
+│   ├── explainability.py        # Human-readable explanations
+│   ├── recommendations.py       # Safe action recommendations
+│   └── ph_predictor.py          # Original predictor (preserved)
+├── edge/                        # Edge AI
+│   └── inference_engine.py      # OpenVINO / sklearn inference
+├── alerts/                      # Alert System
+│   └── ph_alert_engine.py       # Multi-state early warning
+├── simulator/                   # Data Generation
+│   └── ph_simulator.py          # 8 deterministic scenarios
+├── api/                         # Backend
+│   └── server.py                # FastAPI with full pipeline
+├── dashboard/                   # Frontend
+│   └── index.html               # Competition-grade dark dashboard
+├── storage/                     # Data Persistence
+│   └── alert_history.py         # Alert history storage
+├── scripts/                     # Evaluation & Benchmarking
+│   ├── evaluate_forecasting.py  # Multi-horizon accuracy evaluation
+│   └── benchmark_inference.py   # Inference speed comparison
+├── tests/                       # Test Suite
+│   ├── test_guardian.py          # 57 new comprehensive tests
+│   ├── test_alert_engine.py     # 5 original tests (preserved)
+│   ├── test_predictor.py        # 6 original tests (preserved)
+│   └── test_simulator.py        # 4 original tests (preserved)
+├── run_demo.py                  # Competition demo runner
+├── main.py                      # Original entry point (preserved)
+├── requirements.txt             # Dependencies
+└── README.md                    # This file
+```
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Dashboard |
+| GET | `/api/status` | System status |
+| GET | `/api/current` | Current reading |
+| GET | `/api/history` | Reading history |
+| GET | `/api/forecast` | Multi-step forecast |
+| GET | `/api/prediction` | Single-step prediction |
+| GET | `/api/risk` | Risk score & components |
+| GET | `/api/anomalies` | Anomaly detection results |
+| GET | `/api/explanation` | AI explainability |
+| GET | `/api/recommendations` | Action recommendations |
+| GET | `/api/alerts` | Alert status |
+| GET | `/api/alert-history` | Alert history |
+| GET | `/api/model-metrics` | Model performance |
+| GET | `/api/inference-engine` | Edge AI backend info |
+| GET | `/api/system-health` | Full system health |
+| GET | `/api/benchmark` | Live inference benchmark |
+| POST | `/api/scenario` | Switch demo scenario |
+| POST | `/api/retrain-model` | Force model retrain |
+| POST | `/api/submit-ph` | Submit manual pH reading |
+| POST | `/api/set-mode` | Switch auto/manual mode |
+
+---
+
+## Testing
 
 ```bash
-python -c "import fastapi, sklearn, numpy, pandas; print('✓ Cài đặt thành công!')"
+# Run all 72 tests
+python -m pytest tests/ -v
+
+# Run only new pipeline tests
+python -m pytest tests/test_guardian.py -v
+
+# Run with coverage
+python -m pytest tests/ -v --cov=ai --cov=edge --cov=alerts --cov=simulator
 ```
 
 ---
 
-## 🚀 Chạy hệ thống
+## Technology Stack
 
-### Web Dashboard (Khuyến nghị)
-
-```bash
-python run_server.py
-```
-
-Sau đó mở trình duyệt: **http://localhost:8000**
-
-**Hoặc**:
-```bash
-uvicorn api.server:app --reload
-```
-
-### Command Line
-
-```bash
-python main.py
-```
-
-### Tùy chỉnh tham số
-
-```bash
-# Chạy với 50 lần đọc
-python main.py --max-readings 50
-
-# Tùy chỉnh ngưỡng
-python main.py --low-threshold 6.8 --high-threshold 8.8
-
-# Xem tất cả tùy chọn
-python main.py --help
-```
+- **AI/ML**: scikit-learn (RandomForest, IsolationForest)
+- **Edge AI**: Intel® OpenVINO™ toolkit (with honest fallback)
+- **Backend**: Python FastAPI
+- **Frontend**: Vanilla HTML/CSS/JS + Chart.js
+- **Testing**: pytest (72 tests)
 
 ---
 
-## 📁 Cấu trúc dự án
+## License
 
-```
-ph_monitoring_system/
-├── ai/ph_predictor.py          # AI predictor (Random Forest/LSTM)
-├── alerts/ph_alert_engine.py   # Engine cảnh báo
-├── api/server.py                # REST API server
-├── dashboard/index.html         # Web Dashboard
-├── simulator/ph_simulator.py    # Simulator dữ liệu
-├── storage/alert_history.py     # Lưu trữ lịch sử
-├── main.py                      # CLI entry point
-└── run_server.py                # Script chạy server
-```
-
-### Tổng quan các thư mục chính
-
-| Thư mục     | Nội dung chính | Class/Hàm quan trọng | Ghi chú |
-|-------------|----------------|-----------------------|--------|
-| `ai`        | Thuật toán AI dự đoán pH | `PHPredictor` (Random Forest/LSTM), `add_reading()`, `predict()`, `train()`, `check_early_warning()` | Dự đoán pH trong tương lai (10 giây), tính accuracy, feature importance |
-| `alerts`    | Logic cảnh báo pH vượt ngưỡng | `PHAlertEngine`, `AlertStatus`, `process_reading()` | Quản lý NORMAL/WAITING/ALERT, tránh cảnh báo sai nhờ consecutive readings |
-| `api`       | FastAPI server, REST API, vòng lặp monitoring | `process_ph_reading()`, `run_monitoring_system()`, `play_beep()`, các endpoint `/api/*` | Kết nối simulator + AI + alert engine, cung cấp API và Dashboard |
-| `dashboard` | Giao diện Web Dashboard | JS functions: `updateStatus()`, `updateCurrentReading()`, `updateChart()`, `updateAlerts()`, `updateModelMetrics()` | Biểu đồ Chart.js, hiển thị pH thực tế/dự đoán, cảnh báo, lịch sử, metrics AI |
-| `simulator` | Mô phỏng dữ liệu pH | `PHSimulator`, `generate_reading()`, `stream_readings()` | Tạo dữ liệu pH giống thực tế, có sự kiện mưa/nắng để tạo kịch bản vượt ngưỡng |
-| `storage`   | Lưu trữ lịch sử cảnh báo | `AlertHistory`, `add_alert()`, `get_recent_alerts()`, `get_statistics()` | Lưu vào `data/alert_history.json`, không mất khi restart, giới hạn 1000 bản ghi |
-| `data`      | Dữ liệu lưu trữ | `alert_history.json` | File JSON chứa lịch sử cảnh báo đã xảy ra |
-| `tests`     | Unit tests | `test_simulator.py`, `test_alert_engine.py`, `test_predictor.py` | Kiểm tra tự động từng module chính |
+This project is submitted to the Intel® Vietnam AI Impact Festival 2026.
 
 ---
 
-## 🔧 Các file chính
-
-### `main.py` - CLI Entry Point
-- Chạy hệ thống trong terminal
-- Tùy chỉnh tham số: ngưỡng, số lần đọc, interval
-
-### `api/server.py` - REST API Server
-- Cung cấp REST API và Web Dashboard
-- Xử lý readings, cảnh báo, phát beep
-
-**API Endpoints**:
-- `GET /` - Dashboard web
-- `GET /api/status` - Trạng thái hệ thống
-- `GET /api/current` - Lần đọc pH gần nhất
-- `GET /api/history?limit=50` - Lịch sử pH
-- `GET /api/prediction` - Dự đoán pH
-- `GET /api/alerts` - Trạng thái cảnh báo
-- `GET /api/alert-history` - Lịch sử cảnh báo
-- `GET /api/model-metrics` - Metrics AI model
-- `POST /api/retrain-model` - Retrain model
-- `GET /docs` - Swagger API docs
-
-### `simulator/ph_simulator.py` - Simulator
-- Mô phỏng dữ liệu pH từ cảm biến
-- Tạo các sự kiện: mưa, nắng nóng
-
-### `alerts/ph_alert_engine.py` - Alert Engine
-- Xử lý logic cảnh báo khi pH vượt ngưỡng
-- Tránh cảnh báo sai bằng cách yêu cầu nhiều lần đọc liên tiếp
-
-### `ai/ph_predictor.py` - AI Predictor
-- Dự đoán pH trong tương lai (10 giây sau)
-- Hỗ trợ Random Forest (mặc định) và LSTM (tùy chọn)
-- Tự động train khi có đủ dữ liệu (15 mẫu)
-
-### `storage/alert_history.py` - Lưu trữ lịch sử
-- Lưu lịch sử cảnh báo vào `data/alert_history.json`
-- Giữ tối đa 1000 cảnh báo
-- Dữ liệu không bị mất khi restart
-
-### `dashboard/index.html` - Web Dashboard
-- Biểu đồ pH real-time (Chart.js)
-- Hiển thị trạng thái, cảnh báo, metrics AI
-- Tự động refresh mỗi 5 giây
-
----
-
-## 🌐 Web Dashboard
-
-### Tính năng
-
-1. **Status Bar**: Trạng thái, pH hiện tại, pH dự đoán, tổng readings
-2. **Biểu đồ pH**: Real-time với zoom/pan, xem lịch sử
-3. **AI Metrics**: Loại model, accuracy (MAE, RMSE, R²)
-4. **Feature Importance**: Độ quan trọng của features
-5. **Cảnh báo**: Hiển thị cảnh báo hiện tại và early warning
-6. **Lịch sử cảnh báo**: Danh sách và thống kê
-
-### Cảnh báo âm thanh
-Khi pH vượt ngưỡng: phát beep 2 giây, hiển thị cảnh báo, lưu vào lịch sử.
-
----
-
-## 🔌 Tích hợp phần cứng thật
-
-Thay thế simulator bằng cảm biến thật:
-
-```python
-# Trong api/server.py hoặc main.py
-# Thay:
-from simulator.ph_simulator import PHSimulator
-simulator = PHSimulator()
-
-# Bằng:
-from hardware.ph_sensor import RealPHSensor
-sensor = RealPHSensor(port="/dev/ttyUSB0")
-ph_value = sensor.read()
-```
-
----
-
-## 🛠️ Xử lý sự cố
-
-### 1. "ModuleNotFoundError"
-**Giải pháp**: `pip install -r requirements.txt`
-
-### 2. "Port 8000 is already in use"
-**Giải pháp**: 
-- Đóng ứng dụng khác dùng port 8000
-- Hoặc: `uvicorn api.server:app --port 8001`
-
-### 3. Dashboard không hiển thị dữ liệu
-**Giải pháp**:
-- Kiểm tra server: `http://localhost:8000/api/status`
-- Mở F12 → Console để xem lỗi JavaScript
-
-### 4. Beep không phát tiếng
-**Giải pháp**: Kiểm tra loa/headphone đã bật chưa
-
----
-
-## 📊 Ví dụ đầu ra
-
-```
-======================================================================
-  Hệ thống Giám sát và Cảnh báo pH dựa trên AI cho Ao Nuôi Thủy Sản
-======================================================================
-Start Time: 2026-01-12 16:42:05
-Reading Interval: 1.0 seconds
-Safe pH Range: 7.0 - 8.5
-Prediction Horizon: 10 seconds
-======================================================================
-
-[   1] 16:42:06 | pH:  7.52 | Status: ✓ NORMAL
-         → Prediction (+10s): 7.50 ~
-
-[   4] 16:42:09 | pH:  6.88 | Status: ⚠️ ALERT_LOW_PH
-         → ⚠️ LOW pH ALERT: pH = 6.88 (below safe threshold 7.0)
-         → 🔮 EARLY WARNING: Predicted pH may drop below safe range
-         → 🔊 Beep alert played (2 seconds)
-```
-
----
-
-## 🧪 Testing
-
-```bash
-# Cài đặt pytest
-pip install pytest
-
-# Chạy tất cả tests
-pytest tests/ -v
-```
-
----
-
-## 📝 Lưu ý
-
-1. **Hệ thống mô phỏng**: Hiện đang mô phỏng dữ liệu. Để dùng cảm biến thật, cần tích hợp module đọc cảm biến.
-
-2. **Lịch sử cảnh báo**: Lưu trong `data/alert_history.json`, không mất khi restart.
-
-3. **AI Model**: Tự động train khi có 31 mẫu, retrain tự động khi có dữ liệu mới.
-
----
-
+*Built with the goal of enriching lives through sustainable aquaculture.*

@@ -1,904 +1,825 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pH Monitoring Dashboard</title>
+    <title>AI Aquaculture Guardian</title>
+    <meta name="description" content="AI-powered Early Warning System for Sustainable Aquaculture">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #111638;
+            --bg-card: #161b40;
+            --bg-card-hover: #1c2252;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e2548;
+            --glass: rgba(255,255,255,0.03);
         }
-        
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
         }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .header h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .status-bar {
+        .app-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
         }
-        
-        .status-card {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            min-width: 200px;
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
-        .status-card h3 {
-            color: #666;
-            font-size: 14px;
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .app-title .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-monitoring {
+            background: rgba(16,185,129,0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16,185,129,0.3);
+        }
+        .badge-sim {
+            background: rgba(139,92,246,0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(139,92,246,0.3);
+        }
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        /* ── Top Stats ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
+        .stat-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
             margin-bottom: 8px;
         }
-        
-        .status-card .value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
         }
-        
-        .status-normal { color: #10b981; }
-        .status-waiting { color: #f59e0b; }
-        .status-alert { color: #ef4444; }
-        
-        .chart-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
+        .stat-card .sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
-        
-        .chart-container h2 {
-            color: #333;
-            margin-bottom: 15px;
+        /* ── Risk Gauge ── */
+        .risk-gauge {
+            text-align: center;
         }
-        
-        .chart-wrapper {
-            position: relative;
+        .risk-gauge .risk-number {
+            font-size: 36px;
+            font-weight: 800;
+        }
+        .risk-gauge .risk-bar {
             width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
         }
-        
-        .chart-scroll-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
+        .risk-gauge .risk-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease, background 0.5s ease;
         }
-        
-        .chart-scroll-controls button {
-            padding: 6px 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .chart-scroll-controls button:hover {
-            background: #5568d3;
-        }
-        
-        .chart-scroll-controls button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .chart-scroll-info {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .alerts-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .alert-item {
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border-left: 4px solid;
-        }
-        
-        .alert-normal {
-            background: #d1fae5;
-            border-color: #10b981;
-        }
-        
-        .alert-waiting {
-            background: #fef3c7;
-            border-color: #f59e0b;
-        }
-        
-        .alert-low {
-            background: #fee2e2;
-            border-color: #ef4444;
-        }
-        
-        .alert-high {
-            background: #fee2e2;
-            border-color: #ef4444;
-        }
-        
-        .grid {
+        /* ── Main Grid ── */
+        .main-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            gap: 24px;
         }
-        
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
         }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        /* ── Alert Banner ── */
+        .alert-banner {
+            padding: 16px 24px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+        .alert-banner.normal {
+            background: rgba(16,185,129,0.08);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        .alert-banner.warning {
+            background: rgba(245,158,11,0.08);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+        .alert-banner.high {
+            background: rgba(249,115,22,0.08);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        .alert-banner.critical {
+            background: rgba(239,68,68,0.1);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+            animation: fadeIn 0.3s ease, criticalPulse 2s infinite;
+        }
+        @keyframes criticalPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.2); }
+            50% { box-shadow: 0 0 20px 4px rgba(239,68,68,0.15); }
+        }
+        .alert-banner .alert-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+        .alert-banner .alert-text { font-size: 13px; opacity: 0.9; }
+        /* ── Chart ── */
+        .chart-area { position: relative; height: 280px; }
+        /* ── Reasons ── */
+        .reason-list { list-style: none; }
+        .reason-list li {
+            padding: 10px 14px;
+            border-left: 3px solid var(--accent-yellow);
+            background: rgba(245,158,11,0.05);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        /* ── Recommendations ── */
+        .rec-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: var(--glass);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .rec-urgency {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .urgency-critical { background: rgba(239,68,68,0.2); color: var(--accent-red); }
+        .urgency-high { background: rgba(249,115,22,0.2); color: var(--accent-orange); }
+        .urgency-medium { background: rgba(245,158,11,0.2); color: var(--accent-yellow); }
+        .urgency-low { background: rgba(16,185,129,0.2); color: var(--accent-green); }
+        .urgency-info { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
+        /* ── Model Info ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .info-item {
+            padding: 10px 12px;
+            background: var(--glass);
+            border-radius: 8px;
+        }
+        .info-item .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-item .info-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
+        /* ── Risk Components ── */
+        .risk-comp {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .risk-comp-label { font-size: 12px; color: var(--text-secondary); width: 90px; }
+        .risk-comp-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .risk-comp-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .risk-comp-value { font-size: 12px; font-weight: 600; width: 32px; text-align: right; }
+        /* ── Scenario Buttons ── */
+        .scenario-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .scenario-btn {
+            padding: 6px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .scenario-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--accent-blue); }
+        .scenario-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+        /* ── History Table ── */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .history-table th {
+            text-align: left;
+            padding: 8px 10px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .history-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(30,37,72,0.5);
+            color: var(--text-secondary);
+        }
+        .disclaimer {
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 12px;
+            background: var(--glass);
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 3px solid var(--accent-purple);
         }
     </style>
 </head>
 <body>
+    <!-- ══ HEADER ══ -->
+    <header class="app-header">
+        <div class="app-title">
+            <div>
+                <h1>AI Aquaculture Guardian</h1>
+                <div class="subtitle">AI-Powered Early Warning for Sustainable Aquaculture</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="header-badge badge-sim" id="data-source-badge">SIMULATED DATA</span>
+            <span class="header-badge badge-monitoring"><span class="status-dot"></span> MONITORING</span>
+        </div>
+    </header>
+
     <div class="container">
-        <div class="header">
-            <h1>Hệ thống Giám sát pH Ao</h1>
-            <p>Hệ thống Giám sát và Cảnh báo pH dựa trên AI</p>
+        <!-- ── Scenario Switcher ── -->
+        <div class="scenario-bar">
+            <button class="scenario-btn" onclick="setScenario('normal')">Normal</button>
+            <button class="scenario-btn" onclick="setScenario('rapid_ph_rise')">Rapid Rise</button>
+            <button class="scenario-btn" onclick="setScenario('rapid_ph_drop')">Rapid Drop</button>
+            <button class="scenario-btn" onclick="setScenario('heavy_rain')">Heavy Rain</button>
+            <button class="scenario-btn" onclick="setScenario('heat_event')">Heat Event</button>
+            <button class="scenario-btn" onclick="setScenario('sensor_anomaly')">Sensor Anomaly</button>
+            <button class="scenario-btn active" onclick="setScenario('competition_demo')">Competition Demo</button>
         </div>
-        
-        <div class="status-bar">
-            <div class="status-card">
-                <h3>Trạng thái hiện tại</h3>
-                <div class="value" id="currentStatus">Đang tải...</div>
+
+        <!-- ── Alert Banner ── -->
+        <div id="alert-banner" class="alert-banner normal" style="display:none">
+            <div class="alert-title" id="alert-title"></div>
+            <div class="alert-text" id="alert-text"></div>
+        </div>
+
+        <!-- ── Top Stats ── -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Pond</div>
+                <div class="value" style="color:var(--accent-cyan)">POND-01</div>
+                <div class="sub">pH Sensor Active</div>
             </div>
-            <div class="status-card">
-                <h3>pH hiện tại</h3>
-                <div class="value" id="currentPH">--</div>
+            <div class="stat-card">
+                <div class="label">Current pH</div>
+                <div class="value" id="current-ph" style="color:var(--accent-green)">—</div>
+                <div class="sub" id="ph-status">Waiting for data...</div>
             </div>
-            <div class="status-card">
-                <h3>pH dự đoán</h3>
-                <div class="value" id="predictedPH">--</div>
+            <div class="stat-card">
+                <div class="label">Forecast pH</div>
+                <div class="value" id="forecast-ph" style="color:var(--accent-blue)">—</div>
+                <div class="sub" id="forecast-sub">Next step prediction</div>
             </div>
-            <div class="status-card">
-                <h3>Tổng số lần đọc</h3>
-                <div class="value" id="totalReadings">0</div>
+            <div class="stat-card risk-gauge">
+                <div class="label">Risk Score</div>
+                <div class="risk-number" id="risk-score">0</div>
+                <div class="sub" id="risk-level">LOW</div>
+                <div class="risk-bar"><div class="risk-fill" id="risk-fill" style="width:0%;background:var(--accent-green)"></div></div>
             </div>
-            <div class="status-card">
-                <h3>🤖 AI Model</h3>
-                <div class="value" id="aiModel" style="font-size: 18px;">--</div>
+            <div class="stat-card">
+                <div class="label">Status</div>
+                <div class="value" id="system-status" style="font-size:18px; color:var(--accent-green)">NORMAL</div>
+                <div class="sub" id="readings-count">0 readings</div>
             </div>
         </div>
-        
-        <div class="grid">
-            <div class="chart-container">
-                <h2>Biểu đồ pH theo thời gian</h2>
-                <div class="chart-wrapper">
-                    <canvas id="phChart"></canvas>
+
+        <!-- ── Main Content ── -->
+        <div class="main-grid">
+            <div class="left-col">
+                <!-- Chart -->
+                <div class="card">
+                    <h2>📊 pH Monitoring & Forecast</h2>
+                    <div class="chart-area"><canvas id="ph-chart"></canvas></div>
                 </div>
-                <div class="chart-scroll-controls" id="chartControls" style="display: none;">
-                    <button onclick="scrollChart('prev')" id="prevBtn">◀ Trước</button>
-                    <div class="chart-scroll-info">
-                        <span id="chartRange">Hiển thị: 1-20 / Tổng: 0</span>
-                    </div>
-                    <button onclick="scrollChart('next')" id="nextBtn">Tiếp ▶</button>
-                </div>
-                <div style="margin-top: 10px; font-size: 11px; color: #666; text-align: center;">
-                    💡 Pinch/Scroll để zoom | Kéo để di chuyển biểu đồ
-                </div>
-            </div>
-            
-            <div class="alerts-panel">
-                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <h3 style="margin-bottom: 10px;">📊 AI Model Metrics</h3>
-                    <div id="modelMetrics">
-                        <div class="loading">Đang tải metrics...</div>
-                    </div>
-                    <button 
-                        onclick="retrainModel()" 
-                        id="retrainBtn"
-                        style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;"
-                    >
-                        🔄 Retrain Model
-                    </button>
-                </div>
-                
-                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <h3 style="margin-bottom: 10px;">📈 Độ quan trọng của đặc trưng</h3>
-                    <div id="featureImportance">
-                        <div class="loading">Đang tải...</div>
-                    </div>
-                </div>
-            
-                <h2>Cảnh báo</h2>
-                <div id="alertsContainer">
-                    <div class="loading">Đang tải dữ liệu...</div>
-                </div>
-                
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-                    <h3>🔮 Cảnh báo sớm từ AI</h3>
-                    <div id="earlyWarningContainer" style="margin-top: 10px;">
-                        <div class="alert-item alert-normal">
-                            <strong>✓ Chưa có cảnh báo sớm</strong>
-                            <p>AI đang phân tích dữ liệu...</p>
+                <!-- Risk Components -->
+                <div class="card">
+                    <h2>🎯 Risk Components</h2>
+                    <div id="risk-components">
+                        <div class="risk-comp">
+                            <span class="risk-comp-label">Current Value</span>
+                            <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-current" style="width:0%;background:var(--accent-blue)"></div></div>
+                            <span class="risk-comp-value" id="rcv-current">0</span>
+                        </div>
+                        <div class="risk-comp">
+                            <span class="risk-comp-label">Forecast</span>
+                            <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-forecast" style="width:0%;background:var(--accent-cyan)"></div></div>
+                            <span class="risk-comp-value" id="rcv-forecast">0</span>
+                        </div>
+                        <div class="risk-comp">
+                            <span class="risk-comp-label">Trend</span>
+                            <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-trend" style="width:0%;background:var(--accent-yellow)"></div></div>
+                            <span class="risk-comp-value" id="rcv-trend">0</span>
+                        </div>
+                        <div class="risk-comp">
+                            <span class="risk-comp-label">Anomaly</span>
+                            <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-anomaly" style="width:0%;background:var(--accent-orange)"></div></div>
+                            <span class="risk-comp-value" id="rcv-anomaly">0</span>
                         </div>
                     </div>
                 </div>
-                
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-                    <h3>Lịch sử cảnh báo</h3>
-                    <div id="alertHistoryContainer" style="margin-top: 10px; max-height: 300px; overflow-y: auto;">
-                        <div class="loading">Đang tải...</div>
+                <!-- History -->
+                <div class="card">
+                    <h2>📋 Recent History</h2>
+                    <div style="max-height:250px;overflow-y:auto">
+                        <table class="history-table">
+                            <thead><tr><th>Time</th><th>pH</th><th>Forecast</th><th>Risk</th><th>Status</th></tr></thead>
+                            <tbody id="history-body"></tbody>
+                        </table>
                     </div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
-                        <strong>Thống kê:</strong> <span id="alertStats">--</span>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <!-- Why -->
+                <div class="card">
+                    <h2>🔍 Why?</h2>
+                    <p id="explain-summary" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px"></p>
+                    <ul class="reason-list" id="reason-list"></ul>
+                </div>
+                <!-- Recommendations -->
+                <div class="card">
+                    <h2>💡 Recommended Actions</h2>
+                    <div id="rec-list"></div>
+                    <div class="disclaimer" id="rec-disclaimer"></div>
+                </div>
+                <!-- AI Engine -->
+                <div class="card">
+                    <h2>🤖 AI Engine</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Model</div>
+                            <div class="info-value" id="model-type">—</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Inference</div>
+                            <div class="info-value" id="inference-backend">—</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Trained</div>
+                            <div class="info-value" id="model-trained">No</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">History</div>
+                            <div class="info-value" id="history-size">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">MAE</div>
+                            <div class="info-value" id="model-mae">—</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">RMSE</div>
+                            <div class="info-value" id="model-rmse">—</div>
+                        </div>
                     </div>
+                </div>
+                <!-- Sensor Health -->
+                <div class="card">
+                    <h2>📡 Sensor Health</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">pH Sensor</div>
+                            <div class="info-value" id="sensor-status" style="color:var(--accent-green)">GOOD</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Good Rate</div>
+                            <div class="info-value" id="sensor-rate">—</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Anomaly -->
+                <div class="card">
+                    <h2>⚡ Anomaly Detection</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Anomaly</div>
+                            <div class="info-value" id="anomaly-status" style="color:var(--accent-green)">None</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Score</div>
+                            <div class="info-value" id="anomaly-score">0.00</div>
+                        </div>
+                    </div>
+                    <div id="anomaly-reasons" style="margin-top:8px"></div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script>
-        const API_BASE = window.location.origin;
-        
-        // Chart data storage
-        const allChartData = {
+    // ══════ CHART SETUP ══════
+    const ctx = document.getElementById('ph-chart').getContext('2d');
+    const phChart = new Chart(ctx, {
+        type: 'line',
+        data: {
             labels: [],
-            phValues: [],
-            predictedValues: []
-        };
-        let chartDataStartIndex = 0;
-        const CHART_DISPLAY_LIMIT = 20;
-        
-        // Initialize Chart.js
-        const ctx = document.getElementById('phChart').getContext('2d');
-        const phChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'pH thực tế',
-                        data: [],
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.4
-                    },
-                    {
-                        label: 'pH dự đoán',
-                        data: [],
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderDash: [5, 5],
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Ngưỡng thấp (7.0)',
-                        data: [],
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderDash: [2, 2],
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Ngưỡng cao (8.5)',
-                        data: [],
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderDash: [2, 2],
-                        pointRadius: 0
-                    }
-                ]
+            datasets: [
+                {
+                    label: 'Actual pH',
+                    data: [],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.08)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Forecast pH',
+                    data: [],
+                    borderColor: '#06b6d4',
+                    borderWidth: 2,
+                    borderDash: [5, 3],
+                    fill: false,
+                    tension: 0.3,
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Upper Threshold',
+                    data: [],
+                    borderColor: 'rgba(239,68,68,0.4)',
+                    borderWidth: 1,
+                    borderDash: [4, 4],
+                    fill: false,
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Lower Threshold',
+                    data: [],
+                    borderColor: 'rgba(239,68,68,0.4)',
+                    borderWidth: 1,
+                    borderDash: [4, 4],
+                    fill: false,
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Risk Score',
+                    data: [],
+                    borderColor: 'rgba(249,115,22,0.6)',
+                    backgroundColor: 'rgba(249,115,22,0.05)',
+                    borderWidth: 1,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    yAxisID: 'y1',
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+            scales: {
+                x: {
+                    ticks: { color: '#64748b', maxRotation: 0, maxTicksLimit: 10 },
+                    grid: { color: 'rgba(30,37,72,0.5)' },
+                },
+                y: {
+                    min: 5, max: 10,
+                    ticks: { color: '#64748b' },
+                    grid: { color: 'rgba(30,37,72,0.5)' },
+                    title: { display: true, text: 'pH', color: '#64748b' },
+                },
+                y1: {
+                    position: 'right',
+                    min: 0, max: 100,
+                    ticks: { color: 'rgba(249,115,22,0.5)' },
+                    grid: { display: false },
+                    title: { display: true, text: 'Risk', color: 'rgba(249,115,22,0.5)' },
+                },
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 6.0,
-                        max: 9.0,
-                        title: {
-                            display: true,
-                            text: 'pH Value'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Thời gian'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    },
-                    zoom: {
-                        zoom: {
-                            wheel: {
-                                enabled: true,
-                                speed: 0.05,
-                                modifierKey: 'ctrl'  // Ctrl + scroll để zoom
-                            },
-                            pinch: {
-                                enabled: true  // Pinch gesture trên trackpad
-                            },
-                            mode: 'x',
-                            limits: {
-                                x: {
-                                    min: 'original',
-                                    max: 'original'
-                                }
-                            }
-                        },
-                        pan: {
-                            enabled: true,
-                            mode: 'x',
-                            limits: {
-                                x: {
-                                    min: 'original',
-                                    max: 'original'
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        
-        // Update status
-        async function updateStatus() {
-            try {
-                const response = await fetch(`${API_BASE}/api/status`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const status = await response.json();
-                
-                document.getElementById('totalReadings').textContent = status.total_readings;
-                document.getElementById('currentStatus').textContent = getStatusText(status.current_status);
-                document.getElementById('currentStatus').className = `value status-${getStatusClass(status.current_status)}`;
-                
-                // Hiển thị thông tin AI Model
-                const modelInfo = status.model_info;
-                const modelType = modelInfo.model_type || 'Đang khởi tạo';
-                const isTrained = modelInfo.is_trained ? '✓ Đã train' : '⏳ Đang train';
-                const historySize = modelInfo.history_size || 0;
-                document.getElementById('aiModel').innerHTML = `
-                    <div style="font-size: 14px; color: #666; margin-bottom: 4px;">${modelType}</div>
-                    <div style="font-size: 12px; color: #999;">${isTrained} (${historySize} mẫu)</div>
-                `;
-            } catch (error) {
-                console.error('Error fetching status:', error);
-            }
         }
-        
-        // Cập nhật cảnh báo sớm (early warning)
-        function renderEarlyWarning(reading) {
-            const container = document.getElementById('earlyWarningContainer');
-            if (!container) return;
-            
-            if (reading.has_early_warning) {
-                container.innerHTML = `
-                    <div class="alert-item alert-warning">
-                        <strong>⚠️ Cảnh báo sớm</strong>
-                        <p>${reading.warning_message || 'Dự báo sẽ vượt ngưỡng trong thời gian tới.'}</p>
-                        <p style="font-size:12px;color:#555;">Dự báo +10s: ${reading.predicted_ph ? reading.predicted_ph.toFixed(2) : 'N/A'}</p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="alert-item alert-normal">
-                        <strong>✓ Chưa có cảnh báo sớm</strong>
-                        <p>AI đang phân tích dữ liệu...</p>
-                    </div>
-                `;
-            }
+    });
+
+    // ══════ RISK COLOR ══════
+    function riskColor(score) {
+        if (score <= 20) return 'var(--accent-green)';
+        if (score <= 40) return 'var(--accent-cyan)';
+        if (score <= 60) return 'var(--accent-yellow)';
+        if (score <= 80) return 'var(--accent-orange)';
+        return 'var(--accent-red)';
+    }
+
+    function statusColor(status) {
+        const m = {
+            'NORMAL': 'var(--accent-green)', 'WAITING': 'var(--accent-yellow)',
+            'EARLY_WARNING': 'var(--accent-yellow)', 'HIGH_RISK': 'var(--accent-orange)',
+            'CRITICAL': 'var(--accent-red)', 'ALERT_LOW_PH': 'var(--accent-red)',
+            'ALERT_HIGH_PH': 'var(--accent-red)', 'SENSOR_WARNING': 'var(--accent-purple)',
+        };
+        return m[status] || 'var(--text-secondary)';
+    }
+
+    function alertClass(status) {
+        if (['CRITICAL','ALERT_LOW_PH','ALERT_HIGH_PH'].includes(status)) return 'critical';
+        if (status === 'HIGH_RISK') return 'high';
+        if (['EARLY_WARNING','WAITING'].includes(status)) return 'warning';
+        return 'normal';
+    }
+
+    // ══════ DATA FETCHING ══════
+    async function fetchJSON(url) {
+        try { const r = await fetch(url); return await r.json(); } catch(e) { return null; }
+    }
+
+    let chartLabels = [];
+    let chartActual = [];
+    let chartForecast = [];
+    let chartUpper = [];
+    let chartLower = [];
+    let chartRisk = [];
+    const MAX_POINTS = 100;
+
+    async function update() {
+        // Current reading
+        const current = await fetchJSON('/api/current');
+        if (!current) return;
+
+        const ph = current.ph_value;
+        const pred = current.predicted_ph;
+        const status = current.status;
+        const risk = current.risk_score || 0;
+        const riskLvl = current.risk_level || 'LOW';
+        const ts = current.timestamp ? new Date(current.timestamp).toLocaleTimeString() : '';
+
+        document.getElementById('current-ph').textContent = ph?.toFixed(2) || '—';
+        document.getElementById('current-ph').style.color = statusColor(status);
+        document.getElementById('forecast-ph').textContent = pred?.toFixed(2) || '—';
+        document.getElementById('risk-score').textContent = Math.round(risk);
+        document.getElementById('risk-score').style.color = riskColor(risk);
+        document.getElementById('risk-level').textContent = riskLvl;
+        document.getElementById('risk-fill').style.width = risk + '%';
+        document.getElementById('risk-fill').style.background = riskColor(risk);
+        document.getElementById('system-status').textContent = status;
+        document.getElementById('system-status').style.color = statusColor(status);
+
+        // Alert banner
+        const banner = document.getElementById('alert-banner');
+        if (status !== 'NORMAL') {
+            banner.style.display = 'block';
+            banner.className = 'alert-banner ' + alertClass(status);
+            document.getElementById('alert-title').textContent = status.replace(/_/g, ' ');
+            document.getElementById('alert-text').textContent = current.warning_message || '';
+        } else {
+            banner.style.display = 'none';
         }
-        
-        // Update current reading
-        async function updateCurrentReading() {
-            try {
-                const response = await fetch(`${API_BASE}/api/current`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const reading = await response.json();
-                
-                document.getElementById('currentPH').textContent = reading.ph_value.toFixed(2);
-                
-                // Luôn hiển thị predicted_ph, nếu không có thì dùng giá trị hiện tại
-                if (reading.predicted_ph !== null && reading.predicted_ph !== undefined) {
-                    document.getElementById('predictedPH').textContent = `${reading.predicted_ph.toFixed(2)} (+10s)`;
-                } else {
-                    // Nếu chưa có dự đoán, hiển thị giá trị hiện tại với dấu ~
-                    document.getElementById('predictedPH').textContent = `${reading.ph_value.toFixed(2)} ~ (+10s)`;
-                }
-                
-                renderEarlyWarning(reading);
-            } catch (error) {
-                console.error('Error fetching current reading:', error);
+
+        // Chart
+        chartLabels.push(ts);
+        chartActual.push(ph);
+        chartForecast.push(pred);
+        chartUpper.push(8.5);
+        chartLower.push(7.0);
+        chartRisk.push(risk);
+        if (chartLabels.length > MAX_POINTS) {
+            chartLabels.shift(); chartActual.shift(); chartForecast.shift();
+            chartUpper.shift(); chartLower.shift(); chartRisk.shift();
+        }
+        phChart.data.labels = chartLabels;
+        phChart.data.datasets[0].data = chartActual;
+        phChart.data.datasets[1].data = chartForecast;
+        phChart.data.datasets[2].data = chartUpper;
+        phChart.data.datasets[3].data = chartLower;
+        phChart.data.datasets[4].data = chartRisk;
+        phChart.update('none');
+
+        // Status
+        const statusData = await fetchJSON('/api/status');
+        if (statusData) {
+            document.getElementById('readings-count').textContent = statusData.total_readings + ' readings';
+        }
+
+        // Risk
+        const riskData = await fetchJSON('/api/risk');
+        if (riskData && riskData.components) {
+            const c = riskData.components;
+            for (const [key, val] of Object.entries(c)) {
+                const bar = document.getElementById('rc-' + key);
+                const txt = document.getElementById('rcv-' + key);
+                if (bar) bar.style.width = Math.min(val, 100) + '%';
+                if (txt) txt.textContent = Math.round(val);
             }
         }
-        
-        // Update chart
-        async function updateChart() {
-            try {
-                const response = await fetch(`${API_BASE}/api/history?limit=100`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const data = await response.json();
-                
-                if (data.readings.length === 0) return;
-                
-                // Lưu tất cả dữ liệu
-                // pH hiện tại: timestamp gốc
-                // pH dự đoán: sẽ hiển thị ở vị trí +10 giây (đi trước)
-                allChartData.labels = data.readings.map(r => {
-                    const date = new Date(r.timestamp);
-                    return date.toLocaleTimeString('vi-VN');
-                });
-                allChartData.phValues = data.readings.map(r => r.ph_value);
-                
-                // pH dự đoán: mỗi prediction sẽ được đặt ở vị trí +10 giây
-                // Tạo mảng predicted values với offset
-                allChartData.predictedValues = [];
-                const readingInterval = 5; // 5 giây giữa các readings
-                
-                data.readings.forEach((r, index) => {
-                    // Đảm bảo mảng predictedValues có đủ chiều dài cho vị trí hiện tại
-                    while (allChartData.predictedValues.length <= index) {
-                        allChartData.predictedValues.push(null);
-                    }
-                    if (!r.predicted_ph) {
-                        return;
-                    }
-                    
-                    // Tính toán vị trí tương ứng với timestamp + 10 giây
-                    // Readings cách nhau 5 giây, nên prediction tại index i sẽ hiển thị tại index i+2 (10 giây = 2 readings)
-                    const predictedIndex = index + 2; // Offset 2 vị trí (tương đương 10 giây)
-                    
-                    // Nếu predictedIndex vượt quá độ dài hiện tại, mở rộng tất cả các mảng để hiển thị điểm dự đoán nằm trước dữ liệu pH hiện tại
-                    while (allChartData.labels.length <= predictedIndex) {
-                        const baseDate = new Date(r.predicted_timestamp || r.timestamp);
-                        // thêm 5s cho mỗi bước còn thiếu
-                        const extraDate = new Date(baseDate.getTime() + 5000 * (allChartData.labels.length - index));
-                        allChartData.labels.push(extraDate.toLocaleTimeString('vi-VN'));
-                        allChartData.phValues.push(null);
-                        allChartData.predictedValues.push(null);
-                    }
-                    
-                    if (allChartData.predictedValues[predictedIndex] === null || allChartData.predictedValues[predictedIndex] === undefined) {
-                        allChartData.predictedValues[predictedIndex] = r.predicted_ph;
-                    }
-                });
-                
-                // Đảm bảo độ dài bằng với labels
-                while (allChartData.predictedValues.length < allChartData.labels.length) {
-                    allChartData.predictedValues.push(null);
-                }
-                
-                // Hiển thị controls nếu có >= 20 điểm
-                const controls = document.getElementById('chartControls');
-                const total = allChartData.labels.length;
-                
-                if (total >= CHART_DISPLAY_LIMIT) {
-                    controls.style.display = 'flex';
-                    // Tự động scroll về cuối (dữ liệu mới nhất) chỉ khi mới load hoặc đang ở cuối
-                    const currentEnd = chartDataStartIndex + CHART_DISPLAY_LIMIT;
-                    // Nếu đang xem phần cuối (trong vòng 2 điểm), tự động cập nhật để xem dữ liệu mới nhất
-                    if (currentEnd >= total - 2 || chartDataStartIndex === 0) {
-                        chartDataStartIndex = Math.max(0, total - CHART_DISPLAY_LIMIT);
-                    }
-                    updateChartDisplay();
-                } else {
-                    controls.style.display = 'none';
-                    // Hiển thị tất cả nếu < 20 điểm
-                    phChart.data.labels = allChartData.labels;
-                    phChart.data.datasets[0].data = allChartData.phValues;
-                    phChart.data.datasets[1].data = allChartData.predictedValues;
-                    
-                    const thresholdLow = Array(allChartData.labels.length).fill(7.0);
-                    const thresholdHigh = Array(allChartData.labels.length).fill(8.5);
-                    phChart.data.datasets[2].data = thresholdLow;
-                    phChart.data.datasets[3].data = thresholdHigh;
-                    
-                    phChart.update('none');
-                }
-            } catch (error) {
-                console.error('Error fetching history:', error);
-            }
-        }
-        
-        // Update chart display based on scroll position
-        function updateChartDisplay() {
-            const total = allChartData.labels.length;
-            if (total === 0) return;
-            
-            // Tính toán đúng: startIndex là điểm bắt đầu, endIndex là điểm kết thúc
-            const startIndex = Math.max(0, Math.min(chartDataStartIndex, total - CHART_DISPLAY_LIMIT));
-            const endIndex = Math.min(startIndex + CHART_DISPLAY_LIMIT, total);
-            
-            // Extract data for current view
-            const displayLabels = allChartData.labels.slice(startIndex, endIndex);
-            const displayPhValues = allChartData.phValues.slice(startIndex, endIndex);
-            const displayPredictedValues = allChartData.predictedValues.slice(startIndex, endIndex);
-            
-            // Update chart
-            phChart.data.labels = displayLabels;
-            phChart.data.datasets[0].data = displayPhValues;
-            phChart.data.datasets[1].data = displayPredictedValues;
-            
-            // Add threshold lines
-            const thresholdLow = Array(displayLabels.length).fill(7.0);
-            const thresholdHigh = Array(displayLabels.length).fill(8.5);
-            phChart.data.datasets[2].data = thresholdLow;
-            phChart.data.datasets[3].data = thresholdHigh;
-            
-            phChart.update('none');
-            
-            // Update controls
-            document.getElementById('prevBtn').disabled = (startIndex === 0);
-            document.getElementById('nextBtn').disabled = (endIndex >= total);
-            document.getElementById('chartRange').textContent = 
-                `Hiển thị: ${startIndex + 1}-${endIndex} / Tổng: ${total}`;
-        }
-        
-        // Scroll chart
-        function scrollChart(direction) {
-            const total = allChartData.labels.length;
-            if (total === 0) return;
-            
-            if (direction === 'next') {
-                // Scroll về phía trước (xem tiếp - dữ liệu mới hơn)
-                chartDataStartIndex = Math.min(
-                    chartDataStartIndex + CHART_DISPLAY_LIMIT,
-                    total - CHART_DISPLAY_LIMIT
-                );
-            } else if (direction === 'prev') {
-                // Scroll về phía sau (xem cũ - dữ liệu cũ hơn)
-                chartDataStartIndex = Math.max(
-                    chartDataStartIndex - CHART_DISPLAY_LIMIT,
-                    0
-                );
-            }
-            
-            updateChartDisplay();
-        }
-        
-        // Update alerts
-        async function updateAlerts() {
-            try {
-                const response = await fetch(`${API_BASE}/api/alerts`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const alerts = await response.json();
-                
-                const container = document.getElementById('alertsContainer');
-                
-                if (alerts.is_alerting) {
-                    container.innerHTML = `
-                        <div class="alert-item alert-${alerts.status.toLowerCase().replace('_', '-')}">
-                            <strong>⚠️ ${getStatusText(alerts.status)}</strong>
-                            <p>${alerts.summary.last_alert_time ? 'Thời gian: ' + new Date(alerts.summary.last_alert_time).toLocaleString('vi-VN') : ''}</p>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <div class="alert-item alert-normal">
-                            <strong>✓ Hệ thống hoạt động bình thường</strong>
-                            <p>pH trong khoảng an toàn</p>
-                        </div>
-                    `;
-                }
-                
-                // Update early warning từ AI
-                await updateEarlyWarning();
-            } catch (error) {
-                console.error('Error fetching alerts:', error);
-            }
-        }
-        
-        // Update early warning từ AI
-        async function updateEarlyWarning() {
-            try {
-                const response = await fetch(`${API_BASE}/api/current`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const reading = await response.json();
-                
-                const container = document.getElementById('earlyWarningContainer');
-                
-                if (reading.has_early_warning && reading.warning_message) {
-                    // Cảnh báo sớm từ AI
-                    const isLow = reading.predicted_ph < 7.0;
-                    container.innerHTML = `
-                        <div class="alert-item ${isLow ? 'alert-low' : 'alert-high'}">
-                            <strong>🔮 ${reading.warning_message}</strong>
-                            <p>Dự đoán: pH = ${reading.predicted_ph ? reading.predicted_ph.toFixed(2) : 'N/A'}</p>
-                        </div>
-                    `;
-                } else if (reading.predicted_ph) {
-                    // Không có cảnh báo sớm
-                    container.innerHTML = `
-                        <div class="alert-item alert-normal">
-                            <strong>✓ AI dự đoán an toàn</strong>
-                            <p>pH dự đoán: ${reading.predicted_ph.toFixed(2)} (trong khoảng an toàn)</p>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <div class="alert-item alert-normal">
-                            <strong>⏳ AI đang phân tích</strong>
-                            <p>Chưa đủ dữ liệu để dự đoán</p>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error fetching early warning:', error);
-            }
-        }
-        
-        // Helper functions
-        function getStatusText(status) {
-            const statusMap = {
-                'NORMAL': 'Bình thường',
-                'WAITING': 'Đang chờ xác nhận',
-                'ALERT_LOW_PH': '⚠️ Cảnh báo pH thấp',
-                'ALERT_HIGH_PH': '⚠️ Cảnh báo pH cao'
-            };
-            return statusMap[status] || status;
-        }
-        
-        function getStatusClass(status) {
-            if (status === 'NORMAL') return 'normal';
-            if (status === 'WAITING') return 'waiting';
-            return 'alert';
-        }
-        
-        // Update model metrics
-        async function updateModelMetrics() {
-            try {
-                const response = await fetch(`${API_BASE}/api/model-metrics`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const metrics = await response.json();
-                
-                const container = document.getElementById('modelMetrics');
-                const retrainBtn = document.getElementById('retrainBtn');
-                
-                if (!metrics.is_trained) {
-                    container.innerHTML = `
-                        <div style="color: #666; font-size: 14px;">
-                            ⏳ Model chưa được train<br>
-                            Cần: ${metrics.history_size || 0} readings
-                        </div>
-                    `;
-                    retrainBtn.disabled = true;
-                    retrainBtn.style.opacity = '0.5';
-                    return;
-                }
-                
-                retrainBtn.disabled = false;
-                retrainBtn.style.opacity = '1';
-                
-                let accuracyHtml = '';
-                if (metrics.accuracy) {
-                    const acc = metrics.accuracy;
-                    accuracyHtml = `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                            <div>
-                                <strong>MAE:</strong> ${acc.mae ? acc.mae.toFixed(4) : 'N/A'}<br>
-                                <strong>RMSE:</strong> ${acc.rmse ? acc.rmse.toFixed(4) : 'N/A'}
-                            </div>
-                            <div>
-                                <strong>R²:</strong> ${acc.r2 ? acc.r2.toFixed(4) : 'N/A'}<br>
-                                <strong>Samples:</strong> ${acc.samples || metrics.history_size || 0}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                container.innerHTML = `
-                    <div style="font-size: 14px;">
-                        <strong>Model:</strong> ${metrics.model_type}<br>
-                        <strong>Status:</strong> <span style="color: #10b981;">✓ Trained</span><br>
-                        <strong>Data:</strong> ${metrics.history_size} readings
-                        ${accuracyHtml}
-                    </div>
-                `;
-                
-                // Update feature importance
-                updateFeatureImportance(metrics.feature_importance);
-            } catch (error) {
-                console.error('Error fetching model metrics:', error);
-            }
-        }
-        
-        // Update feature importance
-        function updateFeatureImportance(featureData) {
-            const container = document.getElementById('featureImportance');
-            
-            if (!featureData || !featureData.values || featureData.values.length === 0) {
-                container.innerHTML = '<div style="color: #666;">Chưa có dữ liệu</div>';
-                return;
-            }
-            
-            const maxImportance = Math.max(...featureData.values);
-            let html = '<div style="font-size: 12px;">';
-            
-            // Show top 10 most important features
-            const features = featureData.values.map((val, idx) => ({
-                label: featureData.labels[idx] || `Feature ${idx + 1}`,
-                importance: val
-            })).sort((a, b) => b.importance - a.importance).slice(0, 10);
-            
-            features.forEach(feature => {
-                const percentage = (feature.importance / maxImportance) * 100;
-                html += `
-                    <div style="margin-bottom: 8px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <span>${feature.label}</span>
-                            <span style="color: #666;">${(feature.importance * 100).toFixed(2)}%</span>
-                        </div>
-                        <div style="background: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">
-                            <div style="background: #667eea; height: 100%; width: ${percentage}%; transition: width 0.3s;"></div>
-                        </div>
-                    </div>
-                `;
+
+        // Explanation
+        const exp = await fetchJSON('/api/explanation');
+        if (exp) {
+            document.getElementById('explain-summary').textContent = exp.summary || '';
+            const rl = document.getElementById('reason-list');
+            rl.innerHTML = '';
+            (exp.reasons || []).forEach(r => {
+                const li = document.createElement('li');
+                li.textContent = r;
+                rl.appendChild(li);
             });
-            
-            html += '</div>';
-            container.innerHTML = html;
         }
-        
-        // Retrain model
-        async function retrainModel() {
-            const btn = document.getElementById('retrainBtn');
-            const originalText = btn.textContent;
-            
-            btn.disabled = true;
-            btn.textContent = '⏳ Đang train...';
-            btn.style.opacity = '0.5';
-            
-            try {
-                const response = await fetch(`${API_BASE}/api/retrain-model`, {
-                    method: 'POST'
-                });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API error: ${response.status} - ${errorText}`);
-                }
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('✓ Model đã được retrain thành công!');
-                    updateModelMetrics();
-                } else {
-                    alert(`⚠️ ${result.message}`);
-                }
-            } catch (error) {
-                alert(`❌ Lỗi: ${error.message}`);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = originalText;
-                btn.style.opacity = '1';
+
+        // Recommendations
+        const rec = await fetchJSON('/api/recommendations');
+        if (rec) {
+            const rl = document.getElementById('rec-list');
+            rl.innerHTML = '';
+            (rec.actions || []).forEach(a => {
+                const div = document.createElement('div');
+                div.className = 'rec-item';
+                div.innerHTML = `<span class="rec-urgency urgency-${a.urgency || 'info'}">${a.urgency || 'info'}</span><span>${a.text}</span>`;
+                rl.appendChild(div);
+            });
+            document.getElementById('rec-disclaimer').textContent = rec.disclaimer || '';
+        }
+
+        // Model info
+        const model = await fetchJSON('/api/model-metrics');
+        if (model) {
+            document.getElementById('model-type').textContent = model.model_type || '—';
+            document.getElementById('model-trained').textContent = model.is_trained ? 'Yes' : 'No';
+            document.getElementById('history-size').textContent = model.history_size || 0;
+            if (model.accuracy) {
+                document.getElementById('model-mae').textContent = model.accuracy.mae?.toFixed(4) || '—';
+                document.getElementById('model-rmse').textContent = model.accuracy.rmse?.toFixed(4) || '—';
             }
         }
-        
-        // Update alert history
-        async function updateAlertHistory() {
-            try {
-                const response = await fetch(`${API_BASE}/api/alert-history?limit=10`);
-                if (!response.ok) {
-                    console.error(`API error: ${response.status} ${response.statusText}`);
-                    return;
-                }
-                const data = await response.json();
-                
-                const container = document.getElementById('alertHistoryContainer');
-                const statsSpan = document.getElementById('alertStats');
-                
-                // Update statistics
-                if (data.statistics) {
-                    const stats = data.statistics;
-                    statsSpan.textContent = `Tổng: ${stats.total_alerts} | Thấp: ${stats.low_ph_alerts} | Cao: ${stats.high_ph_alerts}`;
-                }
-                
-                // Display recent alerts
-                if (data.alerts && data.alerts.length > 0) {
-                    let html = '';
-                    data.alerts.slice(0, 5).forEach(alert => {
-                        const isLow = alert.alert_type === 'ALERT_LOW_PH';
-                        const alertClass = isLow ? 'alert-low' : 'alert-high';
-                        const date = new Date(alert.timestamp);
-                        html += `
-                            <div class="alert-item ${alertClass}" style="margin-bottom: 8px; padding: 8px; font-size: 12px;">
-                                <strong>⚠️ ${isLow ? 'pH Thấp' : 'pH Cao'}: ${alert.ph_value}</strong><br>
-                                <span style="color: #666;">${date.toLocaleString('vi-VN')}</span>
-                                ${alert.predicted_ph ? `<br>Dự đoán: ${alert.predicted_ph}` : ''}
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<div style="color: #666; font-size: 12px;">Chưa có cảnh báo nào</div>';
-                }
-            } catch (error) {
-                console.error('Error fetching alert history:', error);
-            }
+
+        // Inference engine
+        const ie = await fetchJSON('/api/inference-engine');
+        if (ie) {
+            document.getElementById('inference-backend').textContent = ie.backend || '—';
         }
-        
-        // Update all data
-        async function updateAll() {
-            await Promise.all([
-                updateStatus(),
-                updateCurrentReading(),
-                updateChart(),
-                updateAlerts(),
-                updateModelMetrics(),
-                updateAlertHistory()
-            ]);
+
+        // Sensor health
+        const health = await fetchJSON('/api/system-health');
+        if (health && health.sensor_health) {
+            const sh = health.sensor_health;
+            document.getElementById('sensor-status').textContent = (sh.status || 'good').toUpperCase();
+            document.getElementById('sensor-status').style.color =
+                sh.status === 'good' ? 'var(--accent-green)' :
+                sh.status === 'suspect' ? 'var(--accent-yellow)' : 'var(--accent-red)';
+            document.getElementById('sensor-rate').textContent =
+                sh.good_rate !== undefined ? (sh.good_rate * 100).toFixed(1) + '%' : '—';
         }
-        
-        // Initial load
-        updateAll();
-        
-        // Auto-refresh every 5 seconds
-        setInterval(updateAll, 5000);
+
+        // Anomaly
+        const anom = await fetchJSON('/api/anomalies');
+        if (anom) {
+            document.getElementById('anomaly-status').textContent = anom.is_anomaly ? 'DETECTED' : 'None';
+            document.getElementById('anomaly-status').style.color =
+                anom.is_anomaly ? 'var(--accent-orange)' : 'var(--accent-green)';
+            document.getElementById('anomaly-score').textContent = (anom.anomaly_score || 0).toFixed(2);
+            const ar = document.getElementById('anomaly-reasons');
+            ar.innerHTML = '';
+            (anom.reasons || []).forEach(r => {
+                const d = document.createElement('div');
+                d.style.cssText = 'font-size:12px;color:var(--text-muted);padding:4px 0';
+                d.textContent = '• ' + r;
+                ar.appendChild(d);
+            });
+        }
+
+        // History table
+        const hist = await fetchJSON('/api/history?limit=15');
+        if (hist && hist.readings) {
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+            hist.readings.reverse().forEach(r => {
+                const tr = document.createElement('tr');
+                const t = r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '';
+                tr.innerHTML = `<td>${t}</td><td>${r.ph_value?.toFixed(2)||'—'}</td><td>${r.predicted_ph?.toFixed(2)||'—'}</td><td>${r.risk_score?.toFixed(0)||'—'}</td><td style="color:${statusColor(r.status)}">${r.status}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    // ══════ SCENARIO SWITCHING ══════
+    async function setScenario(name) {
+        document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        chartLabels = []; chartActual = []; chartForecast = [];
+        chartUpper = []; chartLower = []; chartRisk = [];
+        await fetch('/api/scenario?scenario=' + name + '&seed=42', { method: 'POST' });
+    }
+
+    // ══════ MAIN LOOP ══════
+    setInterval(update, 2000);
+    update();
     </script>
 </body>
 </html>
-

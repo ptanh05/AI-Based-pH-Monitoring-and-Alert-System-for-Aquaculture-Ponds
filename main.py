@@ -40,6 +40,14 @@ import threading
 from datetime import datetime
 from typing import Optional
 
+# Fix Windows UTF-8 console output
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from simulator.ph_simulator import PHSimulator
 from alerts.ph_alert_engine import PHAlertEngine, AlertStatus
 from ai.ph_predictor import PHPredictor

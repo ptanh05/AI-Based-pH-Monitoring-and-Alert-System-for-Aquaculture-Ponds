@@ -1,146 +1,160 @@
 """
-FastAPI Server for pH Monitoring System
+FastAPI Server for AI Aquaculture Guardian.
 
-Provides REST API endpoints for:
-- Getting current pH status
-- Getting historical data
-- Getting predictions
-- Getting alerts
+Integrates the full AI pipeline:
+Sensor Data → Validation → Features → Forecasting → Anomaly →
+Risk → Early Warning → Explainability → Recommendations → Dashboard
 """
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import time
 import sys
 import platform
 import traceback
 
-# Robust beep helper (prefers native sound, falls back to console bell)
+# ── Robust beep helper ──
 def play_beep(duration_seconds: float = 2.0):
-    """Play an audible beep for the given duration (seconds)."""
     try:
         if platform.system() == "Windows":
             try:
                 import winsound
-                # Use Beep; if blocked, fall back to MessageBeep
                 winsound.Beep(1000, int(duration_seconds * 1000))
             except Exception:
-                try:
-                    import winsound
-                    winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
-                    time.sleep(duration_seconds)
-                except Exception:
-                    # Last-resort: console bell
-                    for _ in range(int(duration_seconds * 2)):
-                        print("\a", end="", flush=True)
-                        time.sleep(0.5)
+                for _ in range(int(duration_seconds * 2)):
+                    print("\a", end="", flush=True)
+                    time.sleep(0.5)
         else:
-            # Linux/Mac: console bell loop (works in most terminals)
-            for _ in range(int(duration_seconds * 2)):  # 2 beeps per second
+            for _ in range(int(duration_seconds * 2)):
                 print("\a", end="", flush=True)
                 time.sleep(0.5)
     except Exception:
-        # Final fallback to avoid crashing alert flow
-        for _ in range(int(duration_seconds * 2)):
-            print("\a", end="", flush=True)
-            time.sleep(0.5)
+        pass
 
-from simulator.ph_simulator import PHSimulator
+# ── AI Pipeline Imports ──
+from simulator.ph_simulator import PHSimulator, Scenario
 from alerts.ph_alert_engine import PHAlertEngine, AlertStatus
-from ai.ph_predictor import PHPredictor
+from ai.forecasting import ForecastingEngine
+from ai.anomaly import AnomalyDetector
+from ai.risk import AquacultureRiskEngine
+from ai.explainability import ExplainabilityEngine
+from ai.recommendations import RecommendationEngine
+from ai.sensor_schema import (
+    SensorReading, SensorQualityMonitor, validate_reading,
+)
 from storage.alert_history import alert_history
+from edge.inference_engine import (
+    create_inference_engine, BaseInferenceEngine,
+    OPENVINO_AVAILABLE, SKL2ONNX_AVAILABLE,
+)
+from ai.features import FeatureEngineer
 
-
-# Global monitoring system
+# ── Global State ──
 monitoring_system = None
 system_thread = None
 is_running = False
-use_simulator = True  # True = tự động từ simulator, False = nhập thủ công
-
-# Data storage for API
+use_simulator = True
 recent_readings = []
-MAX_RECENT_READINGS = 100
-manual_ph_queue = []  # Queue để lưu pH nhập thủ công
+MAX_RECENT_READINGS = 200
+manual_ph_queue = []
 
 
 class PHMonitoringSystem:
-    """Wrapper for monitoring system components."""
-    
+    """Central orchestrator for all AI pipeline components."""
+
     def __init__(
         self,
         low_threshold: float = 7.0,
         high_threshold: float = 8.5,
-        consecutive_count: int = 1,  # cảnh báo ngay khi vượt ngưỡng
-        prediction_horizon_minutes: int = 30,
+        consecutive_count: int = 1,
         reading_interval_seconds: float = 1.0,
-        prediction_horizon_seconds: int = 10,
+        scenario: Optional[str] = None,
+        seed: Optional[int] = None,
     ):
-        # Store interval for simulator loop
         self.reading_interval_seconds = reading_interval_seconds
 
-        # Components
-        # Increase noise a bit to trigger alerts faster in demo
-        self.simulator = PHSimulator(base_ph=7.5, noise_level=0.25, enable_events=True)
+        self.simulator = PHSimulator(
+            base_ph=7.5, noise_level=0.25, enable_events=True,
+            scenario=scenario, seed=seed,
+        )
         self.alert_engine = PHAlertEngine(
             low_threshold=low_threshold,
             high_threshold=high_threshold,
             consecutive_count=consecutive_count,
         )
-        self.predictor = PHPredictor(
-            prediction_horizon_minutes=prediction_horizon_minutes,
-            prediction_horizon_seconds=prediction_horizon_seconds,
-            min_samples_for_training=15,  # Giảm xuống để train sớm hơn
+        self.forecaster = ForecastingEngine(
+            window_size=20, min_train_samples=30, retrain_interval=50,
         )
+        self.anomaly_detector = AnomalyDetector(
+            z_score_window=30, z_score_threshold=2.5,
+            isolation_forest_samples=60,
+        )
+        self.risk_engine = AquacultureRiskEngine(
+            low_threshold=low_threshold,
+            high_threshold=high_threshold,
+        )
+        self.explainer = ExplainabilityEngine(
+            low_threshold=low_threshold,
+            high_threshold=high_threshold,
+        )
+        self.recommender = RecommendationEngine()
+        self.sensor_monitor = SensorQualityMonitor()
+        self.inference_engine: BaseInferenceEngine = create_inference_engine(
+            prefer_openvino=True
+        )
+
         self.reading_count = 0
+        self.scenario = scenario
+        self.seed = seed
+
+        # Latest pipeline outputs
+        self.latest_forecast: Optional[dict] = None
+        self.latest_anomaly: Optional[dict] = None
+        self.latest_risk: Optional[dict] = None
+        self.latest_explanation: Optional[dict] = None
+        self.latest_recommendations: Optional[dict] = None
+        self.latest_alert_status: Optional[str] = None
+        self.latest_alert_message: Optional[str] = None
+        self.latest_sensor_quality: Optional[dict] = None
 
 
+# ── Pydantic Models ──
 class ReadingResponse(BaseModel):
-    """Response model for pH reading."""
     timestamp: str
     ph_value: float
     status: str
     predicted_ph: Optional[float] = None
-    predicted_timestamp: Optional[str] = None  # Timestamp của prediction (timestamp + 10s)
+    predicted_timestamp: Optional[str] = None
     has_early_warning: bool = False
     warning_message: Optional[str] = None
-
+    risk_score: Optional[float] = None
+    risk_level: Optional[str] = None
 
 class StatusResponse(BaseModel):
-    """Response model for system status."""
     is_running: bool
     total_readings: int
     current_status: str
     model_info: dict
     thresholds: dict
 
-
-class HistoricalDataResponse(BaseModel):
-    """Response model for historical data."""
-    readings: List[ReadingResponse]
-    count: int
-
-
 class ManualPHInput(BaseModel):
-    """Request model for manual pH input."""
     ph_value: float
-    timestamp: Optional[str] = None  # Optional, sẽ dùng thời gian hiện tại nếu không có
+    timestamp: Optional[str] = None
 
 
-# Initialize FastAPI app
+# ── FastAPI App ──
 app = FastAPI(
-    title="pH Monitoring System API",
-    description="REST API for AI-based pH monitoring and alerting",
-    version="1.0.0"
+    title="AI Aquaculture Guardian API",
+    description="AI-powered Early Warning System for Sustainable Aquaculture",
+    version="2.0.0",
 )
 
-# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -150,507 +164,454 @@ app.add_middleware(
 )
 
 
-# Exception handlers
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Handle all unhandled exceptions and return JSON."""
-    print(f"❌ Unhandled exception: {exc}")
     traceback.print_exc()
     return JSONResponse(
         status_code=500,
-        content={
-            "detail": str(exc),
-            "error_type": type(exc).__name__
-        }
+        content={"detail": str(exc), "error_type": type(exc).__name__},
     )
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle validation errors."""
     return JSONResponse(
         status_code=422,
-        content={
-            "detail": exc.errors(),
-            "error_type": "ValidationError"
-        }
+        content={"detail": exc.errors(), "error_type": "ValidationError"},
     )
 
 
+# ── Core Processing ──
 def process_ph_reading(timestamp: datetime, ph_value: float):
-    """
-    Process a single pH reading through the monitoring system.
-    
-    Args:
-        timestamp: Timestamp of the reading
-        ph_value: pH value to process
-    """
+    """Process a single pH reading through the full AI pipeline."""
     global monitoring_system, recent_readings
-    
+
     if not monitoring_system:
         return
-    
-    # Process reading
-    # Thêm pH hiện tại vào lịch sử để train AI
-    monitoring_system.predictor.add_reading(timestamp, ph_value)
-    
-    # Dự đoán pH cho 10 giây sau (future prediction)
-    from datetime import timedelta
-    future_timestamp = timestamp + timedelta(seconds=10)
-    predicted_ph, is_reliable = monitoring_system.predictor.predict(ph_value)
-    
-    # Update accuracy: so sánh prediction trước đó với pH hiện tại
-    if len(monitoring_system.predictor.ph_history) > 1:
-        # Lấy prediction từ 10 giây trước (nếu có) và so sánh với pH hiện tại
-        if len(monitoring_system.predictor.accuracy_history) > 0:
-            # Prediction từ 10 giây trước nên được so sánh với pH hiện tại
-            monitoring_system.predictor.update_accuracy(predicted_ph, ph_value)
-    
-    # Check alert cho pH hiện tại
-    alert_status, alert_message = monitoring_system.alert_engine.process_reading(
-        timestamp, ph_value
+
+    ms = monitoring_system
+
+    # 1. Sensor validation
+    reading = SensorReading(
+        timestamp=timestamp,
+        sensor_id="POND-01-PH",
+        pond_id="POND-01",
+        parameter="pH",
+        value=ph_value,
+        unit="pH",
+        source="simulator" if use_simulator else "manual_input",
     )
-    
-    # Check early warning cho pH dự đoán (10 giây sau)
-    has_warning, warning_msg = monitoring_system.predictor.check_early_warning(
-        predicted_ph, 
-        monitoring_system.alert_engine.low_threshold,
-        monitoring_system.alert_engine.high_threshold
+    quality_result = ms.sensor_monitor.process(reading)
+    sensor_quality_str = quality_result.quality.value
+    ms.latest_sensor_quality = ms.sensor_monitor.get_health_summary()
+
+    # 2. Feature engineering + Forecasting
+    ms.forecaster.add_reading(ph_value, timestamp)
+
+    # Try to load model into inference engine if newly trained
+    if ms.forecaster.is_trained and ms.forecaster.get_sklearn_model() is not None:
+        n_features = len(FeatureEngineer.FEATURE_NAMES)
+        engine_info = ms.inference_engine.get_info()
+        if not engine_info.get("model_loaded", False):
+            ms.inference_engine.load_model(
+                ms.forecaster.get_sklearn_model(), n_features
+            )
+
+    hour = timestamp.hour + timestamp.minute / 60.0
+    predicted_ph, is_trained = ms.forecaster.predict_single(hour)
+    forecast_result = ms.forecaster.predict_multistep(n_steps=30, hour_of_day=hour)
+    ms.latest_forecast = forecast_result
+
+    # 3. Anomaly detection
+    ms.anomaly_detector.add_reading(ph_value)
+    anomaly_result = ms.anomaly_detector.detect(ph_value)
+    ms.latest_anomaly = anomaly_result
+
+    # 4. Extract features for risk
+    values = ms.forecaster.history
+    fe = ms.forecaster.feature_engineer
+    if len(values) >= 2:
+        features = fe.extract(values, hour)
+        rate_of_change = float(features[6])  # rate_of_change
+        trend = float(features[5])           # trend
+    else:
+        rate_of_change = 0.0
+        trend = 0.0
+
+    # 5. Risk scoring
+    risk_result = ms.risk_engine.compute(
+        current_ph=ph_value,
+        predicted_ph=predicted_ph,
+        rate_of_change=rate_of_change,
+        trend=trend,
+        anomaly_score=anomaly_result.get("anomaly_score", 0.0),
     )
-    
-    # Phát tiếng beep khi có cảnh báo và lưu vào lịch sử
-    if alert_status in [AlertStatus.ALERT_LOW_PH, AlertStatus.ALERT_HIGH_PH]:
-        print(f"\n⚠️ ALERT: pH = {ph_value:.2f} | Status: {alert_status.value}")
-        
-        # Lưu cảnh báo vào lịch sử
+    ms.latest_risk = risk_result
+
+    # 6. Early warning (full pipeline)
+    alert_status, alert_message = ms.alert_engine.process_full(
+        timestamp=timestamp,
+        ph_value=ph_value,
+        predicted_ph=predicted_ph,
+        risk_total=risk_result["total"],
+        risk_level=risk_result["level"],
+        anomaly_detected=anomaly_result.get("is_anomaly", False),
+        sensor_quality=sensor_quality_str,
+    )
+    ms.latest_alert_status = alert_status.value
+    ms.latest_alert_message = alert_message
+
+    # 7. Explainability
+    model_info = ms.forecaster.get_model_info()
+    explanation = ms.explainer.explain(
+        current_ph=ph_value,
+        predicted_ph=predicted_ph,
+        risk_result=risk_result,
+        anomaly_result=anomaly_result,
+        rate_of_change=rate_of_change,
+        trend=trend,
+        feature_importance=model_info.get("feature_importance"),
+        feature_names=model_info.get("feature_names"),
+    )
+    ms.latest_explanation = explanation
+
+    # 8. Recommendations
+    recommendations = ms.recommender.generate(
+        risk_level=risk_result["level"],
+        risk_total=risk_result["total"],
+        current_ph=ph_value,
+        predicted_ph=predicted_ph,
+        anomaly_result=anomaly_result,
+        sensor_quality=sensor_quality_str,
+    )
+    ms.latest_recommendations = recommendations
+
+    # 9. Play beep on significant alerts
+    if alert_status in [
+        AlertStatus.ALERT_LOW_PH, AlertStatus.ALERT_HIGH_PH,
+        AlertStatus.CRITICAL, AlertStatus.HIGH_RISK,
+    ]:
         alert_history.add_alert(
             timestamp=timestamp,
             ph_value=ph_value,
             alert_type=alert_status.value,
             predicted_ph=predicted_ph,
-            threshold_low=monitoring_system.alert_engine.low_threshold,
-            threshold_high=monitoring_system.alert_engine.high_threshold,
-            message=alert_message
+            threshold_low=ms.alert_engine.low_threshold,
+            threshold_high=ms.alert_engine.high_threshold,
+            message=alert_message,
         )
-        
-        # Phát beep trong 2 giây (ổn định, không ngẫu nhiên)
-        beep_duration = 2.0
-        # Chạy beep trong thread riêng để không block
-        beep_thread = threading.Thread(
-            target=play_beep,
-            args=(beep_duration,),
-            daemon=True
-        )
-        beep_thread.start()
-    
-    # Store reading - luôn trả về predicted_ph (có thể chưa reliable)
-    # predicted_ph là dự đoán cho 10 giây sau (future_timestamp)
-    reading = ReadingResponse(
+        threading.Thread(target=play_beep, args=(1.5,), daemon=True).start()
+
+    # 10. Store reading
+    future_ts = timestamp + timedelta(seconds=10)
+    has_warning = alert_status in [
+        AlertStatus.EARLY_WARNING, AlertStatus.HIGH_RISK, AlertStatus.CRITICAL,
+    ]
+
+    reading_resp = ReadingResponse(
         timestamp=timestamp.isoformat(),
-        ph_value=ph_value,  # pH hiện tại tại timestamp này
+        ph_value=ph_value,
         status=alert_status.value,
-        predicted_ph=predicted_ph,  # Dự đoán cho 10 giây sau
-        predicted_timestamp=future_timestamp.isoformat(),  # Timestamp của prediction
+        predicted_ph=predicted_ph,
+        predicted_timestamp=future_ts.isoformat(),
         has_early_warning=has_warning,
-        warning_message=warning_msg if has_warning else None
+        warning_message=alert_message if has_warning else None,
+        risk_score=risk_result["total"],
+        risk_level=risk_result["level"],
     )
-    
-    recent_readings.append(reading)
+
+    recent_readings.append(reading_resp)
     if len(recent_readings) > MAX_RECENT_READINGS:
         recent_readings.pop(0)
-    
-    monitoring_system.reading_count += 1
+
+    ms.reading_count += 1
 
 
 def run_monitoring_system():
-    """Run monitoring system in background thread."""
-    global monitoring_system, is_running, recent_readings, use_simulator, manual_ph_queue
-    
-    monitoring_system = PHMonitoringSystem(
-        reading_interval_seconds=1.0,   # Tăng tần suất để demo và kích hoạt cảnh báo nhanh
-        low_threshold=7.0,
-        high_threshold=8.5,
-        consecutive_count=1,            # Cảnh báo ngay khi vượt ngưỡng
-        prediction_horizon_minutes=30,
-    )
-    
+    global monitoring_system, is_running, use_simulator, manual_ph_queue
+
+    if monitoring_system is None:
+        monitoring_system = PHMonitoringSystem()
+
     is_running = True
-    
+
     try:
         if use_simulator:
-            # Chế độ tự động: dùng simulator
-            print("📊 Chế độ: Tự động (Simulator)")
             for timestamp, ph_value in monitoring_system.simulator.stream_readings(
                 interval_seconds=monitoring_system.reading_interval_seconds,
-                max_readings=None
+                max_readings=None,
             ):
                 if not is_running:
                     break
-                
                 process_ph_reading(timestamp, ph_value)
-                time.sleep(monitoring_system.reading_interval_seconds)
         else:
-            # Chế độ thủ công: chờ input từ API
-            print("✋ Chế độ: Thủ công (Manual Input)")
-            print("   Gửi pH qua POST /api/submit-ph")
             while is_running:
                 if manual_ph_queue:
-                    # Lấy pH từ queue
                     ph_data = manual_ph_queue.pop(0)
-                    timestamp = datetime.fromisoformat(ph_data['timestamp']) if ph_data.get('timestamp') else datetime.now()
-                    ph_value = ph_data['ph_value']
-                    
-                    process_ph_reading(timestamp, ph_value)
-                
-                time.sleep(1)  # Check queue mỗi giây
-            
+                    ts = (
+                        datetime.fromisoformat(ph_data["timestamp"])
+                        if ph_data.get("timestamp")
+                        else datetime.now()
+                    )
+                    process_ph_reading(ts, ph_data["ph_value"])
+                time.sleep(0.5)
     except Exception as e:
-        print(f"Error in monitoring system: {e}")
-        import traceback
+        print(f"Error in monitoring: {e}")
         traceback.print_exc()
         is_running = False
 
 
+# ── Lifecycle ──
 @app.on_event("startup")
 async def startup_event():
-    """Start monitoring system on server startup."""
     global system_thread
     system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
     system_thread.start()
-    print("✓ Monitoring system started")
-
+    print("[AI Aquaculture Guardian] Monitoring started")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Stop monitoring system on server shutdown."""
     global is_running
     is_running = False
-    print("✓ Monitoring system stopped")
+    print("[AI Aquaculture Guardian] Monitoring stopped")
 
+
+# ══════════════════════════════════════════════════
+# API ENDPOINTS
+# ══════════════════════════════════════════════════
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    """Serve dashboard HTML."""
     try:
         with open("dashboard/index.html", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        return """
-        <html>
-            <head><title>pH Monitoring System</title></head>
-            <body>
-                <h1>pH Monitoring System API</h1>
-                <p>API is running. Dashboard not found.</p>
-                <p>Visit <a href="/docs">/docs</a> for API documentation.</p>
-            </body>
-        </html>
-        """
+        return "<html><body><h1>AI Aquaculture Guardian API</h1><p>Dashboard not found. Visit <a href='/docs'>/docs</a>.</p></body></html>"
 
-
-@app.get("/api/status", response_model=StatusResponse)
+@app.get("/api/status")
 async def get_status():
-    """Get current system status."""
     if not monitoring_system:
-        raise HTTPException(status_code=503, detail="Monitoring system not initialized")
-    
-    return StatusResponse(
-        is_running=is_running,
-        total_readings=monitoring_system.reading_count,
-        current_status=monitoring_system.alert_engine.get_status().value,
-        model_info=monitoring_system.predictor.get_model_info(),
-        thresholds={
+        raise HTTPException(status_code=503, detail="System not initialized")
+    return {
+        "is_running": is_running,
+        "total_readings": monitoring_system.reading_count,
+        "current_status": monitoring_system.alert_engine.get_status().value,
+        "model_info": monitoring_system.forecaster.get_model_info(),
+        "thresholds": {
             "low": monitoring_system.alert_engine.low_threshold,
-            "high": monitoring_system.alert_engine.high_threshold
-        }
-    )
+            "high": monitoring_system.alert_engine.high_threshold,
+        },
+        "scenario": monitoring_system.scenario,
+        "data_source": "simulator" if use_simulator else "manual",
+    }
 
-
-@app.get("/api/current", response_model=ReadingResponse)
+@app.get("/api/current")
 async def get_current_reading():
-    """Get most recent pH reading."""
     if not recent_readings:
         raise HTTPException(status_code=404, detail="No readings available yet")
-    
     return recent_readings[-1]
 
-
-@app.get("/api/history", response_model=HistoricalDataResponse)
+@app.get("/api/history")
 async def get_history(limit: int = 50):
-    """Get historical pH readings."""
-    if not recent_readings:
-        return HistoricalDataResponse(readings=[], count=0)
-    
     readings = recent_readings[-limit:] if limit > 0 else recent_readings
-    return HistoricalDataResponse(
-        readings=readings,
-        count=len(readings)
-    )
+    return {"readings": readings, "count": len(readings)}
 
+@app.get("/api/forecast")
+async def get_forecast(steps: int = 30):
+    if not monitoring_system:
+        raise HTTPException(status_code=503, detail="System not initialized")
+    hour = datetime.now().hour + datetime.now().minute / 60.0
+    result = monitoring_system.forecaster.predict_multistep(n_steps=steps, hour_of_day=hour)
+    result["sampling_interval_seconds"] = monitoring_system.reading_interval_seconds
+    return result
 
 @app.get("/api/prediction")
 async def get_prediction():
-    """Get current pH prediction."""
+    """Backward-compatible prediction endpoint."""
     if not monitoring_system:
-        raise HTTPException(status_code=503, detail="Monitoring system not initialized")
-    
-    if not monitoring_system.predictor.is_trained:
-        return {
-            "predicted_ph": None,
-            "is_reliable": False,
-            "message": "Model not trained yet"
-        }
-    
-    predicted_ph, is_reliable = monitoring_system.predictor.predict()
-    has_warning, warning_msg = monitoring_system.predictor.check_early_warning(
-        predicted_ph, 7.0, 8.5
-    )
-    
+        raise HTTPException(status_code=503, detail="System not initialized")
+    hour = datetime.now().hour + datetime.now().minute / 60.0
+    predicted_ph, is_trained = monitoring_system.forecaster.predict_single(hour)
     return {
         "predicted_ph": predicted_ph,
-        "is_reliable": is_reliable,
-        "has_early_warning": has_warning,
-        "warning_message": warning_msg,
-        "prediction_horizon_minutes": monitoring_system.predictor.prediction_horizon_minutes
+        "is_reliable": is_trained,
+        "model_type": monitoring_system.forecaster.get_model_info()["model_type"],
     }
 
+@app.get("/api/risk")
+async def get_risk():
+    if not monitoring_system or not monitoring_system.latest_risk:
+        return {"total": 0, "level": "LOW", "components": {}}
+    return monitoring_system.latest_risk
+
+@app.get("/api/anomalies")
+async def get_anomalies():
+    if not monitoring_system or not monitoring_system.latest_anomaly:
+        return {"is_anomaly": False, "anomaly_score": 0.0, "reasons": []}
+    return monitoring_system.latest_anomaly
+
+@app.get("/api/explanation")
+async def get_explanation():
+    if not monitoring_system or not monitoring_system.latest_explanation:
+        return {"summary": "Waiting for data...", "reasons": []}
+    return monitoring_system.latest_explanation
+
+@app.get("/api/recommendations")
+async def get_recommendations():
+    if not monitoring_system or not monitoring_system.latest_recommendations:
+        return {"actions": [], "disclaimer": "System initializing..."}
+    return monitoring_system.latest_recommendations
 
 @app.get("/api/alerts")
 async def get_alerts():
-    """Get current alert status."""
     if not monitoring_system:
-        raise HTTPException(status_code=503, detail="Monitoring system not initialized")
-    
+        raise HTTPException(status_code=503, detail="System not initialized")
     status = monitoring_system.alert_engine.get_status()
-    summary = monitoring_system.alert_engine.get_status_summary()
-    
     return {
         "status": status.value,
-        "summary": summary,
-        "is_alerting": status in [AlertStatus.ALERT_LOW_PH, AlertStatus.ALERT_HIGH_PH]
+        "summary": monitoring_system.alert_engine.get_status_summary(),
+        "message": monitoring_system.latest_alert_message,
+        "is_alerting": status in [
+            AlertStatus.ALERT_LOW_PH, AlertStatus.ALERT_HIGH_PH,
+            AlertStatus.HIGH_RISK, AlertStatus.CRITICAL,
+        ],
     }
-
-
-@app.post("/api/submit-ph")
-async def submit_ph(input_data: ManualPHInput):
-    """
-    Submit pH value manually (for manual input mode).
-    
-    **Nguồn pH hiện tại:**
-    - Mặc định: Tự động từ PHSimulator (simulator/ph_simulator.py)
-    - Thủ công: Gửi qua endpoint này
-    
-    **Cách sử dụng:**
-    1. Chuyển sang chế độ thủ công: POST /api/set-mode?mode=manual
-    2. Gửi pH: POST /api/submit-ph với {"ph_value": 7.5}
-    """
-    global manual_ph_queue, use_simulator
-    
-    if use_simulator:
-        return {
-            "success": False,
-            "message": "Hệ thống đang ở chế độ tự động. Chuyển sang chế độ thủ công trước: POST /api/set-mode?mode=manual"
-        }
-    
-    # Validate pH range
-    if not (4.0 <= input_data.ph_value <= 10.0):
-        raise HTTPException(
-            status_code=400, 
-            detail="pH value must be between 4.0 and 10.0"
-        )
-    
-    # Add to queue
-    manual_ph_queue.append({
-        "ph_value": input_data.ph_value,
-        "timestamp": input_data.timestamp or datetime.now().isoformat()
-    })
-    
-    return {
-        "success": True,
-        "message": f"pH value {input_data.ph_value:.2f} đã được thêm vào queue",
-        "ph_value": input_data.ph_value,
-        "queue_size": len(manual_ph_queue)
-    }
-
-
-@app.post("/api/set-mode")
-async def set_mode(mode: str = "auto"):
-    """
-    Chuyển đổi giữa chế độ tự động và thủ công.
-    
-    - mode="auto": Dùng PHSimulator tự động tạo pH
-    - mode="manual": Chờ input pH thủ công qua POST /api/submit-ph
-    """
-    global use_simulator
-    
-    if mode.lower() == "manual":
-        use_simulator = False
-        return {
-            "success": True,
-            "mode": "manual",
-            "message": "Đã chuyển sang chế độ thủ công. Gửi pH qua POST /api/submit-ph"
-        }
-    elif mode.lower() == "auto":
-        use_simulator = True
-        return {
-            "success": True,
-            "mode": "auto",
-            "message": "Đã chuyển sang chế độ tự động (Simulator)"
-        }
-    else:
-        raise HTTPException(
-            status_code=400,
-            detail="Mode must be 'auto' or 'manual'"
-        )
-
-
-@app.post("/api/retrain-model")
-async def retrain_model():
-    """
-    Retrain the AI model manually.
-    
-    Returns:
-        Success status and model info
-    """
-    if not monitoring_system:
-        raise HTTPException(status_code=503, detail="Monitoring system not initialized")
-    
-    if len(monitoring_system.predictor.ph_history) < monitoring_system.predictor.min_samples_for_training:
-        return {
-            "success": False,
-            "message": f"Cần ít nhất {monitoring_system.predictor.min_samples_for_training} readings để train. Hiện có: {len(monitoring_system.predictor.ph_history)}"
-        }
-    
-    success = monitoring_system.predictor.retrain_model()
-    
-    if success:
-        return {
-            "success": True,
-            "message": "Model đã được retrain thành công",
-            "model_info": monitoring_system.predictor.get_model_info()
-        }
-    else:
-        return {
-            "success": False,
-            "message": "Retrain thất bại"
-        }
-
-
-@app.get("/api/model-metrics")
-async def get_model_metrics():
-    """
-    Get detailed AI model metrics including accuracy and feature importance.
-    
-    Returns:
-        Model metrics and comparison
-    """
-    if not monitoring_system:
-        raise HTTPException(status_code=503, detail="Monitoring system not initialized")
-    
-    model_info = monitoring_system.predictor.get_model_info()
-    
-    # Prepare feature importance labels
-    feature_labels = []
-    if model_info.get('feature_importance'):
-        # Create labels for features (history_window values + 5 stats)
-        history_window = monitoring_system.predictor.history_window
-        feature_labels = [f"pH(t-{i})" for i in range(history_window, 0, -1)]
-        feature_labels.extend(["Mean", "Std", "Min", "Max", "Trend"])
-    
-    return {
-        "model_type": model_info.get("model_type", "Unknown"),
-        "is_trained": model_info.get("is_trained", False),
-        "history_size": model_info.get("history_size", 0),
-        "accuracy": model_info.get("accuracy"),
-        "feature_importance": {
-            "values": model_info.get("feature_importance"),
-            "labels": feature_labels[:len(model_info.get("feature_importance", []))]
-        } if model_info.get("feature_importance") else None,
-        "prediction_horizon": model_info.get("prediction_horizon_minutes", 30)
-    }
-
-
-@app.get("/api/source-info")
-async def get_source_info():
-    """
-    Lấy thông tin về nguồn pH hiện tại.
-    
-    **Nguồn pH trong hệ thống:**
-    1. **Simulator (Mặc định)**: 
-       - File: simulator/ph_simulator.py
-       - Tự động tạo pH với noise và events (mưa, nắng)
-       - Có thể điều chỉnh: base_ph, noise_level, enable_events
-       
-    2. **Manual Input (Thủ công)**:
-       - Gửi qua API: POST /api/submit-ph
-       - Cần chuyển mode: POST /api/set-mode?mode=manual
-    """
-    return {
-        "current_mode": "auto" if use_simulator else "manual",
-        "ph_source": {
-            "simulator": {
-                "file": "simulator/ph_simulator.py",
-                "description": "Tự động tạo pH với mô phỏng thực tế",
-                "parameters": {
-                    "base_ph": monitoring_system.simulator.base_ph if monitoring_system else 7.5,
-                    "noise_level": monitoring_system.simulator.noise_level if monitoring_system else 0.25,
-                    "enable_events": monitoring_system.simulator.enable_events if monitoring_system else True
-                }
-            },
-            "manual": {
-                "endpoint": "POST /api/submit-ph",
-                "description": "Nhập pH thủ công qua API",
-                "example": {
-                    "ph_value": 7.5,
-                    "timestamp": "2024-01-15T10:30:00"  # Optional
-                }
-            }
-        },
-        "how_to_change": {
-            "switch_to_manual": "POST /api/set-mode?mode=manual",
-            "switch_to_auto": "POST /api/set-mode?mode=auto",
-            "submit_ph": "POST /api/submit-ph với body: {\"ph_value\": 7.5}"
-        }
-    }
-
 
 @app.get("/api/alert-history")
 async def get_alert_history(limit: int = 50, alert_type: Optional[str] = None):
-    """
-    Lấy lịch sử cảnh báo.
-    
-    Args:
-        limit: Số lượng cảnh báo tối đa (default: 50)
-        alert_type: Lọc theo loại ('ALERT_LOW_PH' hoặc 'ALERT_HIGH_PH')
-    
-    Returns:
-        Danh sách cảnh báo và thống kê
-    """
     if alert_type:
         alerts = alert_history.get_alerts_by_type(alert_type, limit)
     else:
         alerts = alert_history.get_recent_alerts(limit)
-    
-    stats = alert_history.get_statistics()
-    
     return {
         "alerts": alerts,
-        "statistics": stats,
-        "count": len(alerts)
+        "statistics": alert_history.get_statistics(),
+        "count": len(alerts),
     }
-
 
 @app.get("/api/alert-statistics")
 async def get_alert_statistics():
-    """
-    Lấy thống kê về cảnh báo.
-    
-    Returns:
-        Thống kê tổng hợp về cảnh báo
-    """
     return alert_history.get_statistics()
+
+@app.get("/api/model-metrics")
+async def get_model_metrics():
+    if not monitoring_system:
+        raise HTTPException(status_code=503, detail="System not initialized")
+    info = monitoring_system.forecaster.get_model_info()
+    feature_labels = info.get("feature_names", [])
+    importance = info.get("feature_importance")
+    return {
+        "model_type": info.get("model_type", "Unknown"),
+        "is_trained": info.get("is_trained", False),
+        "history_size": info.get("history_size", 0),
+        "accuracy": info.get("train_metrics"),
+        "feature_importance": {
+            "values": importance,
+            "labels": feature_labels[:len(importance)] if importance else [],
+        } if importance else None,
+        "total_retrains": info.get("total_retrains", 0),
+    }
+
+@app.get("/api/inference-engine")
+async def get_inference_engine():
+    if not monitoring_system:
+        return {"backend": "not_initialized"}
+    return monitoring_system.inference_engine.get_info()
+
+@app.get("/api/system-health")
+async def get_system_health():
+    if not monitoring_system:
+        raise HTTPException(status_code=503, detail="System not initialized")
+    return {
+        "sensor_health": monitoring_system.latest_sensor_quality or {},
+        "anomaly_detector": monitoring_system.anomaly_detector.get_info(),
+        "forecaster": {
+            "is_trained": monitoring_system.forecaster.is_trained,
+            "history_size": len(monitoring_system.forecaster.history),
+        },
+        "inference_engine": monitoring_system.inference_engine.get_info(),
+        "total_readings": monitoring_system.reading_count,
+        "is_running": is_running,
+    }
+
+@app.get("/api/benchmark")
+async def get_benchmark():
+    if not monitoring_system:
+        raise HTTPException(status_code=503, detail="System not initialized")
+    if not monitoring_system.forecaster.is_trained:
+        return {"error": "Model not trained yet. Collect more data."}
+    import numpy as np
+    n_features = len(FeatureEngineer.FEATURE_NAMES)
+    X_sample = np.random.rand(1, n_features)
+    result = monitoring_system.inference_engine.benchmark(X_sample, n_iterations=200)
+    result["engine"] = monitoring_system.inference_engine.get_info().get("backend", "unknown")
+    return result
+
+@app.post("/api/scenario")
+async def set_scenario(scenario: str = "competition_demo", seed: int = 42):
+    global monitoring_system, is_running, recent_readings
+    is_running = False
+    time.sleep(1.5)
+    recent_readings = []
+    monitoring_system = PHMonitoringSystem(
+        scenario=scenario, seed=seed, reading_interval_seconds=0.8,
+    )
+    global system_thread
+    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
+    system_thread.start()
+    return {
+        "success": True,
+        "scenario": scenario,
+        "seed": seed,
+        "available_scenarios": PHSimulator.available_scenarios(),
+    }
+
+@app.post("/api/retrain-model")
+async def retrain_model():
+    if not monitoring_system:
+        raise HTTPException(status_code=503, detail="System not initialized")
+    success = monitoring_system.forecaster.train()
+    return {
+        "success": success,
+        "model_info": monitoring_system.forecaster.get_model_info(),
+    }
+
+@app.post("/api/submit-ph")
+async def submit_ph(input_data: ManualPHInput):
+    global manual_ph_queue, use_simulator
+    if use_simulator:
+        return {
+            "success": False,
+            "message": "System is in auto mode. Switch to manual: POST /api/set-mode?mode=manual",
+        }
+    if not (0.0 <= input_data.ph_value <= 14.0):
+        raise HTTPException(status_code=400, detail="pH must be 0-14")
+    manual_ph_queue.append({
+        "ph_value": input_data.ph_value,
+        "timestamp": input_data.timestamp or datetime.now().isoformat(),
+    })
+    return {"success": True, "ph_value": input_data.ph_value}
+
+@app.post("/api/set-mode")
+async def set_mode(mode: str = "auto"):
+    global use_simulator
+    if mode.lower() == "manual":
+        use_simulator = False
+        return {"success": True, "mode": "manual"}
+    elif mode.lower() == "auto":
+        use_simulator = True
+        return {"success": True, "mode": "auto"}
+    raise HTTPException(status_code=400, detail="Mode must be 'auto' or 'manual'")
+
+@app.get("/api/source-info")
+async def get_source_info():
+    return {
+        "current_mode": "auto" if use_simulator else "manual",
+        "data_source": "simulator (synthetic)" if use_simulator else "manual_input",
+        "disclaimer": "All data is currently from a software simulator, not real sensors.",
+    }
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
