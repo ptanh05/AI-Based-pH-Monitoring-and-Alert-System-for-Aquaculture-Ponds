@@ -1,77 +1,36 @@
-# Responsible AI & Ethical Framework
-## AI Aquaculture Guardian
-### Principles, Transparency, and Safety Guarantees
+# Responsible AI, Safety & Ethical Guidelines
+## AI Aquaculture Guardian — Intel® Vietnam AI Impact Festival 2026
 
 ---
 
-## 1. Core Principles
+## 1. Primary Operating Principle
 
-AI Aquaculture Guardian was developed with strict adherence to **Responsible AI** principles to ensure that technological innovation directly and safely benefits farmers without introducing unintended harm.
-
-```
-                  ┌───────────────────────────────┐
-                  │   RESPONSIBLE AI GUARDIAN     │
-                  └───────────────┬───────────────┘
-          ┌───────────────────────┼───────────────────────┐
-          ▼                       ▼                       ▼
-   Transparency &           Bio-safety &            Explainability
-  Honest Metrics           Human-in-Loop               & Trust
-```
+> [!IMPORTANT]
+> **Core Responsible AI Mandate**: **AI Aquaculture Guardian is strictly an advisory decision-support system, NOT an autonomous chemical dosing or medical treatment system.**
+>
+> The system does not directly actuate high-risk chemical pumps, dispense algaecides, or prescribe veterinary treatments. All outputs are presented to human farm operators as early-warning indicators and suggested Standard Operating Procedures (SOP).
 
 ---
 
-## 2. Principle 1: Absolute Truth in Metrics & Data Provenance
+## 2. Safety & Risk Mitigation Framework
 
-1. **Explicit Data Labeling**:
-   - Every metric, chart, and screen in the application is explicitly labeled with **`DATA SOURCE: SIMULATED (Synthetic)`**.
-   - We make zero false claims that synthetic evaluations represent physical farm trials.
-2. **No Fabricated Offsets or Fake Predictions**:
-   - Prior code versions utilized heuristic offsets; these have been **completely eliminated**.
-   - All predictions originate strictly from trained mathematical models (`ForecastingEngine`).
-3. **Honest Edge & Hardware Claims**:
-   - We report actual, measured benchmark results on the host CPU.
-   - We do not claim NPU or specialized hardware acceleration unless directly measured on such devices.
-   - OpenVINO converter limitations on tree ensembles are documented openly with graceful runtime fallback.
+### 2.1 Human-in-the-Loop Architecture
+1. **Operator Verification First**: Whenever a high-risk score or anomaly is flagged, the system advises verifying the reading with a secondary handheld probe before undertaking major interventions.
+2. **Conservative Sensor Quarantine**: If a sensor exhibits erratic noise or flatlining, the system marks sensor quality as `SUSPECT` or `BAD`, applies a conservative multiplier ($1.15\times - 1.30\times$) to the risk score, and requests physical probe inspection.
+3. **No Uncalibrated Automation**: Recommendations are framed as procedural guidelines (e.g. *"Inspect aeration equipment"*, *"Check for heavy rain runoff"*, *"Consult qualified aquaculture professional"*).
 
 ---
 
-## 3. Principle 2: Bio-Safety & Human-in-the-Loop Decision Support
+## 3. Data Integrity & Anti-Fabrication Principles
 
-1. **No Uncontrolled Chemical Automation**:
-   - The system is architected purely as a **Decision-Support System (DSS)**.
-   - It **NEVER** issues automated chemical dosing commands ($Ca(OH)_2$, lime, or acid buffers) that could risk aquatic biomass overdose.
-2. **Conservative Action Guidance**:
-   - Recommendations focus on non-destructive mechanical interventions: aeration adjustment, secondary probe verification, pond surface inspection, and monitoring frequency escalation.
-3. **Mandatory Sensor Cross-Verification**:
-   - Before taking high-cost interventions, the system explicitly advises the farmer to cross-verify sensor readings with handheld colorimeters or secondary test kits.
+1. **Explicit Provenance Labeling**: The UI, API, and CLI clearly identify the active data source:
+   - `[ REAL DATA ]`: Actual IoT measurements from Mendeley Data DOI: `10.17632/8s73jfvgr5.2`.
+   - `[ SIMULATION / DEMO ]`: Deterministic synthetic scenario for live competition demonstration.
+2. **No Fabricated Anomaly Labels**: Anomaly evaluation on real data is explicitly documented as **unsupervised proxy validation**, acknowledging the absence of manual ground-truth anomaly annotations.
+3. **No Exaggerated Production Claims**: The system is documented as a competition-grade research prototype validated on historical IoT data, not a nationwide deployed production network.
 
 ---
 
-## 4. Principle 3: Linguistic & Operational Precision (Measurement vs Prediction)
+## 4. Intel® OpenVINO™ Edge Transparency
 
-A critical hazard in early warning systems is confusing a **forecasted trend** with an **actual breach**:
-
-| Scenario | System State | Correct System Communication | Prohibited Misleading Statement |
-|---|---|---|---|
-| Current pH: 8.3<br>Forecast: 8.8<br>Threshold: 8.5 | `EARLY_WARNING` or `HIGH_RISK` | *"AI predicts elevated risk of exceeding upper threshold in future steps."* | ❌ *"Current pH has breached safe limit 8.5."* |
-| Current pH: 8.9<br>Threshold: 8.5 | `ALERT_HIGH_PH` / `CRITICAL` | *"CRITICAL: Current pH (8.90) exceeds safe threshold (8.50)."* | — |
-
----
-
-## 5. Principle 4: Sensor Quality vs Environmental Failure Disambiguation
-
-Sensor hardware in harsh aquatic environments frequently encounters bio-fouling, algal coating, and wire disconnection:
-
-- **Stuck Sensor Detection**: When consecutive readings show variance $< 0.001$, the system flags `SENSOR_WARNING` (Probe Maintenance required) rather than triggering false water-quality alerts.
-- **Physical Outlier Rejection**: Values $< 0.0$, $> 14.0$, NaN, or impossible physical jumps ($> 2.0$ pH/step) are quarantined and flagged as `SensorQuality.BAD` / `SUSPECT`.
-
----
-
-## 6. Principle 5: Explainability (XAI) & Farmer Empowerment
-
-- Every alert is accompanied by a transparent breakdown of the 4 contributing factors:
-  1. Current Value Deviation ($30\%$)
-  2. Multi-Step Forecast ($30\%$)
-  3. Rate of Change & Trend ($20\%$)
-  4. Anomaly Score ($20\%$)
-- Explanations are translated into clear, understandable natural language, helping farmers build long-term intuition for pond ecology.
+- The system implements an honest fallback mechanism: if an operator (e.g., `ai.onnx.ml.TreeEnsembleRegressor`) cannot be natively converted by OpenVINO, the system explicitly logs `Falling back to standard scikit-learn engine` and records actual measured CPU latency (0.28 ms) rather than fabricating synthetic acceleration numbers.
