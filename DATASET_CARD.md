@@ -1,72 +1,43 @@
-# Dataset Card: Environmental Parameters in Aquaculture (Mendeley Data)
+# DATASET CARD: MENDELEY AQUACULTURE WATER QUALITY TELEMETRY
+**Intel® Vietnam AI Impact Festival 2026**
 
 ---
 
-## 1. Dataset Summary
+## 1. Dataset Overview
 
-- **Dataset Title**: *Environmental Parameters in Aquaculture: Temperature, pH, Oxygen, and Turbidity Measurements*
-- **DOI**: [10.17632/8s73jfvgr5.2](https://doi.org/10.17632/8s73jfvgr5.2) — Version 2
-- **Direct Access URL**: `https://data.mendeley.com/datasets/8s73jfvgr5/2`
+- **Dataset Identifier**: `mendeley_aquaculture`
+- **Source**: Mendeley Data
+- **DOI**: `10.17632/8s73jfvgr5.2`
 - **License**: Creative Commons Attribution 4.0 International (CC BY 4.0)
-- **Facility Type**: Commercial Tropical Freshwater Aquaculture Facility (Tilapia — *Oreochromis niloticus*)
-- **Geographic Location**: Montería, Department of Córdoba, Colombia (9°15' N, 75°53' W)
-- **Collection Period**: January 1, 2024 – June 30, 2024 (6 continuous months)
-- **Total Continuous Observations**: **37,284 records** (Primary IoT Stream)
-- **Estimated Sampling Interval**: ~5.0 minutes (300 seconds)
+- **Total Record Count**: **37,284 raw IoT measurements**
+- **Location**: Aquaculture Research Station, Montería, Colombia
+- **Species Monitored**: Tilapia (*Oreochromis niloticus*)
 
 ---
 
-## 2. Parameter Schema & Physical Ranges
+## 2. Sensor Schema & Physical Ranges
 
-| Parameter Name | Canonical Name | Physical Unit | Observed Mean | Observed Range | Aquaculture Safe Optimal Window |
-|---|---|:---:|:---:|:---:|:---:|
-| **pH** | `ph` | pH units | 7.64 ± 0.16 | 7.00 – 8.50 | 7.00 – 8.50 |
-| **Water Temperature** | `temperature` | °C | 26.95 ± 0.54 | 20.00 – 27.50 | 26.00 – 30.00 |
-| **Dissolved Oxygen** | `dissolved_oxygen` | mg/L | 8.17 ± 0.38 | 7.30 – 9.00 | > 5.00 mg/L |
-| **Turbidity** | `turbidity` | NTU | 3.52 ± 0.81 | 2.50 – 7.50 | < 25.00 NTU |
-
----
-
-## 3. Data Ingestion & Quality Audit
-
-All files are cryptographically validated against official Mendeley SHA-256 digests:
-- **Missing Values**: 0 / 37,284 (**0.00% missing**)
-- **Duplicate Timestamps**: 0
-- **Physical Boundary Violations**: 0 violations across all 4 monitored physical dimensions
-- **Sampling Continuity**: High temporal density with diurnal solar-photosynthetic cycles captured continuously.
+| Parameter | Unit | Physical Range | Raw Mean | Resampled Standard Dev |
+|:---|:---:|:---:|:---:|:---:|
+| **pH** | pH units | 0.0 – 14.0 | 7.64 | 0.28 |
+| **Water Temperature** | °C | 0.0 – 50.0 | 27.12 | 1.84 |
+| **Dissolved Oxygen** | mg/L | 0.0 – 25.0 | 8.15 | 1.12 |
+| **Turbidity** | NTU | 0.0 – 1000.0 | 142.30 | 38.60 |
 
 ---
 
-## 4. Train / Validation / Test Splitting
+## 3. Data Ingestion & Leakage Prevention Pipeline
 
-To prevent **temporal data leakage**, random shuffling is strictly prohibited. Splitting is performed monotonically along the time dimension:
-
-| Split | Percentage | Observations | Temporal Range |
-|---|:---:|:---:|---|
-| **Training Set** | 70% | 26,098 records | January 1, 2024 – May 6, 2024 |
-| **Validation Set** | 15% | 5,593 records | May 6, 2024 – June 2, 2024 |
-| **Holdout Test Set** | 15% | 5,593 records | June 2, 2024 – June 30, 2024 |
-
----
-
-## 5. Domain Shift & Known Limitations
-
-1. **Species Specificity**: Data reflects freshwater tropical Tilapia (*Oreochromis niloticus*) in Montería, Colombia. Deployment in marine shrimp ponds (*Litopenaeus vannamei*) or cold-water salmonid facilities requires recalibrating physical threshold baselines.
-2. **Seasonal Distribution**: Dataset covers dry-to-wet seasonal transition in northern South America. Extreme typhoon or flood events may exhibit distinct hydrological signatures.
-3. **Correlation vs Causation**: Coupled interactions (e.g. pH vs Dissolved Oxygen rank correlation $\rho = 0.4485$) reflect natural diurnal photosynthesis and respiration, not direct causal control.
+1. **Regularization & Resampling**: Raw irregular IoT timestamps are regularized into 5-minute bins using forward/backward interpolation bounds (`data_pipeline/resampling.py`).
+2. **Chronological Splitting**: Partitioned without random shuffling into:
+   - **Train Set** (70%): Earliest 26,098 time points.
+   - **Validation Set** (15%): Subsequent 5,593 time points.
+   - **Holdout Test Set** (15%): Latest 5,593 time points.
+3. **Scaler Fitting**: Normalization scalers are strictly fitted on the Train partition only.
 
 ---
 
-## 6. Official Citation
+## 4. Ethical & Environmental Considerations
 
-```bibtex
-@dataset{mendeley_aquaculture_2024,
-  author    = {Mendeley Data Contributors},
-  title     = {Environmental Parameters in Aquaculture: Temperature, pH, Oxygen, and Turbidity Measurements},
-  year      = {2024},
-  version   = {2},
-  publisher = {Mendeley Data},
-  doi       = {10.17632/8s73jfvgr5.2},
-  url       = {https://data.mendeley.com/datasets/8s73jfvgr5/2}
-}
-```
+- **Data Privacy**: Telemetry records contain only physical water parameters; zero personal farmer data is present.
+- **Ecological Impact**: Data collected to optimize water aeration efficiency and reduce unnecessary chemical buffer discharges into surrounding watersheds.

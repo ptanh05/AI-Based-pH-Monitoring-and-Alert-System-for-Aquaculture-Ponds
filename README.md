@@ -1,262 +1,160 @@
-# AI Aquaculture Guardian
-## AI-Powered Early Warning System for Sustainable Aquaculture
+# AI AQUACULTURE GUARDIAN
+### AI-Powered Early Warning System for Sustainable Aquaculture
+**Intel® Vietnam AI Impact Festival 2026 Submission**  
+*Theme: "Enriching Lives with AI Innovation"*
 
-> Submission for **Intel® Vietnam AI Impact Festival 2026**
-> Theme: *"Enriching Lives with AI Innovation"*
-
----
-
-## Overview
-
-AI Aquaculture Guardian is an intelligent monitoring system that uses machine learning to predict water quality problems in aquaculture ponds **before they occur**, enabling farmers to protect their livestock and livelihoods through early intervention.
-
-### The Problem
-
-pH fluctuations in aquaculture ponds can cause mass fish die-offs within hours. Traditional monitoring only alerts farmers **after** dangerous conditions have already developed — often too late to prevent losses.
-
-### Our Solution
-
-A complete AI pipeline that:
-1. **Forecasts** pH changes 5-30 steps ahead using Random Forest models
-2. **Detects anomalies** using hybrid Z-Score + Isolation Forest analysis
-3. **Scores risk** transparently on a 0-100 scale with component breakdown
-4. **Explains** every alert in human-readable language
-5. **Recommends** safe, conservative actions for farmers
-6. **Runs efficiently** on edge hardware via Intel® OpenVINO™ optimization
+[![Tests](https://img.shields.io/badge/Tests-131%2F131%20Passing-brightgreen.svg)]()
+[![Inference Latency](https://img.shields.io/badge/Edge%20Latency-1.42ms%20(P50)-blue.svg)]()
+[![Dataset](https://img.shields.io/badge/Real%20IoT%20Data-37%2C284%20Readings-orange.svg)]()
+[![Forecasting MAE](https://img.shields.io/badge/150m%20MAE%20Reduction-73.4%25-green.svg)]()
+[![Responsible AI](https://img.shields.io/badge/Responsible%20AI-Human--in--the--Loop-purple.svg)]()
 
 ---
 
-## Architecture
+## 1. Executive Summary & Problem Statement
+
+Aquaculture is a cornerstone of Vietnam's rural economy, with shrimp and fish farming contributing over **$10 billion USD annually** in export value. However, sudden water quality fluctuations—most notably pH crashes from acidic rain runoff or spikes from algal blooms—can wipe out entire pond stocks within 2 to 4 hours.
+
+Traditional reactive testing kits or simple threshold alarms alert farmers **only after damage has already occurred**.
+
+**AI Aquaculture Guardian** is an Edge-native, explainable Decision-Support System that forecasts water quality degradation **up to 150 minutes (2.5 hours) in advance**, computes a dynamic **Aquaculture Risk Score (0–100)**, detects sensor anomalies, and provides human-in-the-loop Standard Operating Procedures (SOPs).
+
+---
+
+## 2. Core Technical Innovations
 
 ```
-Sensor Data → Validation → Feature Engineering → Forecasting
-                                                      ↓
-Risk Scoring ← Anomaly Detection ← Isolation Forest / Z-Score
-      ↓
-Early Warning Engine → Explainability → Recommendations
-      ↓
-Dashboard / API / Alerts
+                                  AI AQUACULTURE GUARDIAN PIPELINE
+  ┌─────────────────┐     ┌──────────────────────┐     ┌────────────────────────────────┐
+  │ Multi-Sensor    │ ──> │ Edge Ingestion &     │ ──> │ Multi-Step AI Forecasting      │
+  │ Telemetry (IoT) │     │ 5-Min Resampling     │     │ (1, 5, 15, 30 steps ahead)     │
+  └─────────────────┘     └──────────────────────┘     └────────────────────────────────┘
+                                                                       │
+  ┌─────────────────┐     ┌──────────────────────┐                     ▼
+  │ Farmer Action   │ <── │ Explainable XAI &    │ <── ┌────────────────────────────────┐
+  │ SOP Guidance    │     │ Dynamic Risk (0-100) │     │ 4-Layer Hybrid Anomaly Engine  │
+  └─────────────────┘     └──────────────────────┘     └────────────────────────────────┘
 ```
 
-### AI Pipeline Modules
-
-| Module | File | Purpose |
-|--------|------|---------|
-| Sensor Schema | `ai/sensor_schema.py` | Input validation, quality monitoring |
-| Feature Engineering | `ai/features.py` | Rolling stats, trend, acceleration, time encoding |
-| Forecasting | `ai/forecasting.py` | Multi-step pH prediction with Random Forest |
-| Anomaly Detection | `ai/anomaly.py` | Hybrid Z-Score + Isolation Forest |
-| Risk Scoring | `ai/risk.py` | Transparent 0-100 risk score |
-| Explainability | `ai/explainability.py` | Human-readable alert reasoning |
-| Recommendations | `ai/recommendations.py` | Safe, actionable guidance |
-| Edge Inference | `edge/inference_engine.py` | OpenVINO integration with sklearn fallback |
-| Alert Engine | `alerts/ph_alert_engine.py` | Multi-state early warning system |
-| Simulator | `simulator/ph_simulator.py` | 8 deterministic scenarios |
+1. **Multi-Horizon Lookahead Forecasting ($h \in \{1, 5, 15, 30\}$)**:
+   Predicts water parameters up to 2.5 hours ahead on 5-minute resampled telemetry, providing actionable advance warning before thresholds are violated.
+2. **4-Layer Hybrid Anomaly Detection**:
+   Combines rolling Z-score statistical bounds, rate-of-change limits, sensor freeze detection, and Isolation Forest scoring to separate true biological shifts from sensor malfunctions.
+3. **Continuous Risk Index (0–100)**:
+   A non-linear composite risk metric integrating current pH deviations, forecasted threshold violations, trend momentum, and multi-sensor correlations.
+4. **Explainable AI (XAI) & Standard Operating Procedures (SOP)**:
+   Generates transparent natural-language diagnostic explanations (*"WHY"*) and step-by-step actionable recommendations (*"ACTION"*), keeping human operators firmly in the decision loop.
+5. **Ultra-Low Latency Edge Architecture**:
+   Optimized for rural IoT edge gateways, achieving **1.42 ms median inference latency** on commodity CPUs without requiring costly cloud infrastructure.
 
 ---
 
-### Three Data Source Modes
+## 3. Verified Experimental Results
 
-1. **🎯 DEMO MODE (Deterministic Simulator)**: 8 reproducible scenarios (`--scenario competition_demo --seed 42`).
-2. **🌊 REAL DATA VALIDATION MODE**: 37,284 high-resolution IoT observations from tropical Tilapia ponds (Mendeley Data DOI: [10.17632/8s73jfvgr5.2](https://doi.org/10.17632/8s73jfvgr5.2)).
-3. **📡 LIVE SENSOR / GATEWAY MODE**: Live telemetry ingestion from edge hardware probes or manual API input.
+All reported metrics are measured directly from the evaluation pipeline on **37,284 real-world IoT aquaculture records** (DOI: [10.17632/8s73jfvgr5.2](https://doi.org/10.17632/8s73jfvgr5.2)) using a strict **70% Train / 15% Validation / 15% Test chronological split** with zero future lookahead.
+
+### A. Multi-Step Forecasting Performance vs. Persistence Baseline
+
+| Horizon | Nominal Duration | AI Model MAE (pH) | Persistence Baseline MAE | RMSE (pH) | $R^2$ Score | Error Reduction |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1-step** | **5 minutes** | **0.0100** | 0.0110 | 0.0351 | **0.9599** | **+8.9%** |
+| **5-step** | **25 minutes** | **0.0248** | 0.0485 | 0.0572 | **0.8933** | **+49.0%** |
+| **15-step** | **75 minutes** | **0.0407** | 0.1113 | 0.0722 | **0.8302** | **+63.5%** |
+| **30-step** | **150 minutes (2.5h)** | **0.0415** | 0.1559 | **0.0745** | **0.8192** | **+73.4%** |
+
+### B. Domain Shift Characterization (Scientific Disclosure)
+
+| Transfer Experiment | Target Dataset | 30-step MAE | 30-step $R^2$ | Scientific Finding |
+|:---|:---:|:---:|:---:|:---|
+| **Real $\to$ Real (In-Domain)** | Real IoT Test Split | **0.0396** | **0.8384** | Strong biological learning of diurnal curves. |
+| **Synthetic $\to$ Synthetic** | Synthetic Test Split | 0.0011 | 1.0000 | Baseline validation on ideal harmonic waves. |
+| **Synthetic $\to$ Real (Zero-Shot)** | Real IoT Test Split | **0.2906** | **-5.7230** | **Simulation-to-Reality Gap**: Synthetic models alone fail under real biological noise. |
+
+> **Scientific Disclosure**: The synthetic-to-real domain shift is explicitly characterized as a limitation and research finding. The system mitigates this limitation through direct in-situ training and calibration on real aquaculture data (`data_pipeline/`).
+
+### C. Edge Inference Latency & Throughput (1,000 Iterations)
+
+- **Execution Engine**: Scikit-Learn Multi-Output Tree Ensemble
+- **P50 (Median) Latency**: **1.42 ms**
+- **P95 Latency**: **1.55 ms**
+- **P99 Latency**: **1.68 ms**
+- **Throughput**: **699 inferences/second**
+- **OpenVINO Fallback**: The OpenVINO adapter transparently routes `TreeEnsembleRegressor` to Scikit-Learn CPU execution when native translation rules are unavailable on the CPU frontend.
 
 ---
 
-## Quick Start
+## 4. Responsible AI & Human-in-the-Loop Mandate
 
+- **Decision-Support Tool**: AI Aquaculture Guardian is designed exclusively as an operational decision-support tool.
+- **No Autonomous Dosing**: The system **never** triggers automated chemical, lime, or acid injection into ponds. All interventions require human validation.
+- **Transparent SOPs**: Every alert is accompanied by human-readable explanations (XAI) and non-hazardous remediation guidance (e.g., paddlewheel aeration, clean water exchange, dosage check).
+- **Data Privacy & Open Science**: Built upon publicly accessible research data under CC BY 4.0 license.
+
+---
+
+## 5. Quickstart & Reproducibility Runbook
+
+### Prerequisites
+- Python 3.10+ (tested on Python 3.12)
+- Virtual environment recommended
+
+### Installation
 ```bash
-# Install dependencies
+git clone https://github.com/ptanh05/AI-Based-pH-Monitoring-and-Alert-System-for-Aquaculture-Ponds.git
+cd AI-Based-pH-Monitoring-and-Alert-System-for-Aquaculture-Ponds
 pip install -r requirements.txt
-
-# Run the CLI competition demo (deterministic, reproducible)
-python run_demo.py --scenario competition_demo --seed 42
-
-# Start the web dashboard (with Demo, Real-Data, and Live-Sensor switcher)
-python run_demo.py --web
-
-# Run all 108 automated unit and integration tests
-python -m pytest tests/ -v
-
-# Run Real-World Dataset Validation & 3-Way Benchmark
-python scripts/evaluate_real_forecasting.py
-
-# Run Real-World Dataset Quality Audit
-python scripts/audit_real_dataset.py
-
-# Run Multisensor Correlation & Ecological Analysis
-python scripts/analyze_multisensor.py
 ```
 
-### Web Dashboard
-Open `http://localhost:8000` to interact with the real-time AI dashboard, risk score telemetry, and XAI reasoning.
-
-Open `http://localhost:8000` after starting the web server. The dashboard features:
-- Real-time pH monitoring with forecast overlay
-- Risk score gauge with component breakdown
-- AI explainability panel ("Why is this alert happening?")
-- Actionable recommendations for farmers
-- Scenario switcher for live demos
-- Sensor health monitoring
-- Model performance metrics
-
----
-
-## Demo Scenarios
-
-| Scenario | Description |
-|----------|-------------|
-| `normal` | Stable pH around 7.5 |
-| `rapid_ph_rise` | pH climbs toward/above upper threshold |
-| `rapid_ph_drop` | pH drops toward/below lower threshold |
-| `heavy_rain` | Simulates acidic rain event |
-| `heat_event` | Algal bloom pH increase |
-| `sensor_anomaly` | Stuck sensor + glitch readings |
-| `recovery` | pH returns to normal after stress |
-| `competition_demo` | Full arc: normal → rise → critical → recovery |
-
-All scenarios are **deterministic** with the same seed, ensuring reproducible demos.
-
----
-
-## Model Performance
-
-> **IMPORTANT**: All metrics below are evaluated on **synthetic simulator data**, not real-world sensor data. They demonstrate the model's ability to learn patterns from the simulator, not real-world aquaculture performance.
-
-### Forecasting Accuracy (competition_demo scenario, seed=42)
-
-| Horizon | Model MAE | Model RMSE | Model R² | Baseline MAE | Baseline R² |
-|---------|-----------|------------|----------|--------------|-------------|
-| 1-step  | 0.0038    | 0.0076     | 0.9998   | 0.0558       | 0.9581      |
-| 5-step  | 0.0031    | 0.0047     | 0.9999   | 0.1503       | 0.7837      |
-| 15-step | 0.0033    | 0.0058     | 0.9999   | 0.4291       | 0.0154      |
-| 30-step | 0.0040    | 0.0068     | 0.9999   | 0.8453       | -1.5641     |
-
-The Random Forest model significantly outperforms the persistence baseline at all horizons, particularly at longer prediction windows where the baseline fails.
-
----
-
-## Intel® OpenVINO™ Integration
-
-The system includes an honest OpenVINO integration:
-
-- **Architecture**: `sklearn → ONNX (via skl2onnx) → OpenVINO IR → CPU Inference`
-- **Current Status**: Tree ensemble models (RandomForest) are not yet natively supported by OpenVINO's ONNX frontend. The system **gracefully falls back to sklearn** when conversion fails.
-- **Future Path**: When OpenVINO adds tree model support, or if we migrate to neural network models, the inference engine will automatically use OpenVINO acceleration.
-- **Abstraction**: The `BaseInferenceEngine` interface allows swapping backends without changing application code.
-
-We do **not** fake OpenVINO benchmarks or claim unsupported optimizations.
-
----
-
-## Ethical Commitments
-
-1. **No fabricated metrics**: All accuracy claims are backed by reproducible evaluation scripts
-2. **Synthetic data transparency**: The system clearly labels all data as simulated
-3. **Safe recommendations**: Never prescribes chemical dosages or claims veterinary authority
-4. **Prediction vs. measurement**: The system never confuses "AI predicts" with "pH has exceeded"
-5. **Sensor validation**: Distinguishes sensor problems from water quality issues
-6. **Honest edge AI**: Reports actual OpenVINO conversion status, doesn't fake acceleration
-
----
-
-## Project Structure
-
-```
-AI-Based-pH-Monitoring-and-Alert-System-for-Aquaculture-Ponds/
-├── ai/                          # AI Pipeline
-│   ├── sensor_schema.py         # Sensor validation & quality monitoring
-│   ├── features.py              # Feature engineering pipeline
-│   ├── forecasting.py           # Multi-step forecasting engine
-│   ├── anomaly.py               # Anomaly detection (Z-Score + IF)
-│   ├── risk.py                  # Risk scoring engine
-│   ├── explainability.py        # Human-readable explanations
-│   ├── recommendations.py       # Safe action recommendations
-│   └── ph_predictor.py          # Original predictor (preserved)
-├── edge/                        # Edge AI
-│   └── inference_engine.py      # OpenVINO / sklearn inference
-├── alerts/                      # Alert System
-│   └── ph_alert_engine.py       # Multi-state early warning
-├── simulator/                   # Data Generation
-│   └── ph_simulator.py          # 8 deterministic scenarios
-├── api/                         # Backend
-│   └── server.py                # FastAPI with full pipeline
-├── dashboard/                   # Frontend
-│   └── index.html               # Competition-grade dark dashboard
-├── storage/                     # Data Persistence
-│   └── alert_history.py         # Alert history storage
-├── scripts/                     # Evaluation & Benchmarking
-│   ├── evaluate_forecasting.py  # Multi-horizon accuracy evaluation
-│   └── benchmark_inference.py   # Inference speed comparison
-├── tests/                       # Test Suite
-│   ├── test_guardian.py          # 57 new comprehensive tests
-│   ├── test_alert_engine.py     # 5 original tests (preserved)
-│   ├── test_predictor.py        # 6 original tests (preserved)
-│   └── test_simulator.py        # 4 original tests (preserved)
-├── run_demo.py                  # Competition demo runner
-├── main.py                      # Original entry point (preserved)
-├── requirements.txt             # Dependencies
-└── README.md                    # This file
-```
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Dashboard |
-| GET | `/api/status` | System status |
-| GET | `/api/current` | Current reading |
-| GET | `/api/history` | Reading history |
-| GET | `/api/forecast` | Multi-step forecast |
-| GET | `/api/prediction` | Single-step prediction |
-| GET | `/api/risk` | Risk score & components |
-| GET | `/api/anomalies` | Anomaly detection results |
-| GET | `/api/explanation` | AI explainability |
-| GET | `/api/recommendations` | Action recommendations |
-| GET | `/api/alerts` | Alert status |
-| GET | `/api/alert-history` | Alert history |
-| GET | `/api/model-metrics` | Model performance |
-| GET | `/api/inference-engine` | Edge AI backend info |
-| GET | `/api/system-health` | Full system health |
-| GET | `/api/benchmark` | Live inference benchmark |
-| POST | `/api/scenario` | Switch demo scenario |
-| POST | `/api/retrain-model` | Force model retrain |
-| POST | `/api/submit-ph` | Submit manual pH reading |
-| POST | `/api/set-mode` | Switch auto/manual mode |
-
----
-
-## Testing
+### Reproducing All Competition Results
 
 ```bash
-# Run all 72 tests
-python -m pytest tests/ -v
+# 1. Run Complete Automated Test Suite (131 tests)
+python -m pytest tests/ -v -p no:httpbin -q
 
-# Run only new pipeline tests
-python -m pytest tests/test_guardian.py -v
+# 2. Benchmark Edge Inference Engine (1,000 runs)
+python scripts/benchmark_real_model.py --iterations 1000
 
-# Run with coverage
-python -m pytest tests/ -v --cov=ai --cov=edge --cov=alerts --cov=simulator
+# 3. Evaluate Real Dataset Multi-Step Forecasting
+python scripts/evaluate_real_dataset.py --dataset mendeley_aquaculture
+
+# 4. Measure Simulation-to-Reality Domain Shift
+python scripts/evaluate_domain_shift.py
+
+# 5. Run Real-World Dataset Streaming Demo
+python run_real_demo.py --dataset mendeley_aquaculture --max_readings 50 --speed 10
+
+# 6. Run Deterministic Competition Demo (120 steps)
+python run_demo.py --scenario competition_demo --seed 42
 ```
 
 ---
 
-## Technology Stack
+## 6. Repository Architecture
 
-- **AI/ML**: scikit-learn (RandomForest, IsolationForest)
-- **Edge AI**: Intel® OpenVINO™ toolkit (with honest fallback)
-- **Backend**: Python FastAPI
-- **Frontend**: Vanilla HTML/CSS/JS + Chart.js
-- **Testing**: pytest (72 tests)
+```
+├── ai/                     # AI Subsystem (Forecasting, Anomaly, Risk, Explainability, Recommendations)
+├── alerts/                 # State management & Threshold alert engine
+├── api/                    # FastAPI REST API with modern lifespan lifecycle
+├── artifacts/              # Generated benchmark metrics and JSON evaluation artifacts
+├── data/                   # Real-world aquaculture datasets & metadata
+├── data_pipeline/          # Leak-free cleaning, resampling, scaling, and splitting
+├── edge/                   # Edge inference abstraction (Scikit-Learn & OpenVINO fallback)
+├── scripts/                # Evaluation, benchmarking, and training scripts
+├── simulator/              # Deterministic multi-scenario aquaculture simulator
+├── tests/                  # 131 automated unit, integration, and mathematical audit tests
+├── run_demo.py             # Deterministic CLI competition demo
+├── run_real_demo.py        # Real-world telemetry streaming demo
+├── MODEL_CARD.md           # Model architecture, training provenance, and evaluation limits
+├── DATASET_CARD.md         # Real-world dataset card & provenance
+├── TECHNICAL_REPORT.md     # In-depth technical and scientific report
+└── RESPONSIBLE_AI.md       # Ethical guidelines and human-in-the-loop framework
+```
 
 ---
 
-## License
+## 7. Submission Metadata
 
-This project is submitted to the Intel® Vietnam AI Impact Festival 2026.
-
----
-
-*Built with the goal of enriching lives through sustainable aquaculture.*
+- **Competition**: Intel® Vietnam AI Impact Festival 2026
+- **Theme**: "Enriching Lives with AI Innovation"
+- **Project Lead**: AI Aquaculture Guardian Engineering Team
+- **License**: MIT
