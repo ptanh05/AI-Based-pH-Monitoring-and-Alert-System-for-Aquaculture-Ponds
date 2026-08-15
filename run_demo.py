@@ -15,6 +15,7 @@ import sys
 import os
 import argparse
 import time
+import numpy as np
 from datetime import datetime
 
 # Ensure project root is on path
@@ -61,15 +62,25 @@ def run_cli_demo(scenario: str, seed: int, max_readings: int, interval: float):
     recommender = RecommendationEngine()
     alert_engine = PHAlertEngine(consecutive_count=1)
 
+    online_actuals = []
+    online_predictions = []
+    last_predicted = None
+
     for i, (ts, ph) in enumerate(
         sim.stream_readings(interval_seconds=interval, max_readings=max_readings)
     ):
+        # Track 1-step forecast accuracy if previous prediction was made while trained
+        if last_predicted is not None and forecaster.is_trained:
+            online_actuals.append(ph)
+            online_predictions.append(last_predicted)
+
         # Pipeline
         forecaster.add_reading(ph, ts)
         anomaly.add_reading(ph)
 
         hour = ts.hour + ts.minute / 60.0
         predicted, trained = forecaster.predict_single(hour)
+        last_predicted = predicted
         anomaly_result = anomaly.detect(ph)
 
         values = forecaster.history
@@ -126,10 +137,14 @@ def run_cli_demo(scenario: str, seed: int, max_readings: int, interval: float):
     print()
     print("=" * 70)
     print("  Demo Complete")
-    print(f"  Model trained: {forecaster.is_trained}")
+    print(f"  Model trained: {forecaster.is_trained} ({forecaster.total_retrains} calibrations)")
+    if online_actuals:
+        online_mae = float(np.mean(np.abs(np.array(online_actuals) - np.array(online_predictions))))
+        online_rmse = float(np.sqrt(np.mean((np.array(online_actuals) - np.array(online_predictions)) ** 2)))
+        print(f"  Online 1-Step Forecast (t -> t+1):  MAE: {online_mae:.4f}  RMSE: {online_rmse:.4f}")
     if forecaster.get_model_info().get("train_metrics"):
         m = forecaster.get_model_info()["train_metrics"]
-        print(f"  MAE: {m['mae']:.4f}  RMSE: {m['rmse']:.4f}  R2: {m['r2']:.4f}")
+        print(f"  Latest Model Checkpoint (Holdout):  MAE: {m['mae']:.4f}  RMSE: {m['rmse']:.4f}  R2: {m['r2']:.4f}")
     print("=" * 70)
 
 

@@ -1,0 +1,51 @@
+{
+  "dataset_name": "mendeley_aquaculture",
+  "source": "Mendeley Data",
+  "doi": "10.17632/8s73jfvgr5.2",
+  "horizons": {
+    "1_step": {
+      "steps": 1,
+      "duration_minutes": 5,
+      "model_mae": 0.010036,
+      "model_rmse": 0.035079,
+      "model_r2": 0.959912,
+      "baseline_mae": 0.01102,
+      "baseline_rmse": 0.040228,
+      "baseline_r2": 0.94728,
+      "improvement_pct": 8.93
+    },
+    "5_step": {
+      "steps": 5,
+      "duration_minutes": 25,
+      "model_mae": 0.024763,
+      "model_rmse": 0.057238,
+      "model_r2": 0.893267,
+      "baseline_mae": 0.048517,
+      "baseline_rmse": 0.102731,
+      "baseline_r2": 0.656184,
+      "improvement_pct": 48.96
+    },
+    "15_step": {
+      "steps": 15,
+      "duration_minutes": 75,
+      "model_mae": 0.040681,
+      "model_rmse": 0.072191,
+      "model_r2": 0.830248,
+      "baseline_mae": 0.111336,
+      "baseline_rmse": 0.185229,
+      "baseline_r2": -0.117559,
+      "improvement_pct": 63.46
+    },
+    "30_step": {
+      "steps": 30,
+      "duration_minutes": 150,
+      "model_mae": 0.041505,
+      "model_rmse": 0.074502,
+      "model_r2": 0.819235,
+      "baseline_mae": 0.155939,
+      "baseline_rmse": 0.237693,
+      "baseline_r2": -0.83999,
+      "improvement_pct": 73.38
+    }
+  }
+}

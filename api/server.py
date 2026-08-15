@@ -13,6 +13,7 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
+from contextlib import asynccontextmanager
 import threading
 import time
 import sys
@@ -152,11 +153,24 @@ class ManualPHInput(BaseModel):
     timestamp: Optional[str] = None
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global system_thread
+    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
+    system_thread.start()
+    print("[AI Aquaculture Guardian] Monitoring started")
+    yield
+    global is_running
+    is_running = False
+    print("[AI Aquaculture Guardian] Monitoring stopped")
+
+
 # ── FastAPI App ──
 app = FastAPI(
     title="AI Aquaculture Guardian API",
     description="AI-powered Early Warning System for Sustainable Aquaculture",
     version="2.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -372,19 +386,6 @@ def run_monitoring_system():
         is_running = False
 
 
-# ── Lifecycle ──
-@app.on_event("startup")
-async def startup_event():
-    global system_thread
-    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
-    system_thread.start()
-    print("[AI Aquaculture Guardian] Monitoring started")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    global is_running
-    is_running = False
-    print("[AI Aquaculture Guardian] Monitoring stopped")
 
 
 # ══════════════════════════════════════════════════

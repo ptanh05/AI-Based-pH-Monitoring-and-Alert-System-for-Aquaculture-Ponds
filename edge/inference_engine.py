@@ -55,38 +55,65 @@ class BaseInferenceEngine(ABC):
         """Return engine metadata."""
         ...
 
-    def benchmark(self, X: np.ndarray, n_iterations: int = 100) -> Dict:
+    def benchmark(self, X: np.ndarray, n_iterations: int = 100, num_runs: Optional[int] = None) -> Dict:
         """
         Benchmark inference latency.
 
         Returns latency stats (P50, P95, P99, mean) in milliseconds.
         """
+        runs = num_runs if num_runs is not None else n_iterations
         latencies = []
-        for _ in range(n_iterations):
+        if X.ndim == 1:
+            X_in = X.reshape(1, -1)
+        else:
+            X_in = X
+
+        for _ in range(runs):
             start = time.perf_counter()
-            self.predict(X)
+            self.predict(X_in)
             end = time.perf_counter()
             latencies.append((end - start) * 1000)  # ms
 
         latencies.sort()
+        mean_v = round(float(np.mean(latencies)), 4)
+        p50_v = round(float(np.percentile(latencies, 50)), 4)
+        p95_v = round(float(np.percentile(latencies, 95)), 4)
+        p99_v = round(float(np.percentile(latencies, 99)), 4)
+        min_v = round(float(min(latencies)), 4)
+        max_v = round(float(max(latencies)), 4)
+        fps_v = round(runs / (sum(latencies) / 1000) if sum(latencies) > 0 else 0.0, 2)
+
         return {
-            "n_iterations": n_iterations,
-            "mean_ms": round(float(np.mean(latencies)), 4),
-            "p50_ms": round(float(np.percentile(latencies, 50)), 4),
-            "p95_ms": round(float(np.percentile(latencies, 95)), 4),
-            "p99_ms": round(float(np.percentile(latencies, 99)), 4),
-            "min_ms": round(float(min(latencies)), 4),
-            "max_ms": round(float(max(latencies)), 4),
-            "throughput_per_sec": round(n_iterations / (sum(latencies) / 1000), 2),
+            "n_iterations": runs,
+            "mean_ms": mean_v,
+            "p50_ms": p50_v,
+            "p95_ms": p95_v,
+            "p99_ms": p99_v,
+            "min_ms": min_v,
+            "max_ms": max_v,
+            "throughput_per_sec": fps_v,
+            # Backward-compatible aliases:
+            "mean_latency_ms": mean_v,
+            "p50_latency_ms": p50_v,
+            "p95_latency_ms": p95_v,
+            "p99_latency_ms": p99_v,
+            "throughput_fps": fps_v,
         }
 
 
 class SklearnInferenceEngine(BaseInferenceEngine):
     """Default inference backend using scikit-learn."""
 
-    def __init__(self):
+    def __init__(self, model=None, n_features: int = 0):
         self._model = None
         self._n_features = 0
+        if model is not None:
+            nf = n_features or getattr(model, "n_features_in_", 0)
+            self.load_model(model, nf)
+
+    @property
+    def engine_type(self) -> str:
+        return "sklearn"
 
     def load_model(self, model, n_features: int) -> bool:
         if model is None:
@@ -194,6 +221,10 @@ class OpenVINOInferenceEngine(BaseInferenceEngine):
         else:
             return self._fallback_sklearn.predict(X)
 
+    @property
+    def engine_type(self) -> str:
+        return "openvino" if self._conversion_success else "sklearn_fallback"
+
     def get_info(self) -> Dict:
         info = {
             "backend": "openvino" if self._conversion_success else "sklearn_fallback",
@@ -214,16 +245,31 @@ class OpenVINOInferenceEngine(BaseInferenceEngine):
         return info
 
 
-def create_inference_engine(prefer_openvino: bool = True) -> BaseInferenceEngine:
+def create_inference_engine(
+    model=None, prefer_openvino: bool = True, n_features: int = 0
+) -> BaseInferenceEngine:
     """
     Factory function: create the best available inference engine.
 
     Args:
+        model: Optional model to load immediately.
         prefer_openvino: If True and OpenVINO is available, use it.
+        n_features: Feature dimension for model compilation.
 
     Returns:
         An inference engine instance.
     """
+    if isinstance(model, bool):
+        prefer_openvino = model
+        model = None
+
     if prefer_openvino and OPENVINO_AVAILABLE and SKL2ONNX_AVAILABLE:
-        return OpenVINOInferenceEngine()
-    return SklearnInferenceEngine()
+        engine = OpenVINOInferenceEngine()
+    else:
+        engine = SklearnInferenceEngine()
+
+    if model is not None:
+        nf = n_features or getattr(model, "n_features_in_", 0)
+        engine.load_model(model, nf)
+
+    return engine

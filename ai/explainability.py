@@ -127,7 +127,10 @@ class ExplainabilityEngine:
 
         # ── Summary ──
         if risk_total <= 20:
-            summary = "Water quality conditions appear normal."
+            if anomaly_result.get("is_anomaly", False):
+                summary = "Minor sensor or statistical anomaly detected within nominal pH range. Inspect sensor."
+            else:
+                summary = "Water quality conditions appear normal."
         elif risk_total <= 40:
             summary = "Minor water quality changes detected. Continue monitoring."
         elif risk_total <= 60:

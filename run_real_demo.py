@@ -117,10 +117,12 @@ def run_real_demo(dataset_name: str = "mendeley_aquaculture", max_readings: int 
         risk_level = risk_res["level"]
 
         # Status badge
-        if risk_score > 60 or anom_res["is_anomaly"]:
+        if risk_score > 60 or ph_val < 7.0 or ph_val > 8.5:
             status_tag = "[ !ALERT! ]"
         elif risk_score > 30:
             status_tag = "[  WARN   ]"
+        elif anom_res["is_anomaly"]:
+            status_tag = "[ ANOMALY ]"
         else:
             status_tag = "[   OK    ]"
 
@@ -131,8 +133,8 @@ def run_real_demo(dataset_name: str = "mendeley_aquaculture", max_readings: int 
             f"  {count:>3d}  | {ts.strftime('%Y-%m-%d %H:%M:%S')} | {ph_val:>6.2f} | {temp:>5.1f}°C | {do:>5.1f}mg | {pred_ph:>8.2f} | {risk_score:>5.1f} [{risk_bar[:8]}] | {status_tag}"
         )
 
-        # If elevated risk or anomaly, print explainability and actionable recommendations
-        if risk_level in ["ELEVATED", "HIGH", "CRITICAL"] or anom_res["is_anomaly"]:
+        # If elevated risk, warning, or anomaly, print explainability and actionable recommendations
+        if status_tag != "[   OK    ]":
             exp = explainer.explain(
                 current_ph=ph_val,
                 predicted_ph=pred_ph,
@@ -149,8 +151,12 @@ def run_real_demo(dataset_name: str = "mendeley_aquaculture", max_readings: int 
                 anomaly_result=anom_res,
             )
             print(f"        🔍 WHY: {exp['summary']}")
+            if exp["reasons"] and exp["reasons"][0] != "No significant issues detected.":
+                print(f"           - {exp['reasons'][0]}")
             if recs["actions"]:
-                print(f"        💡 ACTION: {recs['actions'][0]['text']}")
+                # Pick the most relevant action (anomaly action if low risk, or top priority action)
+                action_text = recs["actions"][-1]["text"] if (anom_res["is_anomaly"] and risk_level == "LOW") else recs["actions"][0]["text"]
+                print(f"        💡 ACTION: {action_text}")
 
         time.sleep(sleep_interval)
 

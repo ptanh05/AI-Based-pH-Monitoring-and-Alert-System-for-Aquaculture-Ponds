@@ -342,5 +342,9 @@ class ForecastingEngine:
         return self._is_trained
 
     @property
+    def total_retrains(self) -> int:
+        return self._total_retrains
+
+    @property
     def history(self) -> list:
         return list(self._history)

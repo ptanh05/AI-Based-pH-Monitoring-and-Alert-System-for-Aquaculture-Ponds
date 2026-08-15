@@ -1,0 +1,37 @@
+{
+  "benchmark_timestamp": "2026-08-15T14:55:00Z",
+  "iterations": 1000,
+  "scikit_learn_benchmark": {
+    "n_iterations": 1000,
+    "mean_ms": 1.6114,
+    "p50_ms": 1.4812,
+    "p95_ms": 2.1293,
+    "p99_ms": 2.8119,
+    "min_ms": 1.4131,
+    "max_ms": 3.2885,
+    "throughput_per_sec": 620.58,
+    "mean_latency_ms": 1.6114,
+    "p50_latency_ms": 1.4812,
+    "p95_latency_ms": 2.1293,
+    "p99_latency_ms": 2.8119,
+    "throughput_fps": 620.58
+  },
+  "openvino_benchmark": {
+    "n_iterations": 1000,
+    "mean_ms": 2.6017,
+    "p50_ms": 2.6026,
+    "p95_ms": 3.266,
+    "p99_ms": 4.1224,
+    "min_ms": 1.5107,
+    "max_ms": 5.4077,
+    "throughput_per_sec": 384.36,
+    "mean_latency_ms": 2.6017,
+    "p50_latency_ms": 2.6026,
+    "p95_latency_ms": 3.266,
+    "p99_latency_ms": 4.1224,
+    "throughput_fps": 384.36
+  },
+  "active_backend": "sklearn_fallback",
+  "openvino_installed": true,
+  "hardware_readiness": "EDGE_COMPLIANT (< 10ms per inference requirement met)"
+}
