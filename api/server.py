@@ -158,22 +158,52 @@ class ManualPHInput(BaseModel):
     timestamp: Optional[str] = None
 
 
+IS_SERVERLESS = bool(
+    os.environ.get("VERCEL")
+    or os.environ.get("VERCEL_ENV")
+    or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+)
+
+
+def step_serverless_simulation():
+    """Step simulation on-demand for serverless environments (Vercel) without background threads."""
+    global monitoring_system
+    if not monitoring_system or not use_simulator:
+        return
+    try:
+        ts, ph = monitoring_system.simulator.generate_reading()
+        process_ph_reading(ts, ph)
+    except Exception as e:
+        print(f"Serverless simulation step error: {e}")
+
+
 def ensure_system_initialized():
     global monitoring_system, recent_readings
     if monitoring_system is None:
         monitoring_system = PHMonitoringSystem()
     if not recent_readings:
-        ts = datetime.now()
-        process_ph_reading(ts, 7.5)
+        base_time = datetime.now() - timedelta(minutes=20)
+        for i in range(20):
+            ts = base_time + timedelta(minutes=i)
+            try:
+                _, ph = monitoring_system.simulator.generate_reading()
+                process_ph_reading(ts, ph)
+            except Exception:
+                process_ph_reading(ts, 7.5)
+    elif IS_SERVERLESS:
+        step_serverless_simulation()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global system_thread
     ensure_system_initialized()
-    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
-    system_thread.start()
-    print("[AI Aquaculture Guardian] Monitoring started")
+    if not IS_SERVERLESS:
+        system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
+        system_thread.start()
+        print("[AI Aquaculture Guardian] Background monitoring thread started")
+    else:
+        print("[AI Aquaculture Guardian] Serverless mode active (on-demand simulation)")
     yield
     global is_running
     is_running = False
@@ -417,6 +447,10 @@ async def root():
             return f.read()
     except FileNotFoundError:
         return "<html><body><h1>AI Aquaculture Guardian API</h1><p>Dashboard not found. Visit <a href='/docs'>/docs</a>.</p></body></html>"
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return HTMLResponse(content="", status_code=204)
 
 @app.get("/i18n.js")
 async def serve_i18n_js():
