@@ -40,6 +40,11 @@ def play_beep(duration_seconds: float = 2.0):
     except Exception:
         pass
 
+# ── Ensure Root Directory in sys.path for Vercel / Serverless Runtimes ──
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 # ── AI Pipeline Imports ──
 from simulator.ph_simulator import PHSimulator, Scenario
 from alerts.ph_alert_engine import PHAlertEngine, AlertStatus
