@@ -1,0 +1,13 @@
+# Vercel Deployment Exclusions
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+tests/
+artifacts/
+reports/
+*.md
+!README.md
+DEMO_*.md
+requirements-dev.txt

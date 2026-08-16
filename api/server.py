@@ -392,10 +392,13 @@ def run_monitoring_system():
 # API ENDPOINTS
 # ══════════════════════════════════════════════════
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 @app.get("/", response_class=HTMLResponse)
 async def root():
+    dash_path = os.path.join(BASE_DIR, "dashboard", "index.html")
     try:
-        with open("dashboard/index.html", "r", encoding="utf-8") as f:
+        with open(dash_path, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
         return "<html><body><h1>AI Aquaculture Guardian API</h1><p>Dashboard not found. Visit <a href='/docs'>/docs</a>.</p></body></html>"
@@ -403,7 +406,7 @@ async def root():
 @app.get("/i18n.js")
 async def serve_i18n_js():
     """Serve the i18n translation module for the dashboard."""
-    i18n_path = os.path.join("dashboard", "i18n.js")
+    i18n_path = os.path.join(BASE_DIR, "dashboard", "i18n.js")
     if os.path.exists(i18n_path):
         return FileResponse(i18n_path, media_type="application/javascript")
     raise HTTPException(status_code=404, detail="i18n.js not found")
