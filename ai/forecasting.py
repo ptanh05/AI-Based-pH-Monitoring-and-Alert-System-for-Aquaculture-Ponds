@@ -12,8 +12,34 @@ from typing import List, Tuple, Optional, Dict
 from datetime import datetime
 from collections import deque
 
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+try:
+    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+
+
+class SimpleNumpyLinearModel:
+    """Pure NumPy Linear Regression fallback when scikit-learn/scipy are not installed."""
+
+    def __init__(self):
+        self.coef_ = None
+        self.intercept_ = None
+        self.feature_importances_ = None
+
+    def fit(self, X: np.ndarray, y: np.ndarray):
+        X_design = np.c_[X, np.ones(len(X))]
+        coefs, _, _, _ = np.linalg.lstsq(X_design, y, rcond=None)
+        self.coef_ = coefs[:-1]
+        self.intercept_ = coefs[-1]
+        abs_coefs = np.abs(self.coef_)
+        total = np.sum(abs_coefs)
+        self.feature_importances_ = (abs_coefs / total) if total > 0 else np.ones(X.shape[1]) / X.shape[1]
+        return self
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        return np.dot(X, self.coef_) + self.intercept_
 
 from ai.features import FeatureEngineer
 
@@ -127,22 +153,30 @@ class ForecastingEngine:
         X_train, X_val = X[:split], X[split:]
         y_train, y_val = y[:split], y[split:]
 
-        self.model = RandomForestRegressor(
-            n_estimators=self.n_estimators,
-            max_depth=self.max_depth,
-            random_state=self.random_state,
-            n_jobs=-1,
-        )
-        self.model.fit(X_train, y_train)
+        if SKLEARN_AVAILABLE:
+            self.model = RandomForestRegressor(
+                n_estimators=self.n_estimators,
+                max_depth=self.max_depth,
+                random_state=self.random_state,
+                n_jobs=-1,
+            )
+            self.model.fit(X_train, y_train)
+        else:
+            self.model = SimpleNumpyLinearModel()
+            self.model.fit(X_train, y_train)
+
         self._is_trained = True
 
         # Feature importance
-        self._feature_importance = self.model.feature_importances_.tolist()
+        if hasattr(self.model, "feature_importances_") and self.model.feature_importances_ is not None:
+            self._feature_importance = list(self.model.feature_importances_)
+        else:
+            self._feature_importance = [1.0 / X.shape[1]] * X.shape[1]
 
         # Validation metrics
         y_pred = self.model.predict(X_val)
-        mae = float(mean_absolute_error(y_val, y_pred))
-        rmse = float(np.sqrt(mean_squared_error(y_val, y_pred)))
+        mae = float(np.mean(np.abs(y_val - y_pred)))
+        rmse = float(np.sqrt(np.mean((y_val - y_pred) ** 2)))
         ss_res = float(np.sum((y_val - y_pred) ** 2))
         ss_tot = float(np.sum((y_val - np.mean(y_val)) ** 2))
         r2 = float(1 - ss_res / ss_tot) if ss_tot > 0 else 0.0
@@ -321,7 +355,7 @@ class ForecastingEngine:
     def get_model_info(self) -> Dict:
         return {
             "is_trained": self._is_trained,
-            "model_type": "RandomForest" if self._is_trained else "PersistenceBaseline",
+            "model_type": type(self.model).__name__ if (self._is_trained and self.model) else "PersistenceBaseline",
             "history_size": len(self._history),
             "window_size": self.window_size,
             "train_metrics": self._train_metrics,
