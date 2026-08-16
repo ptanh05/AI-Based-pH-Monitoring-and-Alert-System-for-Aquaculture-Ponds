@@ -7,7 +7,7 @@ Risk → Early Warning → Explainability → Recommendations → Dashboard
 """
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
@@ -399,6 +399,14 @@ async def root():
             return f.read()
     except FileNotFoundError:
         return "<html><body><h1>AI Aquaculture Guardian API</h1><p>Dashboard not found. Visit <a href='/docs'>/docs</a>.</p></body></html>"
+
+@app.get("/i18n.js")
+async def serve_i18n_js():
+    """Serve the i18n translation module for the dashboard."""
+    i18n_path = os.path.join("dashboard", "i18n.js")
+    if os.path.exists(i18n_path):
+        return FileResponse(i18n_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="i18n.js not found")
 
 @app.get("/api/status")
 async def get_status():
