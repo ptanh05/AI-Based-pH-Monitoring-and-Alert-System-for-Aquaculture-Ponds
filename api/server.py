@@ -153,9 +153,19 @@ class ManualPHInput(BaseModel):
     timestamp: Optional[str] = None
 
 
+def ensure_system_initialized():
+    global monitoring_system, recent_readings
+    if monitoring_system is None:
+        monitoring_system = PHMonitoringSystem()
+    if not recent_readings:
+        ts = datetime.now()
+        process_ph_reading(ts, 7.5)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global system_thread
+    ensure_system_initialized()
     system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
     system_thread.start()
     print("[AI Aquaculture Guardian] Monitoring started")
@@ -413,8 +423,7 @@ async def serve_i18n_js():
 
 @app.get("/api/status")
 async def get_status():
-    if not monitoring_system:
-        raise HTTPException(status_code=503, detail="System not initialized")
+    ensure_system_initialized()
     return {
         "is_running": is_running,
         "total_readings": monitoring_system.reading_count,
@@ -430,6 +439,7 @@ async def get_status():
 
 @app.get("/api/current")
 async def get_current_reading():
+    ensure_system_initialized()
     if not recent_readings:
         raise HTTPException(status_code=404, detail="No readings available yet")
     return recent_readings[-1]

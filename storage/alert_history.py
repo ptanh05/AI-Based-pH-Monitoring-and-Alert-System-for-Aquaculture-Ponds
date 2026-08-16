@@ -17,32 +17,40 @@ class AlertHistory:
     Lưu trữ vào file JSON.
     """
     
-    def __init__(self, storage_file: str = "data/alert_history.json"):
+    def __init__(self, storage_file: Optional[str] = None):
         """
         Initialize alert history storage.
         
         Args:
             storage_file: Path to JSON file for storing alerts
         """
+        if storage_file is None:
+            if os.environ.get("VERCEL") or not os.access(".", os.W_OK):
+                import tempfile
+                storage_file = os.path.join(tempfile.gettempdir(), "alert_history.json")
+            else:
+                storage_file = "data/alert_history.json"
         self.storage_file = storage_file
         self.storage_path = Path(storage_file)
         
-        # Tạo thư mục nếu chưa có
-        self.storage_path.parent.mkdir(parents=True, exist_ok=True)
+        # Tạo thư mục nếu chưa có (catch PermissionError/OSError)
+        try:
+            self.storage_path.parent.mkdir(parents=True, exist_ok=True)
+        except (PermissionError, OSError):
+            pass
         
         # Load existing alerts
         self.alerts = self._load_alerts()
     
     def _load_alerts(self) -> List[Dict]:
         """Load alerts from JSON file."""
-        if not self.storage_path.exists():
-            return []
-        
         try:
+            if not self.storage_path.exists():
+                return []
             with open(self.storage_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 return data.get('alerts', [])
-        except (json.JSONDecodeError, IOError) as e:
+        except Exception as e:
             print(f"Warning: Could not load alert history: {e}")
             return []
     
@@ -56,8 +64,8 @@ class AlertHistory:
             }
             with open(self.storage_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-        except IOError as e:
-            print(f"Error saving alert history: {e}")
+        except Exception as e:
+            print(f"Warning: Could not save alert history: {e}")
     
     def add_alert(
         self,
