@@ -1,6 +1,10 @@
 # AI Aquaculture Guardian - Full Development & Testing Dependencies
 -r requirements.txt
 
+# Data Analysis & Excel (Optional for real dataset scripts)
+pandas>=2.0.0
+openpyxl>=3.1.0
+
 # Intel Edge AI Acceleration (Optional for local Intel benchmark)
 openvino>=2024.0.0
 skl2onnx>=1.16.0
