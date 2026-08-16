@@ -215,7 +215,7 @@ app = FastAPI(
     title="AI Aquaculture Guardian API",
     description="AI-powered Early Warning System for Sustainable Aquaculture",
     version="2.0.0",
-    lifespan=lifespan,
+    lifespan=None if IS_SERVERLESS else lifespan,
 )
 
 app.add_middleware(
@@ -440,6 +440,7 @@ def run_monitoring_system():
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/api/index", response_class=HTMLResponse)
 async def root():
     dash_path = os.path.join(BASE_DIR, "dashboard", "index.html")
     try:
