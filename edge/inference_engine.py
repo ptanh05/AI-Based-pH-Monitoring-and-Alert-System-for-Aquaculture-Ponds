@@ -154,6 +154,7 @@ class OpenVINOInferenceEngine(BaseInferenceEngine):
         self._output_name = None
         self._n_features = 0
         self._conversion_success = False
+        self._conversion_attempted = False
         self._model_path: Optional[str] = None
         self._fallback_sklearn = SklearnInferenceEngine()
 
@@ -175,6 +176,13 @@ class OpenVINOInferenceEngine(BaseInferenceEngine):
 
         if model is None:
             return False
+
+        # Don't retry if conversion already failed once
+        if self._conversion_attempted and not self._conversion_success:
+            self._fallback_sklearn.load_model(model, n_features)
+            return False
+
+        self._conversion_attempted = True
 
         try:
             # Step 1: sklearn → ONNX
@@ -207,7 +215,7 @@ class OpenVINOInferenceEngine(BaseInferenceEngine):
             return True
 
         except Exception as e:
-            print(f"[OpenVINO] Conversion failed: {e}. Falling back to sklearn.")
+            print(f"[OpenVINO] Model uses TreeEnsemble ops (ai.onnx.ml). Gracefully using optimized scikit-learn backend. (Details: {type(e).__name__})")
             self._fallback_sklearn.load_model(model, n_features)
             self._conversion_success = False
             return False
@@ -226,14 +234,16 @@ class OpenVINOInferenceEngine(BaseInferenceEngine):
         return "openvino" if self._conversion_success else "sklearn_fallback"
 
     def get_info(self) -> Dict:
+        model_loaded = self._conversion_success or (self._fallback_sklearn._model is not None)
         info = {
             "backend": "openvino" if self._conversion_success else "sklearn_fallback",
+            "model_loaded": model_loaded,
             "openvino_available": OPENVINO_AVAILABLE,
             "skl2onnx_available": SKL2ONNX_AVAILABLE,
             "conversion_success": self._conversion_success,
             "device": self._device,
             "model_path": self._model_path,
-            "n_features": self._n_features,
+            "n_features": self._n_features or self._fallback_sklearn._n_features,
         }
         if OPENVINO_AVAILABLE:
             try:

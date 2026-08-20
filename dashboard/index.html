@@ -25,8 +25,30 @@
             --text-muted: #64748b;
             --border: #1e2548;
             --glass: rgba(255,255,255,0.03);
+            --chart-grid: rgba(30,37,72,0.5);
+            --chart-tick: #64748b;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+        [data-theme="light"] {
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --accent-blue: #2563eb;
+            --accent-cyan: #0891b2;
+            --accent-green: #059669;
+            --accent-yellow: #d97706;
+            --accent-orange: #ea580c;
+            --accent-red: #dc2626;
+            --accent-purple: #7c3aed;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --glass: rgba(0,0,0,0.03);
+            --chart-grid: rgba(203, 213, 225, 0.6);
+            --chart-tick: #475569;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
@@ -66,7 +88,47 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+        }
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 30px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .theme-toggle-btn:hover {
+            background: var(--bg-card-hover);
+            transform: scale(1.08);
+            border-color: var(--accent-blue);
+        }
+        .theme-toggle-btn .theme-tooltip {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .theme-toggle-btn:hover .theme-tooltip {
+            opacity: 1;
         }
         .header-badge {
             display: flex;
@@ -235,6 +297,168 @@
         .alert-banner .alert-text { font-size: 13px; opacity: 0.9; }
         /* ── Chart ── */
         .chart-area { position: relative; height: 280px; }
+        .chart-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .chart-header-row h2 { margin-bottom: 0; }
+        .chart-window-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--glass);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .window-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-right: 4px;
+        }
+        .win-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .win-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.06);
+        }
+        .win-btn.active {
+            background: var(--accent-blue);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(59,130,246,0.4);
+        }
+        /* ── Timeline Slider / Scrollbar ── */
+        .timeline-slider-container {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .timeline-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+        .timeline-time {
+            font-family: 'JetBrains Mono', monospace, sans-serif;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .timeline-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+        .timeline-badge.live {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            animation: pulseLive 1.5s infinite;
+        }
+        .timeline-badge.history {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        @keyframes pulseLive {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .timeline-track-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .custom-timeline-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 6px;
+            background: rgba(100, 116, 139, 0.25);
+            outline: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .custom-timeline-slider:hover {
+            background: rgba(100, 116, 139, 0.4);
+        }
+        .custom-timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: grab;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.7);
+            transition: transform 0.15s ease, background-color 0.2s ease;
+        }
+        .custom-timeline-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--accent-blue);
+        }
+        .custom-timeline-slider::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+        .custom-timeline-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: grab;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.7);
+        }
+        .timeline-hints {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .snap-live-btn {
+            background: rgba(59,130,246,0.15);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .snap-live-btn:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(59,130,246,0.4);
+        }
         /* ── Reasons & Recs ── */
         .reason-list { list-style: none; }
         .reason-list li {
@@ -314,7 +538,10 @@
             border: 1px solid transparent;
             border-radius: 7px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
             transition: all 0.25s ease;
             position: relative;
         }
@@ -326,6 +553,7 @@
         .lang-btn.active {
             background: var(--accent-blue);
             border-color: var(--accent-blue);
+            color: #ffffff;
             box-shadow: 0 2px 8px rgba(59,130,246,0.3);
             transform: scale(1.05);
         }
@@ -364,6 +592,10 @@
             <span class="header-badge badge-sim" id="data-source-badge" data-i18n="badge.simulated">DATA SOURCE: SIMULATED (Synthetic)</span>
             <span class="header-badge badge-monitoring"><span class="status-dot"></span> <span data-i18n="header.monitoring">MONITORING</span></span>
             <div class="lang-switcher" id="lang-switcher"></div>
+            <button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
+                <span id="theme-icon">☀️</span>
+                <span class="theme-tooltip" id="theme-tooltip" data-i18n="theme.light">Light Mode</span>
+            </button>
         </div>
     </header>
 
@@ -443,8 +675,35 @@
             <div class="left-col">
                 <!-- Chart -->
                 <div class="card">
-                    <h2 data-i18n="chart.title">📊 Water Quality Monitoring & Multi-Step AI Forecast</h2>
+                    <div class="chart-header-row">
+                        <h2 data-i18n="chart.title">📊 Water Quality Monitoring & Multi-Step AI Forecast</h2>
+                        <div class="chart-window-controls">
+                            <span class="window-label" data-i18n="chart.window">Khung nhìn:</span>
+                            <button class="win-btn active" data-size="30" onclick="setChartWindow(30)" data-i18n="chart.win_30">30 điểm</button>
+                            <button class="win-btn" data-size="60" onclick="setChartWindow(60)" data-i18n="chart.win_60">60 điểm</button>
+                            <button class="win-btn" data-size="120" onclick="setChartWindow(120)" data-i18n="chart.win_120">120 điểm</button>
+                            <button class="win-btn" data-size="0" onclick="setChartWindow(0)" data-i18n="chart.win_all">Tất cả</button>
+                        </div>
+                    </div>
                     <div class="chart-area"><canvas id="ph-chart"></canvas></div>
+
+                    <!-- ── Timeline Range Slider / Scrollbar ── -->
+                    <div class="timeline-slider-container">
+                        <div class="timeline-info-row">
+                            <span id="timeline-start-time" class="timeline-time">--:--:--</span>
+                            <div class="timeline-center-status">
+                                <span id="timeline-status-badge" class="timeline-badge live" data-i18n="timeline.live">🔴 TRỰC TIẾP (LIVE)</span>
+                            </div>
+                            <span id="timeline-end-time" class="timeline-time">--:--:--</span>
+                        </div>
+                        <div class="timeline-track-wrapper">
+                            <input type="range" id="timeline-slider" min="0" max="100" value="100" step="1" class="custom-timeline-slider" oninput="onTimelineSliderChange(this.value)">
+                        </div>
+                        <div class="timeline-hints">
+                            <span data-i18n="chart.slider_hint">◀ Kéo thanh trượt để xem lại toàn bộ lịch sử đo | Kéo hết sang phải để xem trực tiếp ▶</span>
+                            <button id="btn-snap-live" class="snap-live-btn" onclick="snapToLive()" data-i18n="chart.snap_live">⚡ Về trực tiếp</button>
+                        </div>
+                    </div>
                 </div>
                 <!-- Risk Components -->
                 <div class="card">
@@ -513,9 +772,76 @@
         </div>
     </div>
 
-    <script src="i18n.js"></script>
+    <script src="i18n.js?v=20260820_2"></script>
     <script>
+    // Initialize global chart variable
+    let phChart = null;
+
+    // Safe dynamic translation helper
+    function safeTranslate(text) {
+        if (!text) return '';
+        if (window.I18N && typeof window.I18N.translateDynamic === 'function') {
+            return window.I18N.translateDynamic(text);
+        }
+        if (window.I18N && typeof window.I18N.t === 'function') {
+            return window.I18N.t(text);
+        }
+        return text;
+    }
+
+    // Initialize i18n immediately
+    if (window.I18N && typeof window.I18N.init === 'function') {
+        I18N.init();
+    }
+
     let currentSource = "demo";
+
+    // ══════ THEME TOGGLE SETUP ══════
+    let currentTheme = localStorage.getItem('aqua-theme') || 'dark';
+
+    function applyTheme(theme) {
+        currentTheme = theme;
+        localStorage.setItem('aqua-theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        const themeIcon = document.getElementById('theme-icon');
+        const themeTooltip = document.getElementById('theme-tooltip');
+        if (themeIcon && themeTooltip) {
+            if (theme === 'light') {
+                themeIcon.textContent = '🌙';
+                themeTooltip.dataset.i18n = 'theme.dark';
+                themeTooltip.textContent = I18N.t('theme.dark');
+            } else {
+                themeIcon.textContent = '☀️';
+                themeTooltip.dataset.i18n = 'theme.light';
+                themeTooltip.textContent = I18N.t('theme.light');
+            }
+        }
+        
+        // Update Chart color theme
+        if (phChart && phChart.options) {
+            const isLight = theme === 'light';
+            const gridColor = isLight ? 'rgba(203, 213, 225, 0.6)' : 'rgba(30,37,72,0.5)';
+            const tickColor = isLight ? '#475569' : '#64748b';
+            const legendColor = isLight ? '#334155' : '#94a3b8';
+            
+            phChart.options.plugins.legend.labels.color = legendColor;
+            phChart.options.scales.x.ticks.color = tickColor;
+            phChart.options.scales.x.grid.color = gridColor;
+            phChart.options.scales.y.ticks.color = tickColor;
+            phChart.options.scales.y.grid.color = gridColor;
+            phChart.options.scales.y.title.color = tickColor;
+            phChart.update('none');
+        }
+    }
+
+    function toggleTheme() {
+        const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(nextTheme);
+    }
+
+    // Apply initial theme immediately
+    applyTheme(currentTheme);
 
     // ══════ LANGUAGE SWITCHER SETUP ══════
     (function buildLangSwitcher() {
@@ -532,7 +858,7 @@
 
     // ══════ CHART SETUP ══════
     const ctx = document.getElementById('ph-chart').getContext('2d');
-    const phChart = new Chart(ctx, {
+    phChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: [],
@@ -615,8 +941,13 @@
         }
     });
 
+    // Apply theme styling to chart on load
+    applyTheme(currentTheme);
+    updateChartLabels();
+
     // ══════ UPDATE CHART LABELS ON LANG CHANGE ══════
     function updateChartLabels() {
+        if (!phChart || !phChart.data || !phChart.data.datasets) return;
         phChart.data.datasets[0].label = I18N.t('chart.actual_ph');
         phChart.data.datasets[1].label = I18N.t('chart.forecast_ph');
         phChart.data.datasets[2].label = I18N.t('chart.upper_threshold');
@@ -649,105 +980,299 @@
         try { const r = await fetch(url); return await r.json(); } catch(e) { return null; }
     }
 
-    let chartLabels = [];
-    let chartActual = [];
-    let chartForecast = [];
-    let chartUpper = [];
-    let chartLower = [];
-    let chartRisk = [];
-    const MAX_POINTS = 100;
+    let allHistory = {
+        labels: [],
+        actual: [],
+        forecast: [],
+        upper: [],
+        lower: [],
+        risk: []
+    };
+    const MAX_HISTORY = 500;
+    let visibleWindowSize = 30; // 30 points default
+    let isLiveMode = true;
+    let sliderOffset = 0;
 
-    async function update() {
-        const current = await fetchJSON('/api/current');
-        if (!current) return;
+    function renderChartWindow() {
+        if (!phChart || !phChart.data) return;
+        const total = allHistory.labels.length;
+        if (total === 0) return;
 
-        const ph = current.ph_value;
-        const pred = current.predicted_ph;
-        const status = current.status;
-        const risk = current.risk_score || 0;
-        const riskLvl = current.risk_level || 'LOW';
-        const ts = current.timestamp ? new Date(current.timestamp).toLocaleTimeString() : '';
+        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const maxOffset = Math.max(0, total - effectiveWindow);
 
-        document.getElementById('current-ph').textContent = ph?.toFixed(2) || '—';
-        document.getElementById('current-ph').style.color = statusColor(status);
-        document.getElementById('forecast-ph').textContent = pred?.toFixed(2) || '—';
-        document.getElementById('risk-score').textContent = Math.round(risk);
-        document.getElementById('risk-score').style.color = riskColor(risk);
-        // Translate risk level
-        const riskLevelKey = 'risk.' + riskLvl.toLowerCase();
-        document.getElementById('risk-level').textContent = I18N.t(riskLevelKey);
-        document.getElementById('risk-level').dataset.i18n = riskLevelKey;
-        document.getElementById('risk-fill').style.width = risk + '%';
-        document.getElementById('risk-fill').style.background = riskColor(risk);
-
-        // Alert banner
-        const banner = document.getElementById('alert-banner');
-        if (status !== 'NORMAL') {
-            banner.style.display = 'block';
-            banner.className = 'alert-banner ' + (['CRITICAL','ALERT_LOW_PH','ALERT_HIGH_PH'].includes(status) ? 'critical' : status === 'HIGH_RISK' ? 'high' : 'warning');
-            document.getElementById('alert-title').textContent = status.replace(/_/g, ' ');
-            document.getElementById('alert-text').textContent = current.warning_message || '';
+        if (isLiveMode) {
+            sliderOffset = maxOffset;
+            const slider = document.getElementById('timeline-slider');
+            if (slider) slider.value = 100;
         } else {
-            banner.style.display = 'none';
+            sliderOffset = Math.min(Math.max(sliderOffset, 0), maxOffset);
         }
 
-        // Chart update
-        chartLabels.push(ts);
-        chartActual.push(ph);
-        chartForecast.push(pred);
-        chartUpper.push(8.5);
-        chartLower.push(7.0);
-        chartRisk.push(risk);
-        if (chartLabels.length > MAX_POINTS) {
-            chartLabels.shift(); chartActual.shift(); chartForecast.shift();
-            chartUpper.shift(); chartLower.shift(); chartRisk.shift();
-        }
-        phChart.data.labels = chartLabels;
-        phChart.data.datasets[0].data = chartActual;
-        phChart.data.datasets[1].data = chartForecast;
-        phChart.data.datasets[2].data = chartUpper;
-        phChart.data.datasets[3].data = chartLower;
-        phChart.data.datasets[4].data = chartRisk;
+        const endIndex = (visibleWindowSize > 0) ? Math.min(total, sliderOffset + effectiveWindow) : total;
+        const startIndex = (visibleWindowSize > 0) ? sliderOffset : 0;
+
+        const slicedLabels = allHistory.labels.slice(startIndex, endIndex);
+        const slicedActual = allHistory.actual.slice(startIndex, endIndex);
+        const slicedForecast = allHistory.forecast.slice(startIndex, endIndex);
+        const slicedUpper = allHistory.upper.slice(startIndex, endIndex);
+        const slicedLower = allHistory.lower.slice(startIndex, endIndex);
+        const slicedRisk = allHistory.risk.slice(startIndex, endIndex);
+
+        phChart.data.labels = slicedLabels;
+        phChart.data.datasets[0].data = slicedActual;
+        phChart.data.datasets[1].data = slicedForecast;
+        phChart.data.datasets[2].data = slicedUpper;
+        phChart.data.datasets[3].data = slicedLower;
+        phChart.data.datasets[4].data = slicedRisk;
         phChart.update('none');
 
-        // Risk components
-        const riskData = await fetchJSON('/api/risk');
-        if (riskData && riskData.components) {
-            const c = riskData.components;
-            for (const [key, val] of Object.entries(c)) {
-                const bar = document.getElementById('rc-' + key);
-                const txt = document.getElementById('rcv-' + key);
-                if (bar) bar.style.width = Math.min(val, 100) + '%';
-                if (txt) txt.textContent = Math.round(val);
+        // Update timeline range UI labels
+        const startTimeEl = document.getElementById('timeline-start-time');
+        const endTimeEl = document.getElementById('timeline-end-time');
+        const statusBadge = document.getElementById('timeline-status-badge');
+
+        if (startTimeEl && slicedLabels.length > 0) {
+            startTimeEl.textContent = slicedLabels[0];
+        }
+        if (endTimeEl && slicedLabels.length > 0) {
+            endTimeEl.textContent = slicedLabels[slicedLabels.length - 1];
+        }
+        if (statusBadge) {
+            if (isLiveMode) {
+                statusBadge.className = 'timeline-badge live';
+                statusBadge.textContent = I18N.t('timeline.live');
+            } else {
+                statusBadge.className = 'timeline-badge history';
+                statusBadge.textContent = I18N.t('timeline.history');
             }
         }
+    }
 
-        // Explanation
-        const exp = await fetchJSON('/api/explanation');
-        if (exp) {
-            document.getElementById('explain-summary').textContent = exp.summary || '';
-            const rl = document.getElementById('reason-list');
-            rl.innerHTML = '';
-            (exp.reasons || []).forEach(r => {
-                const li = document.createElement('li');
-                li.textContent = r;
-                rl.appendChild(li);
-            });
-        }
+    function onTimelineSliderChange(val) {
+        const total = allHistory.labels.length;
+        if (total === 0) return;
+        const numVal = Number(val);
+        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const maxOffset = Math.max(0, total - effectiveWindow);
 
-        // Recommendations
-        const rec = await fetchJSON('/api/recommendations');
-        if (rec) {
-            const rl = document.getElementById('rec-list');
-            rl.innerHTML = '';
-            (rec.actions || []).forEach(a => {
-                const div = document.createElement('div');
-                div.className = 'rec-item';
-                div.innerHTML = `<span class="rec-urgency urgency-${a.urgency || 'info'}">${a.urgency || 'info'}</span><span>${a.text}</span>`;
-                rl.appendChild(div);
-            });
-            document.getElementById('rec-disclaimer').textContent = rec.disclaimer || '';
+        if (numVal >= 98 || maxOffset === 0) {
+            isLiveMode = true;
+            sliderOffset = maxOffset;
+        } else {
+            isLiveMode = false;
+            sliderOffset = Math.round((numVal / 100) * maxOffset);
         }
+        renderChartWindow();
+    }
+
+    function setChartWindow(size) {
+        visibleWindowSize = Number(size);
+        document.querySelectorAll('.win-btn').forEach(btn => {
+            const btnSize = Number(btn.dataset.size);
+            btn.classList.toggle('active', btnSize === visibleWindowSize);
+        });
+        const total = allHistory.labels.length;
+        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const maxOffset = Math.max(0, total - effectiveWindow);
+        if (isLiveMode) {
+            sliderOffset = maxOffset;
+        } else {
+            sliderOffset = Math.min(sliderOffset, maxOffset);
+        }
+        renderChartWindow();
+    }
+
+    function snapToLive() {
+        isLiveMode = true;
+        const slider = document.getElementById('timeline-slider');
+        if (slider) slider.value = 100;
+        const total = allHistory.labels.length;
+        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        sliderOffset = Math.max(0, total - effectiveWindow);
+        renderChartWindow();
+    }
+
+    async function update() {
+        try {
+            const current = await fetchJSON('/api/current');
+            if (!current) return;
+
+            const ph = current.ph_value;
+            const pred = current.predicted_ph;
+            const status = current.status;
+            const risk = current.risk_score || 0;
+            const riskLvl = current.risk_level || 'LOW';
+            const ts = current.timestamp ? new Date(current.timestamp).toLocaleTimeString() : '';
+
+            const curPhEl = document.getElementById('current-ph');
+            if (curPhEl) {
+                curPhEl.textContent = (ph !== null && ph !== undefined) ? ph.toFixed(2) : '—';
+                curPhEl.style.color = statusColor(status);
+            }
+            const forePhEl = document.getElementById('forecast-ph');
+            if (forePhEl) {
+                forePhEl.textContent = (pred !== null && pred !== undefined) ? pred.toFixed(2) : '—';
+            }
+            const riskScEl = document.getElementById('risk-score');
+            if (riskScEl) {
+                riskScEl.textContent = Math.round(risk);
+                riskScEl.style.color = riskColor(risk);
+            }
+            // Translate risk level
+            const riskLevelKey = 'risk.' + (riskLvl ? String(riskLvl).toLowerCase() : 'low');
+            const riskLvlEl = document.getElementById('risk-level');
+            if (riskLvlEl) {
+                riskLvlEl.textContent = I18N.t(riskLevelKey);
+                riskLvlEl.dataset.i18n = riskLevelKey;
+            }
+            const riskFillEl = document.getElementById('risk-fill');
+            if (riskFillEl) {
+                riskFillEl.style.width = Math.min(Math.max(risk, 0), 100) + '%';
+                riskFillEl.style.background = riskColor(risk);
+            }
+
+            // Alert banner
+            const banner = document.getElementById('alert-banner');
+            if (banner) {
+                if (status && status !== 'NORMAL') {
+                    banner.style.display = 'block';
+                    banner.className = 'alert-banner ' + (['CRITICAL','ALERT_LOW_PH','ALERT_HIGH_PH'].includes(status) ? 'critical' : status === 'HIGH_RISK' ? 'high' : 'warning');
+                    const cleanStatus = String(status).replace(/^status\./i, '');
+                    const statusKey = 'status.' + cleanStatus;
+                    const alertTitleEl = document.getElementById('alert-title');
+                    if (alertTitleEl) {
+                        alertTitleEl.textContent = I18N.t(statusKey);
+                        alertTitleEl.dataset.i18n = statusKey;
+                    }
+                    const alertTextEl = document.getElementById('alert-text');
+                    if (alertTextEl) {
+                        alertTextEl.textContent = current.warning_message ? safeTranslate(current.warning_message) : '';
+                    }
+                } else {
+                    banner.style.display = 'none';
+                }
+            }
+
+            // Record to allHistory and render timeline window
+            allHistory.labels.push(ts);
+            allHistory.actual.push(ph);
+            allHistory.forecast.push(pred);
+            allHistory.upper.push(8.5);
+            allHistory.lower.push(7.0);
+            allHistory.risk.push(risk);
+            if (allHistory.labels.length > MAX_HISTORY) {
+                allHistory.labels.shift();
+                allHistory.actual.shift();
+                allHistory.forecast.shift();
+                allHistory.upper.shift();
+                allHistory.lower.shift();
+                allHistory.risk.shift();
+            }
+            renderChartWindow();
+
+            // Risk components
+            const riskData = await fetchJSON('/api/risk');
+            if (riskData && riskData.components) {
+                const c = riskData.components;
+                for (const [key, val] of Object.entries(c)) {
+                    const elKey = (key === 'current_value') ? 'current' : key;
+                    const bar = document.getElementById('rc-' + elKey) || document.getElementById('rc-' + key);
+                    const txt = document.getElementById('rcv-' + elKey) || document.getElementById('rcv-' + key);
+                    if (bar) bar.style.width = Math.min(Math.max(val, 0), 100) + '%';
+                    if (txt) txt.textContent = Math.round(val);
+                }
+            }
+
+            // Explanation ("Why?")
+            const exp = await fetchJSON('/api/explanation');
+            if (exp) {
+                const expSummaryEl = document.getElementById('explain-summary');
+                if (expSummaryEl) {
+                    expSummaryEl.textContent = exp.summary ? safeTranslate(exp.summary) : '';
+                }
+                const rl = document.getElementById('reason-list');
+                if (rl) {
+                    rl.innerHTML = '';
+                    (exp.reasons || []).forEach(r => {
+                        const li = document.createElement('li');
+                        li.textContent = safeTranslate(r);
+                        rl.appendChild(li);
+                    });
+                }
+            }
+
+            // Recommendations (Decision support)
+            const rec = await fetchJSON('/api/recommendations');
+            if (rec) {
+                const rl = document.getElementById('rec-list');
+                if (rl) {
+                    rl.innerHTML = '';
+                    (rec.actions || []).forEach(a => {
+                        const div = document.createElement('div');
+                        div.className = 'rec-item';
+                        const urgency = a.urgency || 'info';
+                        const urgencyLabel = I18N.t('urgency.' + urgency);
+                        const actionText = safeTranslate(a.text);
+                        div.innerHTML = `<span class="rec-urgency urgency-${urgency}">${urgencyLabel}</span><span>${actionText}</span>`;
+                        rl.appendChild(div);
+                    });
+                }
+                const recDiscEl = document.getElementById('rec-disclaimer');
+                if (recDiscEl) {
+                    recDiscEl.textContent = rec.disclaimer ? safeTranslate(rec.disclaimer) : '';
+                }
+            }
+
+            // Model & Inference engine status
+            const modelInfo = await fetchJSON('/api/model-metrics');
+            if (modelInfo) {
+                if (modelInfo.model_type) {
+                    const mtEl = document.getElementById('model-type');
+                    if (mtEl) mtEl.textContent = modelInfo.model_type;
+                }
+                if (modelInfo.history_size !== undefined) {
+                    const hsEl = document.getElementById('history-size');
+                    if (hsEl) hsEl.textContent = modelInfo.history_size;
+                }
+                const trainedEl = document.getElementById('model-trained');
+                if (trainedEl) {
+                    const trainedKey = modelInfo.is_trained ? 'ai.trained.yes' : 'ai.trained.no';
+                    trainedEl.dataset.i18n = trainedKey;
+                    trainedEl.textContent = I18N.t(trainedKey);
+                }
+            }
+            const infInfo = await fetchJSON('/api/inference-engine');
+            if (infInfo && infInfo.backend) {
+                const ibEl = document.getElementById('inference-backend');
+                if (ibEl) ibEl.textContent = infInfo.backend;
+            }
+        } catch (err) {
+            console.error('Error in updateDashboard:', err);
+        }
+    }
+
+    // Canvas mouse wheel scroll/scrubbing
+    const chartCanvas = document.getElementById('ph-chart');
+    if (chartCanvas) {
+        chartCanvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const total = allHistory.labels.length;
+            if (total === 0) return;
+            const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+            const maxOffset = Math.max(0, total - effectiveWindow);
+            if (maxOffset <= 0) return;
+
+            const delta = e.deltaY > 0 ? 3 : -3;
+            sliderOffset = Math.min(Math.max(sliderOffset + delta, 0), maxOffset);
+            isLiveMode = (sliderOffset >= maxOffset);
+
+            const slider = document.getElementById('timeline-slider');
+            if (slider) {
+                slider.value = (maxOffset > 0) ? Math.round((sliderOffset / maxOffset) * 100) : 100;
+            }
+            renderChartWindow();
+        }, { passive: false });
     }
 
     // ══════ SWITCH DATA SOURCE ══════
@@ -789,21 +1314,27 @@
             pondName.textContent = 'LIVE-PROBE-01';
         }
 
-        chartLabels = []; chartActual = []; chartForecast = [];
-        chartUpper = []; chartLower = []; chartRisk = [];
+        allHistory = { labels: [], actual: [], forecast: [], upper: [], lower: [], risk: [] };
+        sliderOffset = 0;
+        isLiveMode = true;
 
         await fetch('/api/select-source?source=' + source, { method: 'POST' });
     }
 
-    async function setScenario(name) {
+    async function setScenario(name, btnElement) {
         document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        chartLabels = []; chartActual = []; chartForecast = [];
-        chartUpper = []; chartLower = []; chartRisk = [];
+        if (btnElement) {
+            btnElement.classList.add('active');
+        } else if (window.event && window.event.target) {
+            window.event.target.classList.add('active');
+        }
+        allHistory = { labels: [], actual: [], forecast: [], upper: [], lower: [], risk: [] };
+        sliderOffset = 0;
+        isLiveMode = true;
         await fetch('/api/scenario?scenario=' + name + '&seed=42', { method: 'POST' });
     }
 
-    setInterval(update, 2000);
+    setInterval(update, 1000);
     update();
 
     // ══════ INIT i18n ══════

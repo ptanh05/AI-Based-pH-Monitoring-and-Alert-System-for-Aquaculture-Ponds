@@ -398,37 +398,49 @@ def run_monitoring_system():
 
     is_running = True
 
-    try:
-        if current_data_source == "real_validation":
-            loader = RealDataLoader()
-            for timestamp, ph_value, ctx in loader.stream_real_readings():
-                if not is_running or current_data_source != "real_validation":
-                    break
-                process_ph_reading(timestamp, ph_value)
-                time.sleep(monitoring_system.reading_interval_seconds)
-        elif use_simulator:
-            for timestamp, ph_value in monitoring_system.simulator.stream_readings(
-                interval_seconds=monitoring_system.reading_interval_seconds,
-                max_readings=None,
-            ):
-                if not is_running or current_data_source != "demo":
-                    break
-                process_ph_reading(timestamp, ph_value)
-        else:
-            while is_running and current_data_source == "live_sensor":
-                if manual_ph_queue:
-                    ph_data = manual_ph_queue.pop(0)
-                    ts = (
-                        datetime.fromisoformat(ph_data["timestamp"])
-                        if ph_data.get("timestamp")
-                        else datetime.now()
-                    )
-                    process_ph_reading(ts, ph_data["ph_value"])
-                time.sleep(0.5)
-    except Exception as e:
-        print(f"Error in monitoring: {e}")
-        traceback.print_exc()
-        is_running = False
+    while is_running:
+        try:
+            if current_data_source == "real_validation":
+                loader = RealDataLoader()
+                for timestamp, ph_value, ctx in loader.stream_real_readings():
+                    if not is_running or current_data_source != "real_validation":
+                        break
+                    try:
+                        process_ph_reading(timestamp, ph_value)
+                    except Exception as pe:
+                        print(f"Error processing reading: {pe}")
+                    time.sleep(monitoring_system.reading_interval_seconds)
+            elif use_simulator:
+                for timestamp, ph_value in monitoring_system.simulator.stream_readings(
+                    interval_seconds=monitoring_system.reading_interval_seconds,
+                    max_readings=None,
+                ):
+                    if not is_running or current_data_source != "demo":
+                        break
+                    try:
+                        process_ph_reading(timestamp, ph_value)
+                    except Exception as pe:
+                        print(f"Error processing reading: {pe}")
+            else:
+                while is_running and current_data_source == "live_sensor":
+                    if manual_ph_queue:
+                        ph_data = manual_ph_queue.pop(0)
+                        ts = (
+                            datetime.fromisoformat(ph_data["timestamp"])
+                            if ph_data.get("timestamp")
+                            else datetime.now()
+                        )
+                        try:
+                            process_ph_reading(ts, ph_data["ph_value"])
+                        except Exception as pe:
+                            print(f"Error processing reading: {pe}")
+                    time.sleep(0.5)
+        except Exception as e:
+            print(f"Error in monitoring loop: {e}")
+            traceback.print_exc()
+            time.sleep(1.0)
+            if not is_running:
+                break
 
 
 
@@ -622,14 +634,15 @@ async def get_benchmark():
 
 @app.post("/api/scenario")
 async def set_scenario(scenario: str = "competition_demo", seed: int = 42):
-    global monitoring_system, is_running, recent_readings
+    global monitoring_system, is_running, recent_readings, system_thread, current_data_source, use_simulator
     is_running = False
-    time.sleep(1.5)
+    time.sleep(0.3)
     recent_readings = []
+    current_data_source = "demo"
+    use_simulator = True
     monitoring_system = PHMonitoringSystem(
         scenario=scenario, seed=seed, reading_interval_seconds=0.8,
     )
-    global system_thread
     system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
     system_thread.start()
     return {

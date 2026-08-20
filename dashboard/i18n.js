@@ -56,8 +56,27 @@ const I18N = {
             // Risk levels
             'risk.low': 'LOW',
             'risk.medium': 'MEDIUM',
+            'risk.moderate': 'MODERATE',
+            'risk.elevated': 'ELEVATED',
             'risk.high': 'HIGH',
             'risk.critical': 'CRITICAL',
+
+            // Alert status
+            'status.NORMAL': 'NORMAL',
+            'status.WAITING': 'WAITING CONFIRMATION',
+            'status.EARLY_WARNING': 'PREDICTIVE EARLY WARNING',
+            'status.HIGH_RISK': 'HIGH RISK ALERT',
+            'status.CRITICAL': 'CRITICAL EMERGENCY',
+            'status.ALERT_LOW_PH': 'CRITICAL LOW pH ALERT',
+            'status.ALERT_HIGH_PH': 'CRITICAL HIGH pH ALERT',
+            'status.SENSOR_WARNING': 'SENSOR ANOMALY WARNING',
+
+            // Urgency tags
+            'urgency.critical': 'CRITICAL',
+            'urgency.high': 'HIGH',
+            'urgency.medium': 'MEDIUM',
+            'urgency.low': 'LOW',
+            'urgency.info': 'INFO',
 
             // Section headings
             'chart.title': '📊 Water Quality Monitoring & Multi-Step AI Forecast',
@@ -80,7 +99,7 @@ const I18N = {
             'ai.trained.yes': 'Yes',
             'ai.trained.no': 'No',
 
-            // Chart labels
+            // Chart labels & timeline controls
             'chart.actual_ph': 'Actual pH',
             'chart.forecast_ph': 'Forecast pH',
             'chart.upper_threshold': 'Upper Threshold (8.5)',
@@ -88,9 +107,20 @@ const I18N = {
             'chart.risk_score': 'Risk Score (0-100)',
             'chart.axis.ph': 'pH',
             'chart.axis.risk': 'Risk',
+            'chart.window': 'View Window:',
+            'chart.win_30': '30 pts',
+            'chart.win_60': '60 pts',
+            'chart.win_120': '120 pts',
+            'chart.win_all': 'All',
+            'chart.slider_hint': '◀ Drag slider to browse timeline history | Drag rightmost for Live ▶',
+            'chart.snap_live': '⚡ Live View',
+            'timeline.live': '🔴 LIVE',
+            'timeline.history': '⏸ VIEWING HISTORY',
 
-            // Language selector
+            // Language & Theme
             'lang.label': 'Language',
+            'theme.light': 'Light Mode',
+            'theme.dark': 'Dark Mode',
         },
 
         // ═══════════════════════════════════════
@@ -136,8 +166,25 @@ const I18N = {
 
             'risk.low': 'THẤP',
             'risk.medium': 'TRUNG BÌNH',
+            'risk.moderate': 'VỪA PHẢI',
+            'risk.elevated': 'GIA TĂNG',
             'risk.high': 'CAO',
             'risk.critical': 'NGUY HIỂM',
+
+            'status.NORMAL': 'BÌNH THƯỜNG',
+            'status.WAITING': 'ĐANG CHỜ XÁC NHẬN',
+            'status.EARLY_WARNING': 'CẢNH BÁO SỚM TỪ DỰ ĐOÁN AI',
+            'status.HIGH_RISK': 'CẢNH BÁO RỦI RO CAO',
+            'status.CRITICAL': 'NGUY CẤP',
+            'status.ALERT_LOW_PH': 'CẢNH BÁO pH QUÁ THẤP',
+            'status.ALERT_HIGH_PH': 'CẢNH BÁO pH QUÁ CAO',
+            'status.SENSOR_WARNING': 'CẢNH BÁO BẤT THƯỜNG CẢM BIẾN',
+
+            'urgency.critical': 'NGUY CẤP',
+            'urgency.high': 'CAO',
+            'urgency.medium': 'TRUNG BÌNH',
+            'urgency.low': 'THẤP',
+            'urgency.info': 'THÔNG TIN',
 
             'chart.title': '📊 Giám Sát Chất Lượng Nước & Dự Đoán AI Đa Bước',
             'risk.components.title': '🎯 Thành Phần Điểm Rủi Ro Thủy Sản (0–100)',
@@ -164,8 +211,19 @@ const I18N = {
             'chart.risk_score': 'Điểm rủi ro (0-100)',
             'chart.axis.ph': 'pH',
             'chart.axis.risk': 'Rủi ro',
+            'chart.window': 'Khung nhìn:',
+            'chart.win_30': '30 điểm',
+            'chart.win_60': '60 điểm',
+            'chart.win_120': '120 điểm',
+            'chart.win_all': 'Tất cả',
+            'chart.slider_hint': '◀ Kéo thanh trượt để xem lại toàn bộ lịch sử đo | Kéo hết sang phải để xem trực tiếp ▶',
+            'chart.snap_live': '⚡ Về trực tiếp',
+            'timeline.live': '🔴 TRỰC TIẾP (LIVE)',
+            'timeline.history': '⏸ ĐANG XEM LỊCH SỬ',
 
             'lang.label': 'Ngôn ngữ',
+            'theme.light': 'Giao diện Sáng',
+            'theme.dark': 'Giao diện Tối',
         },
 
         // ═══════════════════════════════════════
@@ -211,8 +269,25 @@ const I18N = {
 
             'risk.low': '低',
             'risk.medium': '中等',
+            'risk.moderate': '适度',
+            'risk.elevated': '升高',
             'risk.high': '高',
             'risk.critical': '危急',
+
+            'status.NORMAL': '正常',
+            'status.WAITING': '等待确认',
+            'status.EARLY_WARNING': 'AI多步预测早期预警',
+            'status.HIGH_RISK': '高风险警报',
+            'status.CRITICAL': '紧急危险',
+            'status.ALERT_LOW_PH': 'pH过低警报',
+            'status.ALERT_HIGH_PH': 'pH过高警报',
+            'status.SENSOR_WARNING': '传感器异常警报',
+
+            'urgency.critical': '危急',
+            'urgency.high': '高',
+            'urgency.medium': '中等',
+            'urgency.low': '低',
+            'urgency.info': '信息',
 
             'chart.title': '📊 水质监测与AI多步预测',
             'risk.components.title': '🎯 水产养殖风险评分组成（0–100）',
@@ -232,6 +307,7 @@ const I18N = {
             'ai.trained.yes': '是',
             'ai.trained.no': '否',
 
+            // Chart labels & timeline controls
             'chart.actual_ph': '实际 pH',
             'chart.forecast_ph': '预测 pH',
             'chart.upper_threshold': '上限阈值（8.5）',
@@ -239,8 +315,19 @@ const I18N = {
             'chart.risk_score': '风险评分（0-100）',
             'chart.axis.ph': 'pH',
             'chart.axis.risk': '风险',
+            'chart.window': '时间窗口:',
+            'chart.win_30': '30点',
+            'chart.win_60': '60点',
+            'chart.win_120': '120点',
+            'chart.win_all': '全部',
+            'chart.slider_hint': '◀ 拖动滑块查看历史记录 | 拖至最右侧返回实时 ▶',
+            'chart.snap_live': '⚡ 实时视图',
+            'timeline.live': '🔴 实时 (LIVE)',
+            'timeline.history': '⏸ 查看历史',
 
             'lang.label': '语言',
+            'theme.light': '浅色模式',
+            'theme.dark': '深色模式',
         },
 
         // ═══════════════════════════════════════
@@ -286,8 +373,25 @@ const I18N = {
 
             'risk.low': '低',
             'risk.medium': '中',
+            'risk.moderate': '適度',
+            'risk.elevated': '上昇',
             'risk.high': '高',
             'risk.critical': '危険',
+
+            'status.NORMAL': '正常',
+            'status.WAITING': '確認待機中',
+            'status.EARLY_WARNING': 'AI予測早期警報',
+            'status.HIGH_RISK': '高リスク警報',
+            'status.CRITICAL': '緊急危険',
+            'status.ALERT_LOW_PH': 'pH低下警報',
+            'status.ALERT_HIGH_PH': 'pH上昇警報',
+            'status.SENSOR_WARNING': 'センサー異常警報',
+
+            'urgency.critical': '緊急',
+            'urgency.high': '高',
+            'urgency.medium': '中',
+            'urgency.low': '低',
+            'urgency.info': '情報',
 
             'chart.title': '📊 水質モニタリング＆AIマルチステップ予測',
             'risk.components.title': '🎯 養殖リスクスコア構成（0–100）',
@@ -307,6 +411,7 @@ const I18N = {
             'ai.trained.yes': 'はい',
             'ai.trained.no': 'いいえ',
 
+            // Chart labels & timeline controls
             'chart.actual_ph': '実際の pH',
             'chart.forecast_ph': '予測 pH',
             'chart.upper_threshold': '上限しきい値（8.5）',
@@ -314,19 +419,173 @@ const I18N = {
             'chart.risk_score': 'リスクスコア（0-100）',
             'chart.axis.ph': 'pH',
             'chart.axis.risk': 'リスク',
+            'chart.window': '表示範囲:',
+            'chart.win_30': '30点',
+            'chart.win_60': '60点',
+            'chart.win_120': '120点',
+            'chart.win_all': 'すべて',
+            'chart.slider_hint': '◀ スライダーを動かして履歴を確認 | 最右端でリアルタイム ▶',
+            'chart.snap_live': '⚡ リアルタイムへ',
+            'timeline.live': '🔴 リアルタイム (LIVE)',
+            'timeline.history': '⏸ 履歴閲覧中',
 
             'lang.label': '言語',
+            'theme.light': 'ライトモード',
+            'theme.dark': 'ダークモード',
         },
     },
 
     /**
+     * Pattern-based translator for dynamic backend messages
+     */
+    dynamicPatterns: {
+        vi: [
+            // Explainability Summaries & Reasons
+            { reg: /^Water quality conditions appear normal\./i, replace: 'Chất lượng nước có vẻ bình thường.' },
+            { reg: /^No significant issues detected\./i, replace: 'Không phát hiện vấn đề bất thường.' },
+            { reg: /^Minor sensor or statistical anomaly detected within nominal pH range\. Inspect sensor\./i, replace: 'Phát hiện bất thường nhỏ về thống kê hoặc cảm biến trong dải pH danh định. Cần kiểm tra cảm biến.' },
+            { reg: /^Minor water quality changes detected\. Continue monitoring\./i, replace: 'Phát hiện thay đổi nhỏ về chất lượng nước. Tiếp tục theo dõi.' },
+            { reg: /^Elevated water quality risk detected\. Increased attention recommended\./i, replace: 'Phát hiện rủi ro chất lượng nước gia tăng. Khuyến nghị chú ý theo dõi kỹ hơn.' },
+            { reg: /^High water quality risk\. AI predicts elevated probability of exceeding the safe pH range\./i, replace: 'Rủi ro chất lượng nước cao. AI dự báo xác suất vượt ngưỡng pH an toàn tăng cao.' },
+            { reg: /^Critical water quality risk\. Immediate attention and sensor verification recommended\./i, replace: 'Rủi ro chất lượng nước nguy cấp. Khuyến nghị can thiệp ngay và kiểm tra cảm biến đối chứng.' },
+            { reg: /^All parameters within safe limits/i, replace: 'Tất cả các thông số đều nằm trong giới hạn an toàn.' },
+            { reg: /^Optimal conditions/i, replace: 'Điều kiện tối ưu' },
+            { reg: /^Waiting for data\.\.\./i, replace: 'Đang chờ dữ liệu...' },
+            { reg: /^System initializing\.\.\./i, replace: 'Hệ thống đang khởi tạo...' },
+
+            // Thresholds and forecasts
+            { reg: /^LOW pH ALERT: pH = ([\d.]+) \(below safe threshold ([\d.]+)\)/i, replace: 'CẢNH BÁO pH THẤP: pH = $1 (thấp hơn ngưỡng an toàn $2)' },
+            { reg: /^HIGH pH ALERT: pH = ([\d.]+) \(above safe threshold ([\d.]+)\)/i, replace: 'CẢNH BÁO pH CAO: pH = $1 (cao hơn ngưỡng an toàn $2)' },
+            { reg: /^Waiting: pH = ([\d.]+) is low \((\d+)\/(\d+) consecutive readings\)/i, replace: 'Đang chờ xác nhận: pH = $1 đang thấp ($2/$3 lần đo liên tiếp)' },
+            { reg: /^Waiting: pH = ([\d.]+) is high \((\d+)\/(\d+) consecutive readings\)/i, replace: 'Đang chờ xác nhận: pH = $1 đang cao ($2/$3 lần đo liên tiếp)' },
+            { reg: /^pH returned to safe range: ([\d.]+)/i, replace: 'pH đã trở lại phạm vi an toàn: $1' },
+            { reg: /^Normal: pH = ([\d.]+)/i, replace: 'Bình thường: pH = $1' },
+            { reg: /^Current pH \(([\d.]+)\) is below the safe threshold \(([\d.]+)\)/i, replace: 'pH hiện tại ($1) thấp hơn ngưỡng an toàn ($2)' },
+            { reg: /^Current pH \(([\d.]+)\) is above the safe threshold \(([\d.]+)\)/i, replace: 'pH hiện tại ($1) cao hơn ngưỡng an toàn ($2)' },
+            { reg: /^Current pH \(([\d.]+)\) is approaching the upper safety threshold \(([\d.]+)\)/i, replace: 'pH hiện tại ($1) đang tiến gần ngưỡng an toàn trên ($2)' },
+            { reg: /^Current pH \(([\d.]+)\) is approaching the lower safety threshold \(([\d.]+)\)/i, replace: 'pH hiện tại ($1) đang tiến gần ngưỡng an toàn dưới ($2)' },
+            { reg: /^AI forecasts pH rising to ([\d.]+), which exceeds the upper safe threshold \(([\d.]+)\)/i, replace: 'AI dự báo pH sẽ tăng lên $1, vượt quá ngưỡng trên an toàn ($2)' },
+            { reg: /^AI forecasts pH dropping to ([\d.]+), which is below the lower safe threshold \(([\d.]+)\)/i, replace: 'AI dự báo pH sẽ giảm xuống $1, thấp hơn ngưỡng dưới an toàn ($2)' },
+            { reg: /^AI forecasts pH approaching the upper threshold \(([\d.]+)\)/i, replace: 'AI dự báo pH đang tiến gần ngưỡng trên ($1)' },
+            { reg: /^AI forecasts pH approaching the lower threshold \(([\d.]+)\)/i, replace: 'AI dự báo pH đang tiến gần ngưỡng dưới ($1)' },
+            { reg: /^pH is rising rapidly \(rate: ([+-]?[\d.]+) per reading\)/i, replace: 'pH đang tăng nhanh (tốc độ: $1 mỗi chu kỳ đo)' },
+            { reg: /^pH is falling rapidly \(rate: ([+-]?[\d.]+) per reading\)/i, replace: 'pH đang giảm nhanh (tốc độ: $1 mỗi chu kỳ đo)' },
+            { reg: /^Sustained upward trend detected \(slope: ([+-]?[\d.]+)\)/i, replace: 'Phát hiện xu hướng tăng liên tục (hệ số dốc: $1)' },
+            { reg: /^Sustained downward trend detected \(slope: ([+-]?[\d.]+)\)/i, replace: 'Phát hiện xu hướng giảm liên tục (hệ số dốc: $1)' },
+
+            // Anomaly & Sensor
+            { reg: /^Statistical anomaly detected \(z-score: ([+-]?[\d.]+)\)/i, replace: 'Phát hiện bất thường thống kê (điểm z-score: $1)' },
+            { reg: /^ML anomaly detected by Isolation Forest/i, replace: 'Phát hiện bất thường ML bởi Isolation Forest' },
+            { reg: /^Sensor anomaly detected: (.*)/i, replace: 'Phát hiện bất thường từ cảm biến: $1' },
+            { reg: /^Anomaly detected: (.*)\. Investigate possible environmental cause\./i, replace: 'Phát hiện bất thường: $1. Cần kiểm tra nguyên nhân môi trường.' },
+            { reg: /^Sensor quality is degraded — verify physical sensor before acting on readings\./i, replace: 'Chất lượng cảm biến suy giảm — hãy kiểm tra đầu dò vật lý trước khi xử lý.' },
+            { reg: /^Sensor appears stuck \(constant readings\)\. Clean or recalibrate the sensor probe\./i, replace: 'Cảm biến có dấu hiệu bị kẹt (giá trị không đổi). Hãy vệ sinh hoặc hiệu chuẩn lại đầu dò.' },
+
+            // Recommendations / Actions
+            { reg: /^Water quality appears normal\. Continue routine monitoring\./i, replace: 'Chất lượng nước đang bình thường. Tiếp tục duy trì theo dõi định kỳ.' },
+            { reg: /^Maintain regular monitoring schedule\./i, replace: 'Duy trì lịch theo dõi và giám sát định kỳ.' },
+            { reg: /^Note any environmental changes that could affect water quality\./i, replace: 'Ghi nhận các thay đổi môi trường có thể ảnh hưởng đến chất lượng nước.' },
+            { reg: /^Continue monitoring water quality closely\./i, replace: 'Tiếp tục theo dõi chặt chẽ chất lượng nước.' },
+            { reg: /^Check recent weather conditions and environmental events\./i, replace: 'Kiểm tra diễn biến thời tiết và sự kiện môi trường gần đây.' },
+            { reg: /^Verify sensor calibration if readings seem unusual\./i, replace: 'Hiệu chuẩn lại cảm biến nếu các số đo có dấu hiệu bất thường.' },
+            { reg: /^Verify sensor readings with a secondary measurement\./i, replace: 'Kiểm tra đối chứng số đo cảm biến bằng thiết bị đo thứ hai.' },
+            { reg: /^Inspect pond conditions and check for visible changes \(colour, odour, surface\)\./i, replace: 'Kiểm tra tình trạng ao và quan sát các thay đổi (màu nước, mùi, bọt mặt nước).' },
+            { reg: /^Review aeration and water-management procedures\./i, replace: 'Rà soát lại quy trình quạt khí và điều tiết nguồn nước.' },
+            { reg: /^AI predicts pH may rise above the safe range\. Prepare contingency measures per farm protocol\./i, replace: 'AI dự báo pH có thể vượt ngưỡng an toàn. Chuẩn bị biện pháp xử lý theo quy trình kỹ thuật trang trại.' },
+            { reg: /^AI predicts pH may drop below the safe range\. Check for possible rain or runoff events\./i, replace: 'AI dự báo pH có thể giảm dưới ngưỡng an toàn. Kiểm tra nước mưa chảy tràn hoặc nguồn nước cấp.' },
+            { reg: /^Verify sensor measurements immediately with a backup measurement device\./i, replace: 'Kiểm tra đối chứng ngay lập tức bằng thiết bị đo dự phòng.' },
+            { reg: /^Notify the responsible operator or farm manager\./i, replace: 'Thông báo ngay cho người quản lý ao hoặc kỹ thuật viên phụ trách.' },
+            { reg: /^Follow your farm's established emergency water-management procedure\./i, replace: 'Thực hiện quy trình khẩn cấp theo tiêu chuẩn kỹ thuật của trang trại.' },
+            { reg: /^Increase monitoring frequency until conditions stabilise\./i, replace: 'Tăng tần suất đo kiểm tra cho đến khi chất lượng nước ổn định trở lại.' },
+
+            // Disclaimers & Alert Prefixes
+            { reg: /^These are suggested actions for decision support only\..*/i, replace: 'Các gợi ý này chỉ mang tính chất hỗ trợ ra quyết định. Không thay thế hướng dẫn chuyên môn thủy sản. Luôn tham khảo ý kiến kỹ thuật viên và tuân thủ quy trình trang trại.' },
+            { reg: /^CRITICAL: (.*)/i, replace: 'NGUY CẤP: $1' },
+            { reg: /^HIGH RISK: (.*)/i, replace: 'RỦI RO CAO: $1' },
+            { reg: /^PREDICTIVE WARNING: (.*)/i, replace: 'CẢNH BÁO DỰ ĐOÁN: $1' },
+            { reg: /^LOW pH ALERT: (.*)/i, replace: 'CẢNH BÁO pH THẤP: $1' },
+            { reg: /^HIGH pH ALERT: (.*)/i, replace: 'CẢNH BÁO pH CAO: $1' },
+            { reg: /^Waiting: (.*)/i, replace: 'Đang chờ: $1' },
+        ],
+        zh: [
+            { reg: /^Water quality conditions appear normal\./i, replace: '水质状况正常。' },
+            { reg: /^No significant issues detected\./i, replace: '未发现明显异常。' },
+            { reg: /^Water quality appears normal\. Continue routine monitoring\./i, replace: '水质状况正常。继续常规监测。' },
+            { reg: /^All parameters within safe limits/i, replace: '所有水质参数均在安全范围内' },
+            { reg: /^Optimal conditions/i, replace: '水质状况优良' },
+            { reg: /^Waiting for data/i, replace: '正在等待数据...' },
+            { reg: /^System initializing/i, replace: '系统初始化中...' },
+            { reg: /^Current pH \(([\d.]+)\) is below the safe threshold \(([\d.]+)\)/i, replace: '当前pH ($1) 低于安全阈值 ($2)' },
+            { reg: /^Current pH \(([\d.]+)\) is above the safe threshold \(([\d.]+)\)/i, replace: '当前pH ($1) 高于安全阈值 ($2)' },
+            { reg: /^AI forecasts pH rising to ([\d.]+), which exceeds the upper safe threshold \(([\d.]+)\)/i, replace: 'AI预测pH将上升至 $1，超过安全上限 ($2)' },
+            { reg: /^AI forecasts pH dropping to ([\d.]+), which is below the lower safe threshold \(([\d.]+)\)/i, replace: 'AI预测pH将下降至 $1，低于安全下限 ($2)' },
+            { reg: /^These are suggested actions for decision support only\..*/i, replace: '本建议仅供决策参考，不作为专业兽医或水产诊断依据。请遵循养殖场标准操作流程。' },
+        ],
+        ja: [
+            { reg: /^Water quality conditions appear normal\./i, replace: '水質状態は正常です。' },
+            { reg: /^No significant issues detected\./i, replace: '重大な問題は検出されていません。' },
+            { reg: /^Water quality appears normal\. Continue routine monitoring\./i, replace: '水質は正常です。定期監視を継続してください。' },
+            { reg: /^All parameters within safe limits/i, replace: 'すべてのパラメータが安全範囲内です' },
+            { reg: /^Optimal conditions/i, replace: '水質状態は最適です' },
+            { reg: /^Waiting for data/i, replace: 'データ待機中...' },
+            { reg: /^System initializing/i, replace: 'システム初期化中...' },
+            { reg: /^Current pH \(([\d.]+)\) is below the safe threshold \(([\d.]+)\)/i, replace: '現在のpH ($1) が安全下限 ($2) を下回っています' },
+            { reg: /^Current pH \(([\d.]+)\) is above the safe threshold \(([\d.]+)\)/i, replace: '現在のpH ($1) が安全上限 ($2) を上回っています' },
+            { reg: /^AI forecasts pH rising to ([\d.]+), which exceeds the upper safe threshold \(([\d.]+)\)/i, replace: 'AI予測：pHが $1 に上昇し、安全上限 ($2) を超える見込みです' },
+            { reg: /^AI forecasts pH dropping to ([\d.]+), which is below the lower safe threshold \(([\d.]+)\)/i, replace: 'AI予測：pHが $1 に低下し、安全下限 ($2) を下回る見込みです' },
+            { reg: /^These are suggested actions for decision support only\..*/i, replace: '本提案は意思決定支援のみを目的としています。農場の標準手順に従ってください。' },
+        ]
+    },
+
+    /**
+     * Translate dynamic text from backend if available
+     */
+    translateDynamic(text) {
+        if (!text) return '';
+        if (this.currentLang === 'en') return text;
+        const patterns = this.dynamicPatterns[this.currentLang] || [];
+        for (const p of patterns) {
+            if (p.reg.test(text)) {
+                return text.replace(p.reg, p.replace);
+            }
+        }
+        return text;
+    },
+
+    /**
      * Get translated text for a key.
-     * Falls back to English, then to the key itself.
+     * Robust lookup: direct match, uppercase, lowercase, with/without status. prefix.
      */
     t(key) {
-        return this.translations[this.currentLang]?.[key]
-            || this.translations['en']?.[key]
-            || key;
+        if (!key) return '';
+        const lang = this.translations[this.currentLang] ? this.currentLang : 'en';
+        const trans = this.translations[lang] || {};
+        const enTrans = this.translations['en'] || {};
+
+        if (trans[key] !== undefined) return trans[key];
+        if (enTrans[key] !== undefined) return enTrans[key];
+
+        const cleanKey = String(key).replace(/^status\./i, '');
+        const withPrefix = 'status.' + cleanKey;
+
+        if (trans[withPrefix] !== undefined) return trans[withPrefix];
+        if (enTrans[withPrefix] !== undefined) return enTrans[withPrefix];
+
+        const upperPrefix = 'status.' + cleanKey.toUpperCase();
+        if (trans[upperPrefix] !== undefined) return trans[upperPrefix];
+        if (enTrans[upperPrefix] !== undefined) return enTrans[upperPrefix];
+
+        const lowerPrefix = 'status.' + cleanKey.toLowerCase();
+        if (trans[lowerPrefix] !== undefined) return trans[lowerPrefix];
+        if (enTrans[lowerPrefix] !== undefined) return enTrans[lowerPrefix];
+
+        if (trans[cleanKey] !== undefined) return trans[cleanKey];
+        if (enTrans[cleanKey] !== undefined) return enTrans[cleanKey];
+
+        const dyn = this.translateDynamic(key);
+        if (dyn !== key) return dyn;
+
+        return key;
     },
 
     /**
@@ -345,6 +604,19 @@ const I18N = {
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
+
+        // Update theme tooltip translation if theme button exists
+        const themeTooltip = document.getElementById('theme-tooltip');
+        const theme = localStorage.getItem('aqua-theme') || 'dark';
+        if (themeTooltip) {
+            const key = theme === 'light' ? 'theme.dark' : 'theme.light';
+            themeTooltip.textContent = this.t(key);
+        }
+
+        // Trigger dashboard update if exists to re-render dynamic strings
+        if (typeof update === 'function') {
+            update();
+        }
 
         // Dispatch event so other scripts can react
         window.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
@@ -366,7 +638,11 @@ const I18N = {
 
         // Update chart labels if chart exists
         if (typeof updateChartLabels === 'function') {
-            updateChartLabels();
+            try {
+                updateChartLabels();
+            } catch (e) {
+                // Chart might not be initialized yet
+            }
         }
     },
 
@@ -375,10 +651,10 @@ const I18N = {
      */
     getLanguages() {
         return [
-            { code: 'en', name: 'English', flag: '🇬🇧' },
-            { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-            { code: 'zh', name: '中文', flag: '🇨🇳' },
-            { code: 'ja', name: '日本語', flag: '🇯🇵' },
+            { code: 'en', name: 'English', flag: 'EN' },
+            { code: 'vi', name: 'Tiếng Việt', flag: 'VI' },
+            { code: 'zh', name: '中文', flag: '中' },
+            { code: 'ja', name: '日本語', flag: '日' },
         ];
     },
 
@@ -386,10 +662,9 @@ const I18N = {
      * Initialize: apply translations on DOMContentLoaded.
      */
     init() {
+        this.applyAll();
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.applyAll());
-        } else {
-            this.applyAll();
         }
     }
 };
