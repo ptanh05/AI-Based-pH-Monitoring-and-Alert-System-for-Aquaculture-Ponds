@@ -66,6 +66,10 @@ from data.real_data_loader import RealDataLoader
 from alerts.notification_dispatcher import dispatcher
 from devices.actuator_manager import actuator_manager
 from reports.report_generator import generate_csv_data, generate_html_report
+from digital_twin.twin_simulator import digital_twin_simulator
+from ai.chatbot_advisor import chatbot_advisor
+from vision.fish_behavior_detector import fish_detector
+from ai.drift_detector import drift_detector
 
 # ── Global State ──
 monitoring_system = None
@@ -389,6 +393,15 @@ def process_ph_reading(timestamp: datetime, ph_value: float):
         actuator_manager.evaluate_conditions(eval_dict)
     except Exception as e:
         print(f"Actuator error: {e}")
+
+    # 9c. Track Concept Drift & Check Auto-Adaptation
+    try:
+        drift_detector.add_sample(ph_value)
+        drift_res = drift_detector.check_drift()
+        if drift_res.get("status") == "DRIFT_DETECTED" and drift_detector.auto_retrain_enabled:
+            drift_detector.adapt_model(ms.forecaster)
+    except Exception as e:
+        print(f"Drift check error: {e}")
 
     # 10. Store reading
     future_ts = timestamp + timedelta(seconds=10)
@@ -916,6 +929,86 @@ async def export_report():
     }
     html_content = generate_html_report(current_data, history_buf, actuator_manager.get_status())
     return HTMLResponse(content=html_content)
+
+
+# ── Digital Twin "What-If" Simulation Endpoints ──
+class DigitalTwinSimRequest(BaseModel):
+    rainfall_mm: Optional[float] = 0.0
+    heat_multiplier: Optional[float] = 1.0
+    lime_kg: Optional[float] = 0.0
+    aerator_hours: Optional[float] = 0.0
+    water_exchange_pct: Optional[float] = 0.0
+    pond_volume_m3: Optional[float] = 1000.0
+    n_steps: Optional[int] = 24
+
+@app.post("/api/digital-twin/simulate")
+async def run_digital_twin_simulation(req: DigitalTwinSimRequest):
+    last_reading = recent_readings[-1] if recent_readings else None
+    current_ph = last_reading.ph_value if last_reading else 7.5
+    res = digital_twin_simulator.simulate(
+        current_ph=current_ph,
+        current_do=7.5,
+        current_temp=28.0,
+        pond_volume_m3=req.pond_volume_m3 or 1000.0,
+        rainfall_mm=req.rainfall_mm or 0.0,
+        heat_multiplier=req.heat_multiplier or 1.0,
+        lime_kg=req.lime_kg or 0.0,
+        aerator_hours=req.aerator_hours or 0.0,
+        water_exchange_pct=req.water_exchange_pct or 0.0,
+        n_steps=req.n_steps or 24,
+    )
+    return res
+
+
+# ── AI Aquaculture Chatbot Endpoints ──
+class ChatQueryRequest(BaseModel):
+    query: str
+    lang: Optional[str] = "vi"
+
+@app.post("/api/ai/chat")
+async def chat_with_advisor(req: ChatQueryRequest):
+    last_reading = recent_readings[-1] if recent_readings else None
+    telemetry = {
+        "ph_value": last_reading.ph_value if last_reading else 7.5,
+        "predicted_ph": last_reading.predicted_ph if last_reading else 7.5,
+        "risk_score": last_reading.risk_score if last_reading else 0.0,
+        "status": last_reading.status if last_reading else "NORMAL",
+        "do_value": 7.8,
+        "temperature": 27.5,
+        "pond_volume_m3": 1000.0,
+    }
+    answer = chatbot_advisor.answer_query(req.query, telemetry, lang=req.lang or "vi")
+    return answer
+
+@app.get("/api/ai/chat/prompts")
+async def get_chat_prompts(lang: str = "vi"):
+    return {"prompts": chatbot_advisor.get_quick_prompts(lang)}
+
+
+# ── Computer Vision Bio-Behavior Endpoints ──
+@app.get("/api/vision/status")
+async def get_vision_status():
+    last_reading = recent_readings[-1] if recent_readings else None
+    telemetry = {
+        "ph_value": last_reading.ph_value if last_reading else 7.5,
+        "do_value": 7.5,
+        "risk_score": last_reading.risk_score if last_reading else 0.0,
+        "status": last_reading.status if last_reading else "NORMAL",
+    }
+    return fish_detector.process_frame(telemetry)
+
+
+# ── Concept Drift & Continual Learning Endpoints ──
+@app.get("/api/drift/status")
+async def get_drift_status():
+    return drift_detector.check_drift()
+
+@app.post("/api/drift/retrain")
+async def trigger_drift_retrain():
+    ms = monitoring_system
+    forecaster = ms.forecaster if ms else None
+    res = drift_detector.adapt_model(forecaster)
+    return {"success": True, "details": res}
 
 
 if __name__ == "__main__":

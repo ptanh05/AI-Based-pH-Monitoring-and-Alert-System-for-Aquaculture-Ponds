@@ -683,6 +683,24 @@
             background: rgba(245, 158, 11, 0.3);
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
         }
+        .dt-btn {
+            background: rgba(168, 85, 247, 0.15);
+            border-color: rgba(168, 85, 247, 0.4);
+            color: #c084fc;
+        }
+        .dt-btn:hover {
+            background: rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+        }
+        .chat-btn {
+            background: rgba(236, 72, 153, 0.15);
+            border-color: rgba(236, 72, 153, 0.4);
+            color: #f472b6;
+        }
+        .chat-btn:hover {
+            background: rgba(236, 72, 153, 0.3);
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.4);
+        }
 
         /* ── IoT Actuators & Automation ── */
         .actuator-card {
@@ -960,6 +978,260 @@
             background: #2563eb;
             box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
         }
+
+        /* ── Digital Twin Modal & Sandbox ── */
+        .modal-card-large {
+            max-width: 920px;
+            width: 95%;
+        }
+        .dt-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .dt-grid-layout { grid-template-columns: 1fr; }
+        }
+        .dt-controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .dt-slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .dt-slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .dt-slider-header strong {
+            color: var(--accent-cyan);
+        }
+        .dt-chart-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .dt-chart-wrapper {
+            position: relative;
+            height: 220px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 10px;
+        }
+        .dt-kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .dt-kpi-card {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .dt-kpi-label { font-size: 11px; color: var(--text-secondary); }
+        .dt-kpi-value { font-size: 14px; font-weight: 700; margin-top: 2px; }
+
+        /* ── Vision Bio-Behavior Card ── */
+        .vision-canvas-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #0f2e46 0%, #081320 100%);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            margin-bottom: 12px;
+        }
+        #vision-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .vision-overlay-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 10.5px;
+            color: var(--accent-cyan);
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .vision-stress-meter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .vision-tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .vision-tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .vision-tag.critical {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: var(--accent-red);
+        }
+        .vision-tag.normal {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--accent-green);
+        }
+
+        /* ── Floating AI Chatbot Assistant ── */
+        .chat-floating-launcher {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 999;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .chat-floating-launcher:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(236, 72, 153, 0.6);
+        }
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            width: 360px;
+            height: 480px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            overflow: hidden;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-header {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h4 { margin: 0; font-size: 13.5px; color: var(--text-primary); }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 12.5px;
+        }
+        .chat-msg {
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 85%;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .chat-msg.bot {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .chat-msg.user {
+            background: var(--accent-blue);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-prompts-bar {
+            padding: 8px 12px;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            border-top: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.4);
+        }
+        .prompt-chip {
+            white-space: nowrap;
+            padding: 4px 9px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            font-size: 11px;
+            cursor: pointer;
+            color: var(--accent-cyan);
+            transition: all 0.2s;
+        }
+        .prompt-chip:hover {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent-cyan);
+        }
+        .chat-input-bar {
+            padding: 10px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 6px;
+            background: var(--bg-card);
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-primary);
+            font-size: 12.5px;
+            outline: none;
+        }
+        .chat-send-btn {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 0 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -972,6 +1244,8 @@
             </div>
         </div>
         <div class="header-right">
+            <button class="action-btn dt-btn" onclick="openDigitalTwinModal()" data-i18n="dt.btn">🧬 Bản Sao Số What-If</button>
+            <button class="action-btn chat-btn" onclick="toggleChatAdvisor()" data-i18n="chat.btn">💬 Trợ Lý AI</button>
             <button class="action-btn export-pdf-btn" onclick="window.open('/api/export/report', '_blank')" data-i18n="export.pdf">📄 Xuất Báo Cáo PDF</button>
             <button class="action-btn export-csv-btn" onclick="window.location.href='/api/export/csv'" data-i18n="export.csv">📊 Xuất CSV</button>
             <button class="action-btn notif-btn" onclick="openNotifModal()" data-i18n="notif.btn">📲 Cảnh báo Telegram</button>
@@ -1220,13 +1494,32 @@
                             <div class="info-value" id="inference-backend">OpenVINO / Sklearn</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-i18n="ai.trained">Trained State</div>
-                            <div class="info-value" id="model-trained" data-i18n="ai.trained.yes">Yes</div>
+                            <div class="info-label" data-i18n="drift.title">Độ Ổn Định Dữ Liệu</div>
+                            <div class="info-value" id="drift-status-badge" style="color:var(--accent-green)">🟢 Ổn định (100%)</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label" data-i18n="ai.history">History Buffer</div>
                             <div class="info-value" id="history-size">0</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ── Computer Vision Bio-Behavior Card ── -->
+                <div class="card">
+                    <h2 data-i18n="vision.title">👁️ Thị Giác Máy Tính AI (Hành Vi Cá & Thức Ăn)</h2>
+                    <div class="vision-canvas-container">
+                        <canvas id="vision-canvas"></canvas>
+                        <div class="vision-overlay-badge">
+                            <span class="status-dot" style="background:var(--accent-cyan)"></span>
+                            <span>CAM-01 • 15 FPS • 1280x720</span>
+                        </div>
+                    </div>
+                    <div class="vision-stress-meter">
+                        <span data-i18n="vision.stress_index">Chỉ số Căng thẳng Sinh học:</span>
+                        <strong id="vision-stress-val" style="color:var(--accent-green)">12% (THẤP)</strong>
+                    </div>
+                    <div class="vision-tag-list" id="vision-detections-list">
+                        <span class="vision-tag normal">Đàn bơi phân tán đều (94%)</span>
                     </div>
                 </div>
             </div>
@@ -1975,12 +2268,285 @@
         }
     }
 
+    // ══════ DIGITAL TWIN "WHAT-IF" SANDBOX ══════
+    let dtChart = null;
+
+    function openDigitalTwinModal() {
+        const modal = document.getElementById('dt-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            runDigitalTwinSim();
+        }
+    }
+
+    function closeDigitalTwinModal() {
+        const modal = document.getElementById('dt-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    async function runDigitalTwinSim() {
+        const rain = parseFloat(document.getElementById('dt-rain-input')?.value || 0);
+        const lime = parseFloat(document.getElementById('dt-lime-input')?.value || 0);
+        const aerator = parseFloat(document.getElementById('dt-aerator-input')?.value || 0);
+        const exchange = parseFloat(document.getElementById('dt-exchange-input')?.value || 0);
+
+        try {
+            const res = await fetch('/api/digital-twin/simulate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    rainfall_mm: rain,
+                    lime_kg: lime,
+                    aerator_hours: aerator,
+                    water_exchange_pct: exchange,
+                    pond_volume_m3: 1000.0,
+                    n_steps: 24
+                })
+            });
+            const data = await res.json();
+            if (!data) return;
+
+            document.getElementById('dt-kpi-base-ph').textContent = data.baseline.final_ph;
+            document.getElementById('dt-kpi-whatif-ph').textContent = data.what_if.final_ph;
+            document.getElementById('dt-kpi-reduction').textContent = data.risk_reduction_pct + '%';
+            document.getElementById('dt-summary-text').textContent = safeTranslate(data.summary_message);
+
+            renderDigitalTwinChart(data);
+        } catch (e) {
+            console.error('Digital twin sim error:', e);
+        }
+    }
+
+    function renderDigitalTwinChart(data) {
+        const ctx = document.getElementById('dt-chart')?.getContext('2d');
+        if (!ctx) return;
+
+        if (dtChart) dtChart.destroy();
+
+        dtChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.time_labels,
+                datasets: [
+                    {
+                        label: I18N.t('dt.baseline') || 'Quỹ đạo Cơ sở (Không can thiệp)',
+                        data: data.baseline.ph_trajectory,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.3,
+                        pointRadius: 2
+                    },
+                    {
+                        label: I18N.t('dt.what_if') || 'Quỹ đạo Can thiệp (Đã xử lý)',
+                        data: data.what_if.ph_trajectory,
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.15)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 6.0,
+                        max: 9.0,
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#94a3b8', font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // ══════ VISION BIO-BEHAVIOR SIMULATOR ══════
+    let fishDetections = [];
+    let canvasFishState = [];
+
+    function initFishSimulation() {
+        for (let i = 0; i < 20; i++) {
+            canvasFishState.push({
+                x: Math.random() * 300 + 20,
+                y: Math.random() * 120 + 20,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.0,
+                size: Math.random() * 4 + 3
+            });
+        }
+    }
+    initFishSimulation();
+
+    function drawVisionCanvas() {
+        const canvas = document.getElementById('vision-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width = canvas.parentElement.clientWidth;
+        const h = canvas.height = canvas.parentElement.clientHeight;
+
+        // Background water tint
+        ctx.fillStyle = '#0a1d30';
+        ctx.fillRect(0, 0, w, h);
+
+        // Draw animated swimming fish
+        ctx.fillStyle = 'rgba(147, 197, 253, 0.6)';
+        for (const f of canvasFishState) {
+            f.x += f.vx;
+            f.y += f.vy;
+            if (f.x < 10 || f.x > w - 10) f.vx *= -1;
+            if (f.y < 10 || f.y > h - 10) f.vy *= -1;
+
+            ctx.beginPath();
+            ctx.ellipse(f.x, f.y, f.size * 1.8, f.size * 0.8, Math.atan2(f.vy, f.vx), 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw AI Bounding Boxes
+        for (const d of fishDetections) {
+            const [bx, by, bw, bh] = d.bbox;
+            const sx = (bx / 1280) * w;
+            const sy = (by / 720) * h;
+            const sw = (bw / 1280) * w;
+            const sh = (bh / 720) * h;
+
+            const isCrit = d.severity === 'CRITICAL';
+            ctx.strokeStyle = isCrit ? '#ef4444' : '#06b6d4';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(sx, sy, sw, sh);
+
+            // Bounding box label tag
+            ctx.fillStyle = isCrit ? 'rgba(239, 68, 68, 0.85)' : 'rgba(6, 182, 212, 0.85)';
+            ctx.fillRect(sx, sy - 16, Math.min(sw + 40, 160), 16);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '9.5px sans-serif';
+            ctx.fillText(`${d.label.split('(')[0]} ${Math.round(d.confidence * 100)}%`, sx + 3, sy - 4);
+        }
+    }
+
+    async function updateVision() {
+        try {
+            const data = await fetchJSON('/api/vision/status');
+            if (!data) return;
+            fishDetections = data.detections || [];
+
+            const stressEl = document.getElementById('vision-stress-val');
+            if (stressEl) {
+                stressEl.textContent = `${data.stress_index}% (${data.stress_level_label})`;
+                stressEl.style.color = data.stress_index > 50 ? 'var(--accent-red)' : 'var(--accent-green)';
+            }
+
+            const tagList = document.getElementById('vision-detections-list');
+            if (tagList) {
+                tagList.innerHTML = '';
+                for (const d of fishDetections) {
+                    const tag = document.createElement('span');
+                    tag.className = 'vision-tag ' + (d.severity === 'CRITICAL' ? 'critical' : 'normal');
+                    tag.textContent = `${safeTranslate(d.label)} (${Math.round(d.confidence * 100)}%)`;
+                    tagList.appendChild(tag);
+                }
+            }
+            drawVisionCanvas();
+        } catch (e) {}
+    }
+
+    // ══════ CONCEPT DRIFT ══════
+    async function updateDrift() {
+        try {
+            const data = await fetchJSON('/api/drift/status');
+            if (!data) return;
+            const el = document.getElementById('drift-status-badge');
+            if (el) {
+                const isDrift = data.status === 'DRIFT_DETECTED';
+                const isWarn = data.status === 'WARNING';
+                el.style.color = isDrift ? 'var(--accent-red)' : isWarn ? 'var(--accent-yellow)' : 'var(--accent-green)';
+                el.textContent = `${isDrift ? '🔴' : isWarn ? '🟡' : '🟢'} ${data.status} (${data.alignment_pct}% Khớp)`;
+            }
+        } catch (e) {}
+    }
+
+    // ══════ AI CHATBOT ADVISOR ══════
+    let chatOpen = false;
+
+    function toggleChatAdvisor() {
+        chatOpen = !chatOpen;
+        const w = document.getElementById('chat-window');
+        if (w) w.style.display = chatOpen ? 'flex' : 'none';
+        if (chatOpen) loadChatPrompts();
+    }
+
+    async function loadChatPrompts() {
+        try {
+            const lang = (typeof I18N !== 'undefined') ? I18N.currentLang : 'vi';
+            const data = await fetchJSON('/api/ai/chat/prompts?lang=' + lang);
+            const container = document.getElementById('chat-prompts');
+            if (container && data?.prompts) {
+                container.innerHTML = '';
+                for (const p of data.prompts) {
+                    const chip = document.createElement('span');
+                    chip.className = 'prompt-chip';
+                    chip.textContent = p;
+                    chip.onclick = () => sendChatMessage(p);
+                    container.appendChild(chip);
+                }
+            }
+        } catch (e) {}
+    }
+
+    async function sendChatMessage(customText) {
+        const input = document.getElementById('chat-user-input');
+        const text = customText || input?.value;
+        if (!text || !text.trim()) return;
+
+        appendChatMsg(text, 'user');
+        if (input) input.value = '';
+
+        try {
+            const lang = (typeof I18N !== 'undefined') ? I18N.currentLang : 'vi';
+            const res = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: text, lang: lang })
+            });
+            const data = await res.json();
+            appendChatMsg(data.answer || '...', 'bot');
+        } catch (e) {
+            appendChatMsg('❌ Lỗi kết nối trợ lý AI.', 'bot');
+        }
+    }
+
+    function appendChatMsg(text, sender) {
+        const container = document.getElementById('chat-messages');
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = `chat-msg ${sender}`;
+        div.textContent = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ══════ PERIODIC LOOP ══════
     setInterval(async () => {
         await update();
         await updateActuators();
+        await updateVision();
+        await updateDrift();
     }, 1000);
+
     update();
     updateActuators();
+    updateVision();
+    updateDrift();
 
     // ══════ INIT i18n ══════
     I18N.init();
@@ -2018,6 +2584,102 @@
                 <button class="btn btn-secondary" onclick="sendTestNotif()" data-i18n="notif.test_btn">🧪 Gửi Tin Thử Nghiệm</button>
                 <button class="btn btn-primary" onclick="saveNotifConfig()" data-i18n="notif.save">Lưu Cấu Hình</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ══ Digital Twin "What-If" Modal ══ -->
+    <div id="dt-modal" class="modal-backdrop" style="display:none" onclick="if(event.target===this)closeDigitalTwinModal()">
+        <div class="modal-card modal-card-large">
+            <div class="modal-header">
+                <h3 data-i18n="dt.title">🧬 Bản Sao Số (Digital Twin) Thử Nghiệm Kịch Bản "What-If"</h3>
+                <button class="modal-close-btn" onclick="closeDigitalTwinModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="dt-grid-layout">
+                    <!-- Controls -->
+                    <div class="dt-controls-panel">
+                        <div class="dt-slider-group">
+                            <div class="dt-slider-header">
+                                <span data-i18n="dt.rain_label">Kịch bản Mưa lớn (mm):</span>
+                                <strong id="val-rain">30 mm</strong>
+                            </div>
+                            <input type="range" id="dt-rain-input" min="0" max="100" value="30" oninput="document.getElementById('val-rain').textContent=this.value+' mm';runDigitalTwinSim()">
+                        </div>
+
+                        <div class="dt-slider-group">
+                            <div class="dt-slider-header">
+                                <span data-i18n="dt.lime_label">Liều lượng Vôi nông nghiệp (kg):</span>
+                                <strong id="val-lime">40 kg</strong>
+                            </div>
+                            <input type="range" id="dt-lime-input" min="0" max="100" value="40" oninput="document.getElementById('val-lime').textContent=this.value+' kg';runDigitalTwinSim()">
+                        </div>
+
+                        <div class="dt-slider-group">
+                            <div class="dt-slider-header">
+                                <span data-i18n="dt.aerator_label">Thời gian Bật quạt nước (giờ):</span>
+                                <strong id="val-aerator">4 giờ</strong>
+                            </div>
+                            <input type="range" id="dt-aerator-input" min="0" max="8" value="4" oninput="document.getElementById('val-aerator').textContent=this.value+' giờ';runDigitalTwinSim()">
+                        </div>
+
+                        <div class="dt-slider-group">
+                            <div class="dt-slider-header">
+                                <span data-i18n="dt.exchange_label">Tỷ lệ Bơm thay nước (%):</span>
+                                <strong id="val-exchange">15 %</strong>
+                            </div>
+                            <input type="range" id="dt-exchange-input" min="0" max="50" value="15" oninput="document.getElementById('val-exchange').textContent=this.value+' %';runDigitalTwinSim()">
+                        </div>
+
+                        <button class="btn btn-primary" onclick="runDigitalTwinSim()" style="margin-top:8px" data-i18n="dt.simulate_btn">⚡ Chạy Mô Phỏng What-If</button>
+                    </div>
+
+                    <!-- Visual Comparison -->
+                    <div class="dt-chart-panel">
+                        <div class="dt-kpi-row">
+                            <div class="dt-kpi-card">
+                                <div class="dt-kpi-label">pH Cơ sở (+24h)</div>
+                                <div class="dt-kpi-value" id="dt-kpi-base-ph" style="color:var(--accent-red)">—</div>
+                            </div>
+                            <div class="dt-kpi-card">
+                                <div class="dt-kpi-label">pH Can thiệp (+24h)</div>
+                                <div class="dt-kpi-value" id="dt-kpi-whatif-ph" style="color:var(--accent-cyan)">—</div>
+                            </div>
+                            <div class="dt-kpi-card">
+                                <div class="dt-kpi-label" data-i18n="dt.risk_reduction">Rủi ro giảm:</div>
+                                <div class="dt-kpi-value" id="dt-kpi-reduction" style="color:var(--accent-green)">—</div>
+                            </div>
+                        </div>
+
+                        <div class="dt-chart-wrapper">
+                            <canvas id="dt-chart"></canvas>
+                        </div>
+
+                        <div class="notif-status-box" id="dt-summary-box" style="font-size:11.5px">
+                            <span id="dt-summary-text">Đang tính toán quỹ đạo kép...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ Floating AI Chatbot Assistant ══ -->
+    <div class="chat-floating-launcher" onclick="toggleChatAdvisor()" title="Trợ Lý AI Thủy Sản">
+        💬
+    </div>
+
+    <div class="chat-window" id="chat-window" style="display:none">
+        <div class="chat-header">
+            <h4 data-i18n="chat.title">💬 Trợ Lý AI Kỹ Sư Thủy Sản</h4>
+            <button class="modal-close-btn" onclick="toggleChatAdvisor()">✕</button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg bot">Xin chào! Tôi là Trợ Lý AI Thủy Sản. Tôi có thể hỗ trợ tính lượng vôi, oxy hòa tan và phân tích nguyên nhân biến động nước cho bạn!</div>
+        </div>
+        <div class="chat-prompts-bar" id="chat-prompts"></div>
+        <div class="chat-input-bar">
+            <input type="text" class="chat-input" id="chat-user-input" placeholder="Nhập câu hỏi..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+            <button class="chat-send-btn" onclick="sendChatMessage()">➤</button>
         </div>
     </div>
 </body>

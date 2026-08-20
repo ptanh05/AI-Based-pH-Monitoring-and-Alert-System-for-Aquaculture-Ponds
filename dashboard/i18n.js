@@ -148,6 +148,31 @@ const I18N = {
             'export.pdf': '📄 Export PDF Report',
             'export.csv': '📊 Export CSV Data',
 
+            // Advanced AI Suite (Digital Twin, Chatbot, Vision, Drift)
+            'dt.btn': '🧬 Digital Twin Sandbox',
+            'dt.title': '🧬 Digital Twin "What-If" Pond Simulation',
+            'dt.simulate_btn': '⚡ Run What-If Simulation',
+            'dt.baseline': 'Baseline (No Intervention)',
+            'dt.what_if': 'What-If (With Mitigation)',
+            'dt.risk_reduction': 'Risk Reduction:',
+            'dt.rain_label': 'Rainfall Stress (mm):',
+            'dt.lime_label': 'Agricultural Lime Dosage (kg):',
+            'dt.aerator_label': 'Paddlewheel Aerator Run (hours):',
+            'dt.exchange_label': 'Water Exchange Rate (%):',
+
+            'chat.btn': '💬 AI Agronomist',
+            'chat.title': '💬 AI Aquaculture Expert Advisor',
+            'chat.placeholder': 'Ask about lime dosing, ammonia, rain mitigation...',
+            'chat.send': 'Send',
+
+            'vision.title': '👁️ Computer Vision Bio-Behavior Monitoring',
+            'vision.stress_index': 'Biological Stress Index:',
+            'vision.detections': 'Active AI Detections:',
+
+            'drift.title': 'Model Stability & Concept Drift Adaptation',
+            'drift.alignment': 'Distribution Alignment:',
+            'drift.retrain_btn': '🔄 Adapt Model at Edge',
+
             // Language & Theme
             'lang.label': 'Language',
             'theme.light': 'Light Mode',
@@ -283,6 +308,31 @@ const I18N = {
             'export.pdf': '📄 Xuất Báo Cáo PDF',
             'export.csv': '📊 Xuất Dữ Liệu CSV',
 
+            // Advanced AI Suite (Digital Twin, Chatbot, Vision, Drift)
+            'dt.btn': '🧬 Bản Sao Số What-If',
+            'dt.title': '🧬 Bản Sao Số (Digital Twin) Thử Nghiệm Kịch Bản "What-If"',
+            'dt.simulate_btn': '⚡ Chạy Mô Phỏng What-If',
+            'dt.baseline': 'Quỹ đạo Cơ sở (Không can thiệp)',
+            'dt.what_if': 'Quỹ đạo Can thiệp (Đã xử lý)',
+            'dt.risk_reduction': 'Rủi ro giảm thiểu:',
+            'dt.rain_label': 'Kịch bản Mưa lớn (mm):',
+            'dt.lime_label': 'Liều lượng Vôi nông nghiệp (kg):',
+            'dt.aerator_label': 'Thời gian Bật quạt nước (giờ):',
+            'dt.exchange_label': 'Tỷ lệ Bơm thay nước (%):',
+
+            'chat.btn': '💬 Trợ Lý AI Thủy Sản',
+            'chat.title': '💬 Trợ Lý Ảo AI Kỹ Sư Thủy Sản',
+            'chat.placeholder': 'Hỏi về lượng vôi cần bón, oxy hòa tan, xử lý mưa...',
+            'chat.send': 'Gửi câu hỏi',
+
+            'vision.title': '👁️ Thị Giác Máy Tính AI (Hành Vi Cá & Thức Ăn)',
+            'vision.stress_index': 'Chỉ số Căng thẳng Sinh học:',
+            'vision.detections': 'Nhận diện AI trực tiếp:',
+
+            'drift.title': 'Độ Ổn Định Dữ Liệu & Tự Động Học Lại',
+            'drift.alignment': 'Độ khớp dữ liệu:',
+            'drift.retrain_btn': '🔄 Tự Học Lại Tại Biên',
+
             'lang.label': 'Ngôn ngữ',
             'theme.light': 'Giao diện Sáng',
             'theme.dark': 'Giao diện Tối',
@@ -417,6 +467,31 @@ const I18N = {
             'export.pdf': '📄 导出 PDF 报告',
             'export.csv': '📊 导出 CSV 数据',
 
+            // Advanced AI Suite
+            'dt.btn': '🧬 数字孪生沙盒',
+            'dt.title': '🧬 数字孪生 "What-If" 水质模拟沙盒',
+            'dt.simulate_btn': '⚡ 运行沙盒模拟',
+            'dt.baseline': '基线方案（未干预）',
+            'dt.what_if': '干预方案（已处理）',
+            'dt.risk_reduction': '风险降低率:',
+            'dt.rain_label': '降雨量模拟 (mm):',
+            'dt.lime_label': '生石灰施用量 (kg):',
+            'dt.aerator_label': '增氧机运行 (小时):',
+            'dt.exchange_label': '换水率 (%):',
+
+            'chat.btn': '💬 AI 专家助手',
+            'chat.title': '💬 AI 水产专家智能问答',
+            'chat.placeholder': '询问石灰用量、暴雨应对、溶氧调控...',
+            'chat.send': '发送',
+
+            'vision.title': '👁️ 计算机视觉鱼类行为与残饵监测',
+            'vision.stress_index': '生物应激指数:',
+            'vision.detections': '实时AI检测:',
+
+            'drift.title': '数据稳定性与持续学习',
+            'drift.alignment': '数据匹配度:',
+            'drift.retrain_btn': '🔄 边缘模型自适应重训',
+
             'lang.label': '语言',
             'theme.light': '浅色模式',
             'theme.dark': '深色模式',
@@ -550,6 +625,31 @@ const I18N = {
             // Export
             'export.pdf': '📄 PDF 監査レポート出力',
             'export.csv': '📊 CSV データ出力',
+
+            // Advanced AI Suite
+            'dt.btn': '🧬 デジタルツイン',
+            'dt.title': '🧬 デジタルツイン "What-If" シミュレーター',
+            'dt.simulate_btn': '⚡ シミュレーション実行',
+            'dt.baseline': 'ベースライン（未処置）',
+            'dt.what_if': '介入シナリオ（処置後）',
+            'dt.risk_reduction': 'リスク低減率:',
+            'dt.rain_label': '降雨量ストレス (mm):',
+            'dt.lime_label': '消石灰散布量 (kg):',
+            'dt.aerator_label': 'エアレーター稼働時間 (時間):',
+            'dt.exchange_label': '換水率 (%):',
+
+            'chat.btn': '💬 AI アドバイザー',
+            'chat.title': '💬 AI 水産専門家アドバイザー',
+            'chat.placeholder': '石灰散布量や降雨対策について質問...',
+            'chat.send': '送信',
+
+            'vision.title': '👁️ コンピュータビジョン魚類行動検知',
+            'vision.stress_index': '生物ストレス指数:',
+            'vision.detections': 'AI検知項目:',
+
+            'drift.title': 'データ安定性＆継続学習',
+            'drift.alignment': 'データ適合率:',
+            'drift.retrain_btn': '🔄 エッジモデル自動適応',
 
             'lang.label': '言語',
             'theme.light': 'ライトモード',
