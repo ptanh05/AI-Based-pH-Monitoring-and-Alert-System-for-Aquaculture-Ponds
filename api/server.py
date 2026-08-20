@@ -6,7 +6,7 @@ Sensor Data → Validation → Features → Forecasting → Anomaly →
 Risk → Early Warning → Explainability → Recommendations → Dashboard
 """
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -63,6 +63,9 @@ from edge.inference_engine import (
 )
 from ai.features import FeatureEngineer
 from data.real_data_loader import RealDataLoader
+from alerts.notification_dispatcher import dispatcher
+from devices.actuator_manager import actuator_manager
+from reports.report_generator import generate_csv_data, generate_html_report
 
 # ── Global State ──
 monitoring_system = None
@@ -364,6 +367,28 @@ def process_ph_reading(timestamp: datetime, ph_value: float):
             message=alert_message,
         )
         threading.Thread(target=play_beep, args=(1.5,), daemon=True).start()
+
+    # 9b. Dispatch notifications (Telegram / Email) & Evaluate IoT Actuators
+    eval_dict = {
+        "timestamp": timestamp.isoformat(),
+        "ph_value": ph_value,
+        "predicted_ph": predicted_ph,
+        "risk_score": risk_result["total"],
+        "status": alert_status.value,
+        "alert_status": alert_status.value,
+        "warning_message": alert_message,
+        "do_value": 7.8,
+        "turbidity": 4.2,
+        "temperature": 27.5
+    }
+    try:
+        dispatcher.dispatch_alert(eval_dict)
+    except Exception as e:
+        print(f"Notification error: {e}")
+    try:
+        actuator_manager.evaluate_conditions(eval_dict)
+    except Exception as e:
+        print(f"Actuator error: {e}")
 
     # 10. Store reading
     future_ts = timestamp + timedelta(seconds=10)
@@ -798,6 +823,99 @@ async def get_real_multisensor():
         with open(res_path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {"message": "Run python scripts/analyze_multisensor.py to generate."}
+
+
+# ── Notification Endpoints ──
+class NotificationConfigRequest(BaseModel):
+    enabled: bool
+    telegram_token: Optional[str] = ""
+    telegram_chat_id: Optional[str] = ""
+    email: Optional[str] = ""
+
+@app.get("/api/notifications/config")
+async def get_notification_config():
+    return dispatcher.get_config()
+
+@app.post("/api/notifications/config")
+async def set_notification_config(req: NotificationConfigRequest):
+    dispatcher.configure(
+        enabled=req.enabled,
+        telegram_token=req.telegram_token,
+        telegram_chat_id=req.telegram_chat_id,
+        email=req.email
+    )
+    return {"success": True, "config": dispatcher.get_config()}
+
+@app.post("/api/notifications/test")
+async def test_notification():
+    msg = (
+        f"🧪 *AI AQUACULTURE GUARDIAN - TIN NHẮN THỬ NGHIỆM*\n"
+        f"━━━━━━━━━━━━━━━━━━━\n"
+        f"• *Hệ thống:* Hoạt động bình thường\n"
+        f"• *Kênh thông báo:* Telegram Bot / Webhook\n"
+        f"• *Thời gian:* {time.strftime('%H:%M:%S %d/%m/%Y')}\n"
+        f"━━━━━━━━━━━━━━━━━━━\n"
+        f"✅ Kết nối thành công! Bạn sẽ nhận được thông báo khi có cảnh báo khẩn cấp."
+    )
+    res = dispatcher.send_telegram_message(msg)
+    return res
+
+
+# ── IoT Actuators & Automation Endpoints ──
+class ActuatorModeRequest(BaseModel):
+    mode: str
+
+class ActuatorToggleRequest(BaseModel):
+    device_id: str
+    state: Optional[bool] = None
+    reason: Optional[str] = ""
+
+@app.get("/api/actuators")
+async def get_actuators_status():
+    return actuator_manager.get_status()
+
+@app.post("/api/actuators/mode")
+async def set_actuator_mode(req: ActuatorModeRequest):
+    new_mode = actuator_manager.set_mode(req.mode)
+    return {"success": True, "mode": new_mode}
+
+@app.post("/api/actuators/toggle")
+async def toggle_actuator(req: ActuatorToggleRequest):
+    new_state = actuator_manager.toggle_device(req.device_id, req.state, req.reason or "Thao tác từ Dashboard")
+    return {"success": True, "device_id": req.device_id, "is_on": new_state}
+
+
+# ── Export Endpoints (CSV & HTML/PDF Report) ──
+@app.get("/api/export/csv")
+async def export_csv():
+    history_buf = {
+        "labels": [r.timestamp for r in recent_readings],
+        "actual": [r.ph_value for r in recent_readings],
+        "forecast": [r.predicted_ph or r.ph_value for r in recent_readings],
+        "upper": [8.5] * len(recent_readings),
+        "lower": [7.0] * len(recent_readings),
+        "risk": [r.risk_score or 0.0 for r in recent_readings],
+    }
+    csv_content = generate_csv_data(history_buf)
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=aquaculture_data_{int(time.time())}.csv"}
+    )
+
+@app.get("/api/export/report")
+async def export_report():
+    current_data = recent_readings[-1].__dict__ if recent_readings else {}
+    history_buf = {
+        "labels": [r.timestamp for r in recent_readings],
+        "actual": [r.ph_value for r in recent_readings],
+        "forecast": [r.predicted_ph or r.ph_value for r in recent_readings],
+        "upper": [8.5] * len(recent_readings),
+        "lower": [7.0] * len(recent_readings),
+        "risk": [r.risk_score or 0.0 for r in recent_readings],
+    }
+    html_content = generate_html_report(current_data, history_buf, actuator_manager.get_status())
+    return HTMLResponse(content=html_content)
 
 
 if __name__ == "__main__":

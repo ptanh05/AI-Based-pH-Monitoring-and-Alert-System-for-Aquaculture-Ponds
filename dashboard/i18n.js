@@ -123,6 +123,31 @@ const I18N = {
             'alert.warning_sub': 'Attention Required',
             'alert.critical_sub': 'Immediate Action Needed',
 
+            // IoT Actuators
+            'actuators.title': '⚡ IoT Actuators & Pond Automation',
+            'actuators.mode_auto': 'AI Auto',
+            'actuators.mode_manual': 'Manual',
+            'actuators.power_total': 'Total Load:',
+            'actuators.aerator': 'Paddlewheel Aerator (1.5 kW)',
+            'actuators.pump': 'Water Exchange Pump (2.2 kW)',
+            'actuators.lime': 'Auto Lime Dispenser (0.75 kW)',
+            'actuators.running': 'RUNNING',
+            'actuators.idle': 'STANDBY',
+
+            // Notifications & Telegram
+            'notif.title': '📲 Alert Notification Channels (Telegram / Email)',
+            'notif.btn': '📲 Alerts & Telegram',
+            'notif.enable': 'Enable Telegram Alert Bot',
+            'notif.token_placeholder': 'Telegram Bot Token (e.g. 123456:ABC-DEF...)',
+            'notif.chatid_placeholder': 'Chat ID (e.g. 987654321)',
+            'notif.save': 'Save Settings',
+            'notif.test_btn': '🧪 Send Test Alert',
+            'notif.status_ok': 'Telegram Dispatcher Active',
+
+            // Export
+            'export.pdf': '📄 Export PDF Report',
+            'export.csv': '📊 Export CSV Data',
+
             // Language & Theme
             'lang.label': 'Language',
             'theme.light': 'Light Mode',
@@ -233,6 +258,31 @@ const I18N = {
             'alert.warning_sub': 'Cần chú ý theo dõi',
             'alert.critical_sub': 'Cần can thiệp khẩn cấp',
 
+            // IoT Actuators
+            'actuators.title': '⚡ Bảng Điều Khiển Thiết Bị Ao Nuôi',
+            'actuators.mode_auto': 'Tự Động (AI)',
+            'actuators.mode_manual': 'Thủ Công',
+            'actuators.power_total': 'Tổng tải:',
+            'actuators.aerator': 'Quạt nước tạo Oxy (1.5 kW)',
+            'actuators.pump': 'Máy bơm nước sạch (2.2 kW)',
+            'actuators.lime': 'Máy xả vôi trung hòa (0.75 kW)',
+            'actuators.running': 'ĐANG CHẠY',
+            'actuators.idle': 'ĐANG NGHỈ',
+
+            // Notifications & Telegram
+            'notif.title': '📲 Cấu Hình Kênh Báo Động (Telegram / Email)',
+            'notif.btn': '📲 Cảnh báo Telegram',
+            'notif.enable': 'Bật nhận cảnh báo qua Telegram Bot',
+            'notif.token_placeholder': 'Nhập Telegram Bot Token (tùy chọn)',
+            'notif.chatid_placeholder': 'Nhập Chat ID người nhận (tùy chọn)',
+            'notif.save': 'Lưu Cấu Hình',
+            'notif.test_btn': '🧪 Gửi Tin Thử Nghiệm',
+            'notif.status_ok': 'Kênh thông báo Telegram đã sẵn sàng',
+
+            // Export
+            'export.pdf': '📄 Xuất Báo Cáo PDF',
+            'export.csv': '📊 Xuất Dữ Liệu CSV',
+
             'lang.label': 'Ngôn ngữ',
             'theme.light': 'Giao diện Sáng',
             'theme.dark': 'Giao diện Tối',
@@ -342,6 +392,31 @@ const I18N = {
             'alert.warning_sub': '需要密切注意',
             'alert.critical_sub': '需要立即处理',
 
+            // IoT Actuators
+            'actuators.title': '⚡ 物联网执行器与池塘自动化',
+            'actuators.mode_auto': 'AI 自动',
+            'actuators.mode_manual': '手动模式',
+            'actuators.power_total': '总功耗:',
+            'actuators.aerator': '水车式增氧机 (1.5 kW)',
+            'actuators.pump': '循环换水泵 (2.2 kW)',
+            'actuators.lime': '自动熟石灰机 (0.75 kW)',
+            'actuators.running': '运行中',
+            'actuators.idle': '待机中',
+
+            // Notifications & Telegram
+            'notif.title': '📲 警报通知渠道 (Telegram / Email)',
+            'notif.btn': '📲 Telegram 警报',
+            'notif.enable': '启用 Telegram 警报机器人',
+            'notif.token_placeholder': '输入 Telegram Bot Token (可选)',
+            'notif.chatid_placeholder': '输入 Chat ID (可选)',
+            'notif.save': '保存设置',
+            'notif.test_btn': '🧪 发送测试警报',
+            'notif.status_ok': 'Telegram 通知已就绪',
+
+            // Export
+            'export.pdf': '📄 导出 PDF 报告',
+            'export.csv': '📊 导出 CSV 数据',
+
             'lang.label': '语言',
             'theme.light': '浅色模式',
             'theme.dark': '深色模式',
@@ -450,6 +525,31 @@ const I18N = {
             'alert.normal_sub': 'システム正常稼働中',
             'alert.warning_sub': '注意深い監視が必要',
             'alert.critical_sub': '緊急対応が必要',
+
+            // IoT Actuators
+            'actuators.title': '⚡ IoTアクチュエータ＆自動化',
+            'actuators.mode_auto': 'AI 自動',
+            'actuators.mode_manual': '手動モード',
+            'actuators.power_total': '合計負荷:',
+            'actuators.aerator': '水車式エアレーター (1.5 kW)',
+            'actuators.pump': '循環給水ポンプ (2.2 kW)',
+            'actuators.lime': '消石灰自動散布機 (0.75 kW)',
+            'actuators.running': '稼働中',
+            'actuators.idle': '待機中',
+
+            // Notifications & Telegram
+            'notif.title': '📲 警報通知チャンネル (Telegram / Email)',
+            'notif.btn': '📲 Telegram 警報',
+            'notif.enable': 'Telegram 警報ボットを有効化',
+            'notif.token_placeholder': 'Telegram Bot Token を入力 (任意)',
+            'notif.chatid_placeholder': 'Chat ID を入力 (任意)',
+            'notif.save': '設定を保存',
+            'notif.test_btn': '🧪 テスト警報送信',
+            'notif.status_ok': 'Telegram 通知準備完了',
+
+            // Export
+            'export.pdf': '📄 PDF 監査レポート出力',
+            'export.csv': '📊 CSV データ出力',
 
             'lang.label': '言語',
             'theme.light': 'ライトモード',
