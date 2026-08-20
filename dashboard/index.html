@@ -271,30 +271,99 @@
             align-items: center;
             gap: 8px;
         }
-        /* ── Alert Banner ── */
-        .alert-banner {
-            padding: 16px 24px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid;
-            animation: fadeIn 0.3s ease;
+        /* ── Modern Right-Column Alert Card ── */
+        .alert-card {
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: var(--glass);
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-        .alert-banner.normal { background: rgba(16,185,129,0.08); border-color: var(--accent-green); color: var(--accent-green); }
-        .alert-banner.warning { background: rgba(245,158,11,0.08); border-color: var(--accent-yellow); color: var(--accent-yellow); }
-        .alert-banner.high { background: rgba(249,115,22,0.08); border-color: var(--accent-orange); color: var(--accent-orange); }
-        .alert-banner.critical {
-            background: rgba(239,68,68,0.1);
+        .alert-card.normal {
+            border-color: rgba(16, 185, 129, 0.35);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+        }
+        .alert-card.warning {
+            border-color: var(--accent-yellow);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.7) 100%);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+        }
+        .alert-card.high {
+            border-color: var(--accent-orange);
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.25);
+            animation: orangePulse 2.5s infinite;
+        }
+        .alert-card.critical {
             border-color: var(--accent-red);
-            color: var(--accent-red);
-            animation: fadeIn 0.3s ease, criticalPulse 2s infinite;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(15, 23, 42, 0.85) 100%);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
+            animation: criticalPulse 1.8s infinite;
+        }
+        @keyframes orangePulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.4); }
         }
         @keyframes criticalPulse {
-            0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.2); }
-            50% { box-shadow: 0 0 20px 4px rgba(239,68,68,0.15); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.2); }
+            50% { box-shadow: 0 0 20px 4px rgba(239,68,68,0.3); }
         }
-        .alert-banner .alert-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-        .alert-banner .alert-text { font-size: 13px; opacity: 0.9; }
+        .alert-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .alert-card-icon {
+            font-size: 22px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+        .alert-card-title-group {
+            flex-grow: 1;
+        }
+        .alert-card-heading {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            letter-spacing: 0.3px;
+        }
+        .alert-card-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .alert-pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+            flex-shrink: 0;
+            animation: pulseLive 1.5s infinite;
+        }
+        .alert-card.warning .alert-pulse-dot { background: var(--accent-yellow); box-shadow: 0 0 10px var(--accent-yellow); }
+        .alert-card.high .alert-pulse-dot { background: var(--accent-orange); box-shadow: 0 0 12px var(--accent-orange); }
+        .alert-card.critical .alert-pulse-dot { background: var(--accent-red); box-shadow: 0 0 15px var(--accent-red); }
+
+        .alert-card-body {
+            padding: 9px 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .alert-card-text {
+            font-size: 12.5px;
+            line-height: 1.45;
+            color: var(--text-primary);
+            margin: 0;
+        }
         /* ── Chart ── */
         .chart-area { position: relative; height: 280px; }
         .chart-header-row {
@@ -623,12 +692,6 @@
             <button class="scenario-btn active" onclick="setScenario('competition_demo')" data-i18n="scenario.competition_demo">Competition Demo</button>
         </div>
 
-        <!-- ── Alert Banner ── -->
-        <div id="alert-banner" class="alert-banner normal" style="display:none">
-            <div class="alert-title" id="alert-title"></div>
-            <div class="alert-text" id="alert-text"></div>
-        </div>
-
         <!-- ── Top Stats Grid ── -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -679,10 +742,10 @@
                         <h2 data-i18n="chart.title">📊 Water Quality Monitoring & Multi-Step AI Forecast</h2>
                         <div class="chart-window-controls">
                             <span class="window-label" data-i18n="chart.window">Khung nhìn:</span>
-                            <button class="win-btn active" data-size="30" onclick="setChartWindow(30)" data-i18n="chart.win_30">30 điểm</button>
-                            <button class="win-btn" data-size="60" onclick="setChartWindow(60)" data-i18n="chart.win_60">60 điểm</button>
-                            <button class="win-btn" data-size="120" onclick="setChartWindow(120)" data-i18n="chart.win_120">120 điểm</button>
-                            <button class="win-btn" data-size="0" onclick="setChartWindow(0)" data-i18n="chart.win_all">Tất cả</button>
+                            <button class="win-btn" data-size="15" onclick="setChartWindow(15)" data-i18n="chart.win_15">15 điểm</button>
+                            <button class="win-btn active" data-size="30" onclick="setChartWindow(30)" data-i18n="chart.win_30">30 điểm (Mặc định)</button>
+                            <button class="win-btn" data-size="50" onclick="setChartWindow(50)" data-i18n="chart.win_50">50 điểm</button>
+                            <button class="win-btn" data-size="100" onclick="setChartWindow(100)" data-i18n="chart.win_100">100 điểm</button>
                         </div>
                     </div>
                     <div class="chart-area"><canvas id="ph-chart"></canvas></div>
@@ -734,6 +797,21 @@
             </div>
 
             <div class="right-col">
+                <!-- System Alert & Live Warning Card -->
+                <div class="card alert-card normal" id="alert-card-container">
+                    <div class="alert-card-header">
+                        <div class="alert-card-icon" id="alert-card-icon">✅</div>
+                        <div class="alert-card-title-group">
+                            <h2 class="alert-card-heading" id="alert-title" data-i18n="status.NORMAL">BÌNH THƯỜNG</h2>
+                            <span class="alert-card-sub" id="alert-subtitle" data-i18n="alert.normal_sub">Hệ thống an toàn</span>
+                        </div>
+                        <span class="alert-pulse-dot" id="alert-pulse-dot"></span>
+                    </div>
+                    <div class="alert-card-body">
+                        <p class="alert-card-text" id="alert-text">Tất cả thông số đều nằm trong giới hạn an toàn.</p>
+                    </div>
+                </div>
+
                 <!-- Why -->
                 <div class="card">
                     <h2 data-i18n="explain.title">🔍 Explainable AI ("Why?")</h2>
@@ -772,7 +850,7 @@
         </div>
     </div>
 
-    <script src="i18n.js?v=20260820_2"></script>
+    <script src="i18n.js?v=20260820_4"></script>
     <script>
     // Initialize global chart variable
     let phChart = null;
@@ -780,18 +858,20 @@
     // Safe dynamic translation helper
     function safeTranslate(text) {
         if (!text) return '';
-        if (window.I18N && typeof window.I18N.translateDynamic === 'function') {
-            return window.I18N.translateDynamic(text);
+        const i18nObj = (typeof I18N !== 'undefined') ? I18N : (typeof window !== 'undefined' ? window.I18N : null);
+        if (i18nObj && typeof i18nObj.translateDynamic === 'function') {
+            return i18nObj.translateDynamic(text);
         }
-        if (window.I18N && typeof window.I18N.t === 'function') {
-            return window.I18N.t(text);
+        if (i18nObj && typeof i18nObj.t === 'function') {
+            return i18nObj.t(text);
         }
         return text;
     }
 
     // Initialize i18n immediately
-    if (window.I18N && typeof window.I18N.init === 'function') {
-        I18N.init();
+    const globalI18N = (typeof I18N !== 'undefined') ? I18N : (typeof window !== 'undefined' ? window.I18N : null);
+    if (globalI18N && typeof globalI18N.init === 'function') {
+        globalI18N.init();
     }
 
     let currentSource = "demo";
@@ -988,7 +1068,7 @@
         lower: [],
         risk: []
     };
-    const MAX_HISTORY = 500;
+    const MAX_HISTORY = 1000;
     let visibleWindowSize = 30; // 30 points default
     let isLiveMode = true;
     let sliderOffset = 0;
@@ -998,19 +1078,30 @@
         const total = allHistory.labels.length;
         if (total === 0) return;
 
-        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const effectiveWindow = Math.min(visibleWindowSize, total);
         const maxOffset = Math.max(0, total - effectiveWindow);
 
-        if (isLiveMode) {
-            sliderOffset = maxOffset;
-            const slider = document.getElementById('timeline-slider');
-            if (slider) slider.value = 100;
-        } else {
-            sliderOffset = Math.min(Math.max(sliderOffset, 0), maxOffset);
+        const slider = document.getElementById('timeline-slider');
+        if (slider) {
+            if (maxOffset <= 0) {
+                slider.disabled = true;
+                slider.style.opacity = '0.4';
+                slider.value = 100;
+            } else {
+                slider.disabled = false;
+                slider.style.opacity = '1';
+                if (isLiveMode) {
+                    sliderOffset = maxOffset;
+                    slider.value = 100;
+                } else {
+                    sliderOffset = Math.min(Math.max(sliderOffset, 0), maxOffset);
+                    slider.value = Math.round((sliderOffset / maxOffset) * 100);
+                }
+            }
         }
 
-        const endIndex = (visibleWindowSize > 0) ? Math.min(total, sliderOffset + effectiveWindow) : total;
-        const startIndex = (visibleWindowSize > 0) ? sliderOffset : 0;
+        const startIndex = sliderOffset;
+        const endIndex = Math.min(total, startIndex + effectiveWindow);
 
         const slicedLabels = allHistory.labels.slice(startIndex, endIndex);
         const slicedActual = allHistory.actual.slice(startIndex, endIndex);
@@ -1053,7 +1144,7 @@
         const total = allHistory.labels.length;
         if (total === 0) return;
         const numVal = Number(val);
-        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const effectiveWindow = Math.min(visibleWindowSize, total);
         const maxOffset = Math.max(0, total - effectiveWindow);
 
         if (numVal >= 98 || maxOffset === 0) {
@@ -1073,7 +1164,7 @@
             btn.classList.toggle('active', btnSize === visibleWindowSize);
         });
         const total = allHistory.labels.length;
-        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const effectiveWindow = Math.min(visibleWindowSize, total);
         const maxOffset = Math.max(0, total - effectiveWindow);
         if (isLiveMode) {
             sliderOffset = maxOffset;
@@ -1088,7 +1179,7 @@
         const slider = document.getElementById('timeline-slider');
         if (slider) slider.value = 100;
         const total = allHistory.labels.length;
-        const effectiveWindow = (visibleWindowSize > 0) ? Math.min(visibleWindowSize, total) : total;
+        const effectiveWindow = Math.min(visibleWindowSize, total);
         sliderOffset = Math.max(0, total - effectiveWindow);
         renderChartWindow();
     }
@@ -1132,25 +1223,52 @@
                 riskFillEl.style.background = riskColor(risk);
             }
 
-            // Alert banner
-            const banner = document.getElementById('alert-banner');
-            if (banner) {
-                if (status && status !== 'NORMAL') {
-                    banner.style.display = 'block';
-                    banner.className = 'alert-banner ' + (['CRITICAL','ALERT_LOW_PH','ALERT_HIGH_PH'].includes(status) ? 'critical' : status === 'HIGH_RISK' ? 'high' : 'warning');
-                    const cleanStatus = String(status).replace(/^status\./i, '');
-                    const statusKey = 'status.' + cleanStatus;
-                    const alertTitleEl = document.getElementById('alert-title');
-                    if (alertTitleEl) {
-                        alertTitleEl.textContent = I18N.t(statusKey);
-                        alertTitleEl.dataset.i18n = statusKey;
+            // System Alert Card Update
+            const alertCard = document.getElementById('alert-card-container');
+            const alertTitleEl = document.getElementById('alert-title');
+            const alertSubEl = document.getElementById('alert-subtitle');
+            const alertIconEl = document.getElementById('alert-card-icon');
+            const alertTextEl = document.getElementById('alert-text');
+
+            if (alertCard) {
+                const isAbnormal = (status && status !== 'NORMAL');
+                let severityClass = 'normal';
+                let icon = '✅';
+                let subKey = 'alert.normal_sub';
+
+                if (['CRITICAL', 'ALERT_LOW_PH', 'ALERT_HIGH_PH'].includes(status)) {
+                    severityClass = 'critical';
+                    icon = '🚨';
+                    subKey = 'alert.critical_sub';
+                } else if (status === 'HIGH_RISK') {
+                    severityClass = 'high';
+                    icon = '⚠️';
+                    subKey = 'alert.critical_sub';
+                } else if (isAbnormal) {
+                    severityClass = 'warning';
+                    icon = '⚡';
+                    subKey = 'alert.warning_sub';
+                }
+
+                alertCard.className = 'card alert-card ' + severityClass;
+                if (alertIconEl) alertIconEl.textContent = icon;
+
+                const cleanStatus = String(status || 'NORMAL').replace(/^status\./i, '');
+                const statusKey = 'status.' + cleanStatus;
+                if (alertTitleEl) {
+                    alertTitleEl.textContent = I18N.t(statusKey);
+                    alertTitleEl.dataset.i18n = statusKey;
+                }
+                if (alertSubEl) {
+                    alertSubEl.textContent = I18N.t(subKey);
+                    alertSubEl.dataset.i18n = subKey;
+                }
+                if (alertTextEl) {
+                    if (isAbnormal && current.warning_message) {
+                        alertTextEl.textContent = safeTranslate(current.warning_message);
+                    } else {
+                        alertTextEl.textContent = safeTranslate('All parameters within safe limits.');
                     }
-                    const alertTextEl = document.getElementById('alert-text');
-                    if (alertTextEl) {
-                        alertTextEl.textContent = current.warning_message ? safeTranslate(current.warning_message) : '';
-                    }
-                } else {
-                    banner.style.display = 'none';
                 }
             }
 
@@ -1244,8 +1362,14 @@
             }
             const infInfo = await fetchJSON('/api/inference-engine');
             if (infInfo && infInfo.backend) {
+                const b = infInfo.backend;
+                const cleanBackend = (b === 'sklearn_fallback' || b === 'sklearn') 
+                    ? 'OpenVINO / Sklearn' 
+                    : (b === 'openvino') 
+                        ? 'Intel OpenVINO' 
+                        : b;
                 const ibEl = document.getElementById('inference-backend');
-                if (ibEl) ibEl.textContent = infInfo.backend;
+                if (ibEl) ibEl.textContent = cleanBackend;
             }
         } catch (err) {
             console.error('Error in updateDashboard:', err);
@@ -1318,7 +1442,11 @@
         sliderOffset = 0;
         isLiveMode = true;
 
-        await fetch('/api/select-source?source=' + source, { method: 'POST' });
+        try {
+            await fetch('/api/select-source?source=' + source, { method: 'POST' });
+        } catch (e) {
+            console.warn('Switch source request error:', e);
+        }
     }
 
     async function setScenario(name, btnElement) {
@@ -1331,7 +1459,11 @@
         allHistory = { labels: [], actual: [], forecast: [], upper: [], lower: [], risk: [] };
         sliderOffset = 0;
         isLiveMode = true;
-        await fetch('/api/scenario?scenario=' + name + '&seed=42', { method: 'POST' });
+        try {
+            await fetch('/api/scenario?scenario=' + name + '&seed=42', { method: 'POST' });
+        } catch (e) {
+            console.warn('Set scenario request error:', e);
+        }
     }
 
     setInterval(update, 1000);

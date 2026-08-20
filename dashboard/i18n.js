@@ -4,7 +4,7 @@
  */
 
 const I18N = {
-    currentLang: localStorage.getItem('aqua-lang') || 'en',
+    currentLang: localStorage.getItem('aqua-lang') || 'vi',
 
     translations: {
         // ═══════════════════════════════════════
@@ -108,14 +108,20 @@ const I18N = {
             'chart.axis.ph': 'pH',
             'chart.axis.risk': 'Risk',
             'chart.window': 'View Window:',
-            'chart.win_30': '30 pts',
-            'chart.win_60': '60 pts',
-            'chart.win_120': '120 pts',
-            'chart.win_all': 'All',
+            'chart.win_15': '15 pts',
+            'chart.win_30': '30 pts (Default)',
+            'chart.win_50': '50 pts',
+            'chart.win_100': '100 pts',
             'chart.slider_hint': '◀ Drag slider to browse timeline history | Drag rightmost for Live ▶',
             'chart.snap_live': '⚡ Live View',
             'timeline.live': '🔴 LIVE',
             'timeline.history': '⏸ VIEWING HISTORY',
+
+            // Alert Card
+            'alert.card_title': '🚨 System Alert & Status',
+            'alert.normal_sub': 'System Safe',
+            'alert.warning_sub': 'Attention Required',
+            'alert.critical_sub': 'Immediate Action Needed',
 
             // Language & Theme
             'lang.label': 'Language',
@@ -212,14 +218,20 @@ const I18N = {
             'chart.axis.ph': 'pH',
             'chart.axis.risk': 'Rủi ro',
             'chart.window': 'Khung nhìn:',
-            'chart.win_30': '30 điểm',
-            'chart.win_60': '60 điểm',
-            'chart.win_120': '120 điểm',
-            'chart.win_all': 'Tất cả',
+            'chart.win_15': '15 điểm',
+            'chart.win_30': '30 điểm (Mặc định)',
+            'chart.win_50': '50 điểm',
+            'chart.win_100': '100 điểm',
             'chart.slider_hint': '◀ Kéo thanh trượt để xem lại toàn bộ lịch sử đo | Kéo hết sang phải để xem trực tiếp ▶',
             'chart.snap_live': '⚡ Về trực tiếp',
             'timeline.live': '🔴 TRỰC TIẾP (LIVE)',
             'timeline.history': '⏸ ĐANG XEM LỊCH SỬ',
+
+            // Alert Card
+            'alert.card_title': '🚨 Trạng Thái Cảnh Báo Hệ Thống',
+            'alert.normal_sub': 'Hệ thống an toàn',
+            'alert.warning_sub': 'Cần chú ý theo dõi',
+            'alert.critical_sub': 'Cần can thiệp khẩn cấp',
 
             'lang.label': 'Ngôn ngữ',
             'theme.light': 'Giao diện Sáng',
@@ -234,16 +246,16 @@ const I18N = {
             'app.subtitle': 'AI驱动的可持续水产养殖预警系统',
             'header.monitoring': '监控中',
 
-            'badge.simulated': '数据来源：模拟数据（合成）',
-            'badge.real': '数据来源：真实数据（Mendeley DOI: 10.17632/8s73jfvgr5.2）',
-            'badge.live': '数据来源：实时传感器 / 手动输入',
+            'badge.simulated': '数据源：模拟（合成）',
+            'badge.real': '数据源：实测数据（Mendeley DOI: 10.17632/8s73jfvgr5.2）',
+            'badge.live': '数据源：实时传感器/手动输入',
 
             'source.demo': '🎯 演示模式（模拟器）',
             'source.real': '🌊 真实数据验证（Mendeley）',
             'source.live': '📡 实时传感器',
-            'source.provenance.demo': '来源：PHSimulator（确定性竞赛场景）',
-            'source.provenance.real': '罗非鱼塘物联网数据流（蒙特里亚，哥伦比亚 — 2024）',
-            'source.provenance.live': '等待硬件遥测数据或手动API提交',
+            'source.provenance.demo': '来源：PHSimulator（竞赛确定性场景）',
+            'source.provenance.real': '罗非鱼养殖池IoT数据流（哥伦比亚蒙特里亚 — 2024）',
+            'source.provenance.live': '等待硬件遥测或手动API输入',
 
             'scenario.normal': '正常',
             'scenario.rapid_rise': '快速上升',
@@ -253,37 +265,37 @@ const I18N = {
             'scenario.sensor_anomaly': '传感器异常',
             'scenario.competition_demo': '竞赛演示',
 
-            'stat.pond': '鱼塘',
+            'stat.pond': '养殖池',
             'stat.current_ph': '当前 pH',
             'stat.forecast_ph': '预测 pH',
             'stat.risk_score': '风险评分',
             'stat.water_temp': '水温',
             'stat.dissolved_o2': '溶解氧',
             'stat.turbidity': '浊度',
-            'stat.sensor_active': 'pH传感器运行中',
-            'stat.optimal': '最优范围（7.0 - 8.5）',
-            'stat.ai_projection': 'AI多步预测',
+            'stat.sensor_active': 'pH 传感器运行中',
+            'stat.optimal': '最佳范围（7.0 - 8.5）',
+            'stat.ai_projection': 'AI 多步预测',
             'stat.tropical_range': '热带罗非鱼适宜范围',
-            'stat.optical_probe': '光学DO探头',
-            'stat.clarity_index': '清澈度指数',
+            'stat.optical_probe': '光学溶氧探头',
+            'stat.clarity_index': '水体透明度指数',
 
             'risk.low': '低',
-            'risk.medium': '中等',
+            'risk.medium': '中',
             'risk.moderate': '适度',
-            'risk.elevated': '升高',
+            'risk.elevated': '上升',
             'risk.high': '高',
-            'risk.critical': '危急',
+            'risk.critical': '危险',
 
             'status.NORMAL': '正常',
             'status.WAITING': '等待确认',
-            'status.EARLY_WARNING': 'AI多步预测早期预警',
+            'status.EARLY_WARNING': 'AI预测早期预警',
             'status.HIGH_RISK': '高风险警报',
             'status.CRITICAL': '紧急危险',
-            'status.ALERT_LOW_PH': 'pH过低警报',
-            'status.ALERT_HIGH_PH': 'pH过高警报',
+            'status.ALERT_LOW_PH': 'pH 过低警报',
+            'status.ALERT_HIGH_PH': 'pH 过高警报',
             'status.SENSOR_WARNING': '传感器异常警报',
 
-            'urgency.critical': '危急',
+            'urgency.critical': '紧急',
             'urgency.high': '高',
             'urgency.medium': '中等',
             'urgency.low': '低',
@@ -307,7 +319,6 @@ const I18N = {
             'ai.trained.yes': '是',
             'ai.trained.no': '否',
 
-            // Chart labels & timeline controls
             'chart.actual_ph': '实际 pH',
             'chart.forecast_ph': '预测 pH',
             'chart.upper_threshold': '上限阈值（8.5）',
@@ -316,14 +327,20 @@ const I18N = {
             'chart.axis.ph': 'pH',
             'chart.axis.risk': '风险',
             'chart.window': '时间窗口:',
-            'chart.win_30': '30点',
-            'chart.win_60': '60点',
-            'chart.win_120': '120点',
-            'chart.win_all': '全部',
+            'chart.win_15': '15点',
+            'chart.win_30': '30点（默认）',
+            'chart.win_50': '50点',
+            'chart.win_100': '100点',
             'chart.slider_hint': '◀ 拖动滑块查看历史记录 | 拖至最右侧返回实时 ▶',
             'chart.snap_live': '⚡ 实时视图',
             'timeline.live': '🔴 实时 (LIVE)',
             'timeline.history': '⏸ 查看历史',
+
+            // Alert Card
+            'alert.card_title': '🚨 系统预警与状态',
+            'alert.normal_sub': '系统安全正常',
+            'alert.warning_sub': '需要密切注意',
+            'alert.critical_sub': '需要立即处理',
 
             'lang.label': '语言',
             'theme.light': '浅色模式',
@@ -411,7 +428,6 @@ const I18N = {
             'ai.trained.yes': 'はい',
             'ai.trained.no': 'いいえ',
 
-            // Chart labels & timeline controls
             'chart.actual_ph': '実際の pH',
             'chart.forecast_ph': '予測 pH',
             'chart.upper_threshold': '上限しきい値（8.5）',
@@ -420,14 +436,20 @@ const I18N = {
             'chart.axis.ph': 'pH',
             'chart.axis.risk': 'リスク',
             'chart.window': '表示範囲:',
-            'chart.win_30': '30点',
-            'chart.win_60': '60点',
-            'chart.win_120': '120点',
-            'chart.win_all': 'すべて',
+            'chart.win_15': '15点',
+            'chart.win_30': '30点（デフォルト）',
+            'chart.win_50': '50点',
+            'chart.win_100': '100点',
             'chart.slider_hint': '◀ スライダーを動かして履歴を確認 | 最右端でリアルタイム ▶',
             'chart.snap_live': '⚡ リアルタイムへ',
             'timeline.live': '🔴 リアルタイム (LIVE)',
             'timeline.history': '⏸ 履歴閲覧中',
+
+            // Alert Card
+            'alert.card_title': '🚨 システム警報＆ステータス',
+            'alert.normal_sub': 'システム正常稼働中',
+            'alert.warning_sub': '注意深い監視が必要',
+            'alert.critical_sub': '緊急対応が必要',
 
             'lang.label': '言語',
             'theme.light': 'ライトモード',
@@ -447,8 +469,17 @@ const I18N = {
             { reg: /^Minor water quality changes detected\. Continue monitoring\./i, replace: 'Phát hiện thay đổi nhỏ về chất lượng nước. Tiếp tục theo dõi.' },
             { reg: /^Elevated water quality risk detected\. Increased attention recommended\./i, replace: 'Phát hiện rủi ro chất lượng nước gia tăng. Khuyến nghị chú ý theo dõi kỹ hơn.' },
             { reg: /^High water quality risk\. AI predicts elevated probability of exceeding the safe pH range\./i, replace: 'Rủi ro chất lượng nước cao. AI dự báo xác suất vượt ngưỡng pH an toàn tăng cao.' },
-            { reg: /^Critical water quality risk\. Immediate attention and sensor verification recommended\./i, replace: 'Rủi ro chất lượng nước nguy cấp. Khuyến nghị can thiệp ngay và kiểm tra cảm biến đối chứng.' },
-            { reg: /^All parameters within safe limits/i, replace: 'Tất cả các thông số đều nằm trong giới hạn an toàn.' },
+            // Warning Messages (Summary risk + values)
+            { reg: /^Elevated risk\.\s*pH:\s*([\d.]+)\.\s*Risk:\s*([\d.]+)\/100\.\s*(.*)/i, replace: 'Rủi ro gia tăng. pH: $1. Rủi ro: $2/100. $3' },
+            { reg: /^High risk\.\s*pH:\s*([\d.]+)\.\s*Risk:\s*([\d.]+)\/100\.\s*(.*)/i, replace: 'Rủi ro cao. pH: $1. Rủi ro: $2/100. $3' },
+            { reg: /^Critical risk\.\s*pH:\s*([\d.]+)\.\s*Risk:\s*([\d.]+)\/100\.\s*(.*)/i, replace: 'Rủi ro nguy cấp. pH: $1. Rủi ro: $2/100. $3' },
+            { reg: /^Low risk\.\s*pH:\s*([\d.]+)\.\s*Risk:\s*([\d.]+)\/100\.\s*(.*)/i, replace: 'Rủi ro thấp. pH: $1. Rủi ro: $2/100. $3' },
+            { reg: /Anomaly detected\./i, replace: 'Phát hiện bất thường.' },
+            { reg: /Predicted early warning\./i, replace: 'Cảnh báo sớm từ AI.' },
+            { reg: /pH below safe threshold\./i, replace: 'pH thấp hơn ngưỡng an toàn.' },
+            { reg: /pH above safe threshold\./i, replace: 'pH cao hơn ngưỡng an toàn.' },
+            { reg: /Normal operations\./i, replace: 'Hoạt động bình thường.' },
+            { reg: /^All parameters within safe limits\.?/i, replace: 'Tất cả thông số đều nằm trong giới hạn an toàn.' },
             { reg: /^Optimal conditions/i, replace: 'Điều kiện tối ưu' },
             { reg: /^Waiting for data\.\.\./i, replace: 'Đang chờ dữ liệu...' },
             { reg: /^System initializing\.\.\./i, replace: 'Hệ thống đang khởi tạo...' },
@@ -668,3 +699,7 @@ const I18N = {
         }
     }
 };
+
+if (typeof window !== 'undefined') {
+    window.I18N = I18N;
+}
