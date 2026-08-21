@@ -6,7 +6,6 @@ __pycache__/
 *.pyo
 tests/
 artifacts/
-reports/
 *.md
 !README.md
 DEMO_*.md

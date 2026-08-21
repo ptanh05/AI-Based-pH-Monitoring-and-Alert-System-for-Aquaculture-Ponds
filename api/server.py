@@ -42,8 +42,9 @@ def play_beep(duration_seconds: float = 2.0):
 
 # ── Ensure Root Directory in sys.path for Vercel / Serverless Runtimes ──
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
+for p in [ROOT_DIR, os.getcwd(), "/var/task"]:
+    if p and os.path.exists(p) and p not in sys.path:
+        sys.path.insert(0, p)
 
 # ── AI Pipeline Imports ──
 from simulator.ph_simulator import PHSimulator, Scenario

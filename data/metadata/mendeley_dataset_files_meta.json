@@ -1,0 +1,138 @@
+[
+  {
+    "filename": "Data IoTMLCQ.xlsx",
+    "id": "cea90e46-0c19-4aea-aaf7-267c9b445ec3",
+    "content_details": {
+      "id": "8fc24237-0a48-424e-ac4f-a42ba6b84f5c",
+      "sha256_hash": "a93c35045672a49f54153572fb84f8f569de3d2c728db24c20d9ce5bb22c21c7",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 3644463,
+      "created_date": "2024-10-11T14:15:12.584Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/cea90e46-0c19-4aea-aaf7-267c9b445ec3/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/cea90e46-0c19-4aea-aaf7-267c9b445ec3/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631787748Z"
+    },
+    "size": 3644463,
+    "last_modified_date": "2024-10-11T14:15:12.584Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "Fish_Health_Intervention_Comparison_2024_Corrected.xlsx",
+    "id": "b2b2ee14-9b5f-4205-befe-d2035c07c4ba",
+    "content_details": {
+      "id": "e680044e-5e1d-4b5d-bb27-bdf575939c9c",
+      "sha256_hash": "7afebc66db7ea7b94e6dbd14cbd9780bc46cea504f8628983932c53a974a73c7",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 9228,
+      "created_date": "2024-10-22T02:32:43.56Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/b2b2ee14-9b5f-4205-befe-d2035c07c4ba/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/b2b2ee14-9b5f-4205-befe-d2035c07c4ba/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631805879Z"
+    },
+    "size": 9228,
+    "last_modified_date": "2024-10-22T02:32:43.56Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "IoT_Intervention_Events.xlsx",
+    "id": "12d911fe-8e35-4fad-92f4-733c1fbe0077",
+    "content_details": {
+      "id": "44811fe9-a1bb-41ed-90b4-386a3f02ac58",
+      "sha256_hash": "422de562e64de6c8cb58cb1843f3b1484d1ce9f2a7c725dd08439cfc59334e2c",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 2532244,
+      "created_date": "2024-10-22T02:32:44.97Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/12d911fe-8e35-4fad-92f4-733c1fbe0077/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/12d911fe-8e35-4fad-92f4-733c1fbe0077/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631819399Z"
+    },
+    "size": 2532244,
+    "last_modified_date": "2024-10-22T02:32:44.97Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "Monteria_Climate_Conditions_2023.xlsx",
+    "id": "a41573b7-b8a8-44f3-bb72-81ca5d6ce0f3",
+    "content_details": {
+      "id": "00b129f3-b8f7-4848-92d9-34f99a5eee66",
+      "sha256_hash": "88c0c53793a5413d0bc511cd43d330132907bb1ed588cd961732809c1a72b717",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 5811,
+      "created_date": "2024-10-22T02:32:43.452Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/a41573b7-b8a8-44f3-bb72-81ca5d6ce0f3/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/a41573b7-b8a8-44f3-bb72-81ca5d6ce0f3/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631833309Z"
+    },
+    "size": 5811,
+    "last_modified_date": "2024-10-22T02:32:43.452Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "Non_IoT_Fish_Health_Data_2024.xlsx",
+    "id": "8546ba32-48e2-4812-aca9-d171203143ad",
+    "content_details": {
+      "id": "3a005fee-ff2c-41ae-a6af-849936927829",
+      "sha256_hash": "61ab2ea580ec5787f785168d12ed3baf3cb65d60e008deeccbb8f1962317e4b2",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 5868,
+      "created_date": "2024-10-22T02:32:43.514Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/8546ba32-48e2-4812-aca9-d171203143ad/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/8546ba32-48e2-4812-aca9-d171203143ad/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631847069Z"
+    },
+    "size": 5868,
+    "last_modified_date": "2024-10-22T02:32:43.514Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "Pre_IoT_Historical_Water_Quality_2023.xlsx",
+    "id": "956366d3-43e1-4886-aa01-130da83aaaaa",
+    "content_details": {
+      "id": "8eb132ce-470b-411f-8772-ddf96ade7bab",
+      "sha256_hash": "3b2b418558e6c6f4cd04c83c854e960b66a9130af70abbae920377525ca7dd54",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 9340,
+      "created_date": "2024-10-22T02:32:43.891Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/956366d3-43e1-4886-aa01-130da83aaaaa/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/956366d3-43e1-4886-aa01-130da83aaaaa/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631859649Z"
+    },
+    "size": 9340,
+    "last_modified_date": "2024-10-22T02:32:43.891Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "Pre_IoT_Validated_Fish_Health_Data_2023.xlsx",
+    "id": "beb96ed3-7a73-485d-82e0-e81ba027652e",
+    "content_details": {
+      "id": "6fec1729-4cb5-4513-9ce4-2b3fc86f555f",
+      "sha256_hash": "f1a79926102b4b4a0a6722030e64dbcac6d65a3276995947b1730ca178300cb4",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 6192,
+      "created_date": "2024-10-22T02:32:43.53Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/beb96ed3-7a73-485d-82e0-e81ba027652e/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/beb96ed3-7a73-485d-82e0-e81ba027652e/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631872839Z"
+    },
+    "size": 6192,
+    "last_modified_date": "2024-10-22T02:32:43.53Z",
+    "status": "COMPLETED"
+  },
+  {
+    "filename": "Validated_IoT_Fish_Health_Data 2024.xlsx",
+    "id": "e02f93e6-58eb-4d80-b427-d05cc61618d7",
+    "content_details": {
+      "id": "5e989bef-c3e9-4b0c-98c7-d7e763deda81",
+      "sha256_hash": "110c472197ffc8477741432dcfad5fca444606c76e3cf807eb8d38239b0b43ea",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 8970,
+      "created_date": "2024-10-22T02:32:43.545Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/e02f93e6-58eb-4d80-b427-d05cc61618d7/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8s73jfvgr5/files/e02f93e6-58eb-4d80-b427-d05cc61618d7/file_viewed",
+      "download_expiry_time": "2126-08-15T07:04:34.631878219Z"
+    },
+    "size": 8970,
+    "last_modified_date": "2024-10-22T02:32:43.545Z",
+    "status": "COMPLETED"
+  }
+]
