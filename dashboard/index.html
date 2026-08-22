@@ -251,14 +251,16 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 24px;
+            align-items: start;
         }
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 24px;
+            padding: 22px;
             margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .card h2 {
             font-size: 14px;
@@ -266,7 +268,7 @@
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -278,6 +280,11 @@
             position: relative;
             overflow: hidden;
             background: var(--glass);
+            min-height: 110px;
+            max-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .alert-card.normal {
             border-color: rgba(16, 185, 129, 0.35);
@@ -528,63 +535,111 @@
             color: #fff;
             box-shadow: 0 0 10px rgba(59,130,246,0.4);
         }
-        /* ── Reasons & Recs ── */
-        .reason-list { list-style: none; }
+        /* ── Stable Reasons & Explainable AI Card ── */
+        .explain-card {
+            min-height: 180px;
+            max-height: 180px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #explain-summary {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            min-height: 18px;
+            line-height: 1.4;
+            flex-shrink: 0;
+        }
+        .reason-list {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+        }
+        .reason-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .reason-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
         .reason-list li {
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-left: 3px solid var(--accent-yellow);
             background: rgba(245,158,11,0.05);
             border-radius: 0 8px 8px 0;
-            margin-bottom: 8px;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            line-height: 1.35;
+            flex-shrink: 0;
+        }
+
+        /* ── Stable Decision Support Card ── */
+        .recommend-card {
+            min-height: 220px;
+            max-height: 220px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #rec-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+        }
+        #rec-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        #rec-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
         }
         .rec-item {
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 12px;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
             background: var(--glass);
             border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 13px;
+            font-size: 12px;
+            min-height: 36px;
+            line-height: 1.35;
+            flex-shrink: 0;
         }
         .rec-urgency {
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 4px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         .urgency-critical { background: rgba(239,68,68,0.2); color: var(--accent-red); }
         .urgency-high { background: rgba(249,115,22,0.2); color: var(--accent-orange); }
         .urgency-medium { background: rgba(245,158,11,0.2); color: var(--accent-yellow); }
         .urgency-low { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .urgency-info { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
-        /* ── Info Grid ── */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .info-item { padding: 10px 12px; background: var(--glass); border-radius: 8px; }
-        .info-item .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .info-item .info-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
-        /* ── Risk Components ── */
-        .risk-comp { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .risk-comp-label { font-size: 12px; color: var(--text-secondary); width: 90px; }
-        .risk-comp-bar { flex: 1; height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden; }
-        .risk-comp-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-        .risk-comp-value { font-size: 12px; font-weight: 600; width: 32px; text-align: right; }
-        /* ── Scenario Buttons ── */
-        .scenario-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .scenario-btn {
-            padding: 6px 14px; background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text-secondary); font-size: 12px; cursor: pointer;
-            transition: all 0.2s; font-family: inherit;
-        }
-        .scenario-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--accent-blue); }
-        .scenario-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
         .disclaimer {
-            font-size: 11px; color: var(--text-muted); padding: 12px; background: var(--glass);
-            border-radius: 8px; margin-top: 12px; border-left: 3px solid var(--accent-purple);
+            font-size: 10.5px;
+            color: var(--text-muted);
+            padding: 8px 10px;
+            background: var(--glass);
+            border-radius: 8px;
+            margin-top: 8px;
+            border-left: 3px solid var(--accent-purple);
+            line-height: 1.35;
+            flex-shrink: 0;
         }
         /* ── Language Switcher ── */
         .lang-switcher {
@@ -1470,13 +1525,13 @@
                 </div>
 
                 <!-- Why -->
-                <div class="card">
+                <div class="card explain-card">
                     <h2 data-i18n="explain.title">🔍 Explainable AI ("Why?")</h2>
-                    <p id="explain-summary" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px"></p>
+                    <p id="explain-summary"></p>
                     <ul class="reason-list" id="reason-list"></ul>
                 </div>
                 <!-- Recommendations -->
-                <div class="card">
+                <div class="card recommend-card">
                     <h2 data-i18n="recommend.title">💡 Decision Support (Actionable Guidance)</h2>
                     <div id="rec-list"></div>
                     <div class="disclaimer" id="rec-disclaimer"></div>
