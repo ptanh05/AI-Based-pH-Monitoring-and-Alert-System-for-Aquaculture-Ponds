@@ -11,18 +11,25 @@ Handles:
 - Climate conditions ('Monteria_Climate_Conditions_2023.xlsx')
 """
 
+from __future__ import annotations
+
 import os
 import math
 import numpy as np
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Tuple, Generator
+from typing import List, Dict, Optional, Tuple, Generator, Any
 
 try:
     import pandas as pd
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
-    pd = None
+    class _DummyPandas:
+        class DataFrame:
+            pass
+        class Series:
+            pass
+    pd = _DummyPandas()
 
 from ai.sensor_schema import SensorReading, SensorParameter, DataSource, SensorQuality
 
@@ -41,7 +48,7 @@ class RealDataLoader:
         self,
         physical_scale: bool = True,
         max_rows: Optional[int] = None,
-    ) -> pd.DataFrame:
+    ) -> Any:
         """
         Load the primary continuous IoT stream ('Data IoTMLCQ.xlsx').
 
@@ -120,10 +127,13 @@ class RealDataLoader:
 
         return clean_df
 
-    def load_historical_baseline(self) -> pd.DataFrame:
+    def load_historical_baseline(self) -> Any:
         """
         Load the 2023 pre-IoT monthly baseline with alkalinity and nitrates.
         """
+        if not PANDAS_AVAILABLE:
+            raise ImportError("pandas is required for loading real dataset files.")
+
         fpath = os.path.join(self.data_dir, "Pre_IoT_Historical_Water_Quality_2023.xlsx")
         if not os.path.exists(fpath):
             raise FileNotFoundError(f"Baseline file not found: {fpath}")
@@ -142,10 +152,13 @@ class RealDataLoader:
         })
         return df
 
-    def load_fish_health_data(self) -> pd.DataFrame:
+    def load_fish_health_data(self) -> Any:
         """
         Load fish health metrics (Weight, Survival Rate, Disease Cases).
         """
+        if not PANDAS_AVAILABLE:
+            raise ImportError("pandas is required for loading real dataset files.")
+
         fpath = os.path.join(self.data_dir, "Validated_IoT_Fish_Health_Data 2024.xlsx")
         if not os.path.exists(fpath):
             raise FileNotFoundError(f"Fish health file not found: {fpath}")
