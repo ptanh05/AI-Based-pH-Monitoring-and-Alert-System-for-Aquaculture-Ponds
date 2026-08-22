@@ -1972,22 +1972,27 @@
     let audioCtx = null;
     let isSoundEnabled = (localStorage.getItem('aqua-sound-enabled') !== 'false');
     let lastAlarmSoundTime = 0;
+    let wasAlarming = false;
 
     function getAudioContext() {
-        if (!audioCtx) {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (AudioContextClass) {
-                audioCtx = new AudioContextClass();
+        try {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
             }
-        }
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        } catch (e) {
+            console.warn('Audio context init error:', e);
         }
         return audioCtx;
     }
 
     // Unlock Web Audio context on user interaction anywhere on the dashboard
-    ['click', 'touchstart', 'keydown'].forEach(evt => {
+    ['click', 'touchstart', 'mousedown', 'keydown'].forEach(evt => {
         document.addEventListener(evt, () => {
             getAudioContext();
         }, { once: false, passive: true });
@@ -1999,7 +2004,7 @@
         updateSoundButtonUI(false);
         if (isSoundEnabled) {
             getAudioContext();
-            playBeepTone(880, 0.15, 'sine', 0.2); // Short pleasant confirmation beep
+            playBeepTone(900, 0.18, 'sine', 0.35); // Loud confirmation beep
         }
     }
 
@@ -2021,10 +2026,13 @@
     // Initialize sound button UI on load
     updateSoundButtonUI(false);
 
-    function playBeepTone(freq, duration = 0.15, type = 'sawtooth', volume = 0.2) {
+    function playBeepTone(freq, duration = 0.18, type = 'square', volume = 0.35) {
         try {
             const ctx = getAudioContext();
             if (!ctx) return;
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = type;
@@ -2046,27 +2054,32 @@
     function triggerEmergencyAlarmSound(alertLevel) {
         if (!isSoundEnabled) {
             updateSoundButtonUI(false);
+            wasAlarming = false;
             return;
         }
 
         const now = Date.now();
-        if (now - lastAlarmSoundTime < 3200) return;
-        lastAlarmSoundTime = now;
+        // If it's a new breach transition, beep INSTANTLY with 0 delay!
+        // Otherwise repeat every 2.2 seconds while breach continues.
+        const isNewBreach = !wasAlarming;
+        if (!isNewBreach && (now - lastAlarmSoundTime < 2200)) return;
 
+        lastAlarmSoundTime = now;
+        wasAlarming = true;
         updateSoundButtonUI(true);
 
         const ctx = getAudioContext();
         if (!ctx) return;
 
         if (alertLevel === 'CRITICAL') {
-            // High-urgency triple siren buzzer for critical pH breach (<7.0 or >8.5)
-            playBeepTone(880, 0.2, 'sawtooth', 0.25);
-            setTimeout(() => playBeepTone(1100, 0.2, 'sawtooth', 0.25), 220);
-            setTimeout(() => playBeepTone(1320, 0.35, 'sawtooth', 0.3), 460);
-        } else if (alertLevel === 'HIGH_RISK' || alertLevel === 'WARNING') {
-            // Dual warning chime for early alert
-            playBeepTone(660, 0.18, 'sine', 0.2);
-            setTimeout(() => playBeepTone(880, 0.25, 'sine', 0.2), 220);
+            // Loud dual-pulse high pitch alarm buzzer (1100Hz -> 1400Hz -> 1800Hz)
+            playBeepTone(1100, 0.16, 'square', 0.4);
+            setTimeout(() => playBeepTone(1400, 0.16, 'square', 0.45), 180);
+            setTimeout(() => playBeepTone(1800, 0.28, 'sawtooth', 0.5), 360);
+        } else {
+            // Early warning chime (880Hz -> 1100Hz)
+            playBeepTone(880, 0.15, 'sine', 0.35);
+            setTimeout(() => playBeepTone(1100, 0.20, 'sine', 0.35), 180);
         }
     }
 
@@ -2582,6 +2595,7 @@
     }
 
     async function setScenario(name, btnElement) {
+        getAudioContext();
         document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
         if (btnElement) {
             btnElement.classList.add('active');
