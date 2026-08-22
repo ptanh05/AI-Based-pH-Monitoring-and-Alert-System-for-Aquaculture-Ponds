@@ -1968,11 +1968,11 @@
         });
     })();
 
-    // ══════ WEB AUDIO ALARM BUZZER SYSTEM ══════
+    // ══════ WEB AUDIO ALARM BUZZER SYSTEM (Single Continuous Buzzer) ══════
     let audioCtx = null;
     let isSoundEnabled = (localStorage.getItem('aqua-sound-enabled') !== 'false');
-    let lastAlarmSoundTime = 0;
-    let wasAlarming = false;
+    let alarmOscillator = null;
+    let alarmGain = null;
 
     function getAudioContext() {
         try {
@@ -2001,11 +2001,10 @@
     function toggleAudioAlarm() {
         isSoundEnabled = !isSoundEnabled;
         localStorage.setItem('aqua-sound-enabled', isSoundEnabled ? 'true' : 'false');
-        updateSoundButtonUI(false);
-        if (isSoundEnabled) {
-            getAudioContext();
-            playBeepTone(900, 0.18, 'sine', 0.35); // Loud confirmation beep
+        if (!isSoundEnabled) {
+            stopContinuousBuzzer();
         }
+        updateSoundButtonUI(Boolean(alarmOscillator));
     }
 
     function updateSoundButtonUI(isAlarming = false) {
@@ -2026,61 +2025,55 @@
     // Initialize sound button UI on load
     updateSoundButtonUI(false);
 
-    function playBeepTone(freq, duration = 0.18, type = 'square', volume = 0.35) {
-        try {
-            const ctx = getAudioContext();
-            if (!ctx) return;
-            if (ctx.state === 'suspended') {
-                ctx.resume();
-            }
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-            gain.gain.setValueAtTime(volume, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            osc.start();
-            osc.stop(ctx.currentTime + duration);
-        } catch (e) {
-            console.warn('Audio playback error:', e);
-        }
-    }
-
-    function triggerEmergencyAlarmSound(alertLevel) {
+    function startContinuousBuzzer() {
         if (!isSoundEnabled) {
-            updateSoundButtonUI(false);
-            wasAlarming = false;
+            stopContinuousBuzzer();
             return;
         }
-
-        const now = Date.now();
-        // If it's a new breach transition, beep INSTANTLY with 0 delay!
-        // Otherwise repeat every 2.2 seconds while breach continues.
-        const isNewBreach = !wasAlarming;
-        if (!isNewBreach && (now - lastAlarmSoundTime < 2200)) return;
-
-        lastAlarmSoundTime = now;
-        wasAlarming = true;
-        updateSoundButtonUI(true);
 
         const ctx = getAudioContext();
         if (!ctx) return;
 
-        if (alertLevel === 'CRITICAL') {
-            // Loud dual-pulse high pitch alarm buzzer (1100Hz -> 1400Hz -> 1800Hz)
-            playBeepTone(1100, 0.16, 'square', 0.4);
-            setTimeout(() => playBeepTone(1400, 0.16, 'square', 0.45), 180);
-            setTimeout(() => playBeepTone(1800, 0.28, 'sawtooth', 0.5), 360);
-        } else {
-            // Early warning chime (880Hz -> 1100Hz)
-            playBeepTone(880, 0.15, 'sine', 0.35);
-            setTimeout(() => playBeepTone(1100, 0.20, 'sine', 0.35), 180);
+        if (alarmOscillator) {
+            // Already buzzing continuously
+            updateSoundButtonUI(true);
+            return;
         }
+
+        try {
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            alarmGain = ctx.createGain();
+            alarmGain.gain.setValueAtTime(0.28, ctx.currentTime);
+
+            alarmOscillator = ctx.createOscillator();
+            alarmOscillator.type = 'sawtooth'; // 1 loại âm thanh còi hú duy nhất (BÍPPPPPP)
+            alarmOscillator.frequency.setValueAtTime(880, ctx.currentTime); // 880 Hz tiêu chuẩn
+
+            alarmOscillator.connect(alarmGain);
+            alarmGain.connect(ctx.destination);
+
+            alarmOscillator.start();
+            updateSoundButtonUI(true);
+        } catch (e) {
+            console.warn('Continuous buzzer start error:', e);
+        }
+    }
+
+    function stopContinuousBuzzer() {
+        if (alarmOscillator) {
+            try {
+                if (alarmGain && audioCtx) {
+                    alarmGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                }
+                alarmOscillator.stop();
+                alarmOscillator.disconnect();
+            } catch (e) {}
+            alarmOscillator = null;
+            alarmGain = null;
+        }
+        updateSoundButtonUI(false);
     }
 
     // ══════ CHART SETUP ══════
@@ -2368,29 +2361,29 @@
                 const isBreach = (ph !== null && ph !== undefined && (ph < 7.0 || ph > 8.5));
                 const isCritical = ['CRITICAL', 'ALERT_LOW_PH', 'ALERT_HIGH_PH'].includes(status) || isBreach || risk >= 70;
                 const isHighRisk = (status === 'HIGH_RISK') || risk >= 40;
-                const isAbnormal = (status && status !== 'NORMAL') || current.has_early_warning || risk >= 25;
+                const isAbnormal = (status && status !== 'NORMAL') || current.has_early_warning || risk >= 25 || isBreach;
 
                 let severityClass = 'normal';
                 let icon = '✅';
                 let subKey = 'alert.normal_sub';
 
-                if (isCritical) {
+                if (isCritical || isBreach) {
                     severityClass = 'critical';
                     icon = '🚨';
                     subKey = 'alert.critical_sub';
-                    triggerEmergencyAlarmSound('CRITICAL');
+                    startContinuousBuzzer();
                 } else if (isHighRisk) {
                     severityClass = 'high';
                     icon = '⚠️';
                     subKey = 'alert.critical_sub';
-                    triggerEmergencyAlarmSound('HIGH_RISK');
+                    startContinuousBuzzer();
                 } else if (isAbnormal) {
                     severityClass = 'warning';
                     icon = '⚡';
                     subKey = 'alert.warning_sub';
-                    triggerEmergencyAlarmSound('WARNING');
+                    startContinuousBuzzer();
                 } else {
-                    updateSoundButtonUI(false);
+                    stopContinuousBuzzer();
                 }
 
                 alertCard.className = 'card alert-card ' + severityClass;
