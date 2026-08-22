@@ -57,38 +57,48 @@ class ActuatorManager:
         self._load_state()
 
     def _load_state(self):
-        for path in [STATE_FILE, TMP_STATE_FILE]:
+        # Priority 1: Check ephemeral runtime /tmp state first (dynamic state on serverless)
+        # Priority 2: Check repository data/ directory (local dev / default fallback)
+        best_data = None
+        best_time = -1
+
+        for path in [TMP_STATE_FILE, STATE_FILE]:
             try:
                 if os.path.exists(path):
                     with open(path, "r", encoding="utf-8") as f:
                         data = json.load(f)
-                    if "mode" in data and data["mode"] in ("AUTO", "MANUAL"):
-                        self.mode = data["mode"]
-                    if "devices" in data and isinstance(data["devices"], dict):
-                        for k, v in data["devices"].items():
-                            if k in self.devices:
-                                self.devices[k]["is_on"] = bool(v.get("is_on", self.devices[k]["is_on"]))
-                                if "reason" in v:
-                                    self.devices[k]["reason"] = v["reason"]
-                    return
+                    if isinstance(data, dict):
+                        up_time = data.get("updated_at", 0)
+                        if up_time > best_time or best_data is None:
+                            best_data = data
+                            best_time = up_time
             except Exception:
                 pass
+
+        if best_data:
+            if "mode" in best_data and best_data["mode"] in ("AUTO", "MANUAL"):
+                self.mode = best_data["mode"]
+            if "devices" in best_data and isinstance(best_data["devices"], dict):
+                for k, v in best_data["devices"].items():
+                    if k in self.devices:
+                        self.devices[k]["is_on"] = bool(v.get("is_on", self.devices[k]["is_on"]))
+                        if "reason" in v and v["reason"]:
+                            self.devices[k]["reason"] = v["reason"]
 
     def _save_state(self):
         payload = {
             "mode": self.mode,
             "devices": {
-                k: {"is_on": v["is_on"], "reason": v["reason"]}
+                k: {"is_on": bool(v["is_on"]), "reason": v["reason"]}
                 for k, v in self.devices.items()
             },
             "updated_at": time.time(),
         }
-        for path in [STATE_FILE, TMP_STATE_FILE]:
+        for path in [TMP_STATE_FILE, STATE_FILE]:
             try:
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 with open(path, "w", encoding="utf-8") as f:
                     json.dump(payload, f, indent=2)
-                return
             except Exception:
                 pass
 
@@ -103,13 +113,12 @@ class ActuatorManager:
         self._load_state()
         if device_id in self.devices:
             dev = self.devices[device_id]
-            new_state = (not dev["is_on"]) if state is None else state
-            if dev["is_on"] != new_state:
-                dev["is_on"] = new_state
-                dev["last_toggle"] = time.time()
-                dev["reason"] = reason or ("Bật thủ công" if new_state else "Tắt thủ công")
-                self._add_log(device_id, "ON" if new_state else "OFF", dev["reason"])
-                self._save_state()
+            new_state = (not dev["is_on"]) if state is None else bool(state)
+            dev["is_on"] = new_state
+            dev["last_toggle"] = time.time()
+            dev["reason"] = reason or ("Bật thủ công" if new_state else "Tắt thủ công")
+            self._add_log(device_id, "ON" if new_state else "OFF", dev["reason"])
+            self._save_state()
             return dev["is_on"]
         return False
 

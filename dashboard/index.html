@@ -2459,16 +2459,17 @@
                 const reasonEl = document.getElementById(`reason-${id}`);
                 const toggleEl = document.getElementById(`toggle-${id}`);
 
-                if (itemEl) itemEl.classList.toggle('active', dev.is_on);
+                const isOn = Boolean(dev.is_on);
+                if (itemEl) itemEl.classList.toggle('active', isOn);
                 if (badgeEl) {
-                    badgeEl.className = 'device-badge ' + (dev.is_on ? 'running' : 'idle');
-                    const badgeKey = dev.is_on ? 'actuators.running' : 'actuators.idle';
+                    badgeEl.className = 'device-badge ' + (isOn ? 'running' : 'idle');
+                    const badgeKey = isOn ? 'actuators.running' : 'actuators.idle';
                     badgeEl.dataset.i18n = badgeKey;
                     badgeEl.textContent = I18N.t(badgeKey);
                 }
                 if (reasonEl) reasonEl.textContent = safeTranslate(dev.reason);
-                if (toggleEl && document.activeElement !== toggleEl) {
-                    toggleEl.checked = dev.is_on;
+                if (toggleEl) {
+                    toggleEl.checked = isOn;
                     toggleEl.disabled = (currentActuatorMode === 'AUTO');
                 }
             }
@@ -2499,28 +2500,46 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ mode: mode })
             });
+            await updateActuators();
         } catch (e) {
             console.error('Set mode error:', e);
         }
     }
 
     async function toggleActuator(deviceId, state) {
-        // Immediate local state update for responsiveness
+        const isChecked = Boolean(state);
         const itemEl = document.getElementById(`device-card-${deviceId}`);
         const badgeEl = document.getElementById(`status-badge-${deviceId}`);
-        if (itemEl) itemEl.classList.toggle('active', state);
+        const reasonEl = document.getElementById(`reason-${deviceId}`);
+        const toggleEl = document.getElementById(`toggle-${deviceId}`);
+
+        if (toggleEl) toggleEl.checked = isChecked;
+        if (itemEl) itemEl.classList.toggle('active', isChecked);
         if (badgeEl) {
-            badgeEl.className = 'device-badge ' + (state ? 'running' : 'idle');
-            const badgeKey = state ? 'actuators.running' : 'actuators.idle';
+            badgeEl.className = 'device-badge ' + (isChecked ? 'running' : 'idle');
+            const badgeKey = isChecked ? 'actuators.running' : 'actuators.idle';
             badgeEl.dataset.i18n = badgeKey;
             badgeEl.textContent = I18N.t(badgeKey);
         }
+        if (reasonEl) {
+            reasonEl.textContent = isChecked ? 'Bật thủ công' : 'Tắt thủ công';
+        }
+
+        // Calculate and update total power immediately
+        let totalPower = 0;
+        const powerMap = { aerator: 1.5, pump: 2.2, lime: 0.75 };
+        ['aerator', 'pump', 'lime'].forEach(id => {
+            const el = document.getElementById(`toggle-${id}`);
+            if (el && el.checked) totalPower += (powerMap[id] || 0);
+        });
+        const totalPowerEl = document.getElementById('total-power-val');
+        if (totalPowerEl) totalPowerEl.textContent = totalPower.toFixed(2);
 
         try {
             await fetch('/api/actuators/toggle', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ device_id: deviceId, state: state })
+                body: JSON.stringify({ device_id: deviceId, state: isChecked })
             });
             await updateActuators();
         } catch (e) {
