@@ -165,9 +165,9 @@
             50% { opacity: 0.4; }
         }
         .container {
-            max-width: 1440px;
+            max-width: 1560px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 24px 32px;
         }
         /* ── Source Bar ── */
         .source-selector-bar {
@@ -249,16 +249,16 @@
         /* ── Main Grid ── */
         .main-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1.55fr 1fr;
             gap: 24px;
             align-items: start;
         }
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1050px) { .main-grid { grid-template-columns: 1fr; } }
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 22px;
+            padding: 24px;
             margin-bottom: 20px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -280,8 +280,7 @@
             position: relative;
             overflow: hidden;
             background: var(--glass);
-            min-height: 110px;
-            max-height: 110px;
+            min-height: 125px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -537,16 +536,16 @@
         }
         /* ── Stable Reasons & Explainable AI Card ── */
         .explain-card {
-            min-height: 180px;
-            max-height: 180px;
+            min-height: 235px;
+            max-height: 255px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
         #explain-summary {
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--text-secondary);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             min-height: 18px;
             line-height: 1.4;
             flex-shrink: 0;
@@ -557,7 +556,7 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             padding-right: 4px;
         }
         .reason-list::-webkit-scrollbar {
@@ -568,23 +567,23 @@
             border-radius: 4px;
         }
         .reason-list li {
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-left: 3px solid var(--accent-yellow);
             background: rgba(245,158,11,0.05);
             border-radius: 0 8px 8px 0;
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--text-secondary);
-            min-height: 36px;
+            min-height: 40px;
             display: flex;
             align-items: center;
-            line-height: 1.35;
+            line-height: 1.4;
             flex-shrink: 0;
         }
 
         /* ── Stable Decision Support Card ── */
         .recommend-card {
-            min-height: 220px;
-            max-height: 220px;
+            min-height: 275px;
+            max-height: 295px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -594,7 +593,7 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             padding-right: 4px;
         }
         #rec-list::-webkit-scrollbar {
@@ -607,13 +606,13 @@
         .rec-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
+            gap: 10px;
+            padding: 10px 12px;
             background: var(--glass);
             border-radius: 8px;
-            font-size: 12px;
-            min-height: 36px;
-            line-height: 1.35;
+            font-size: 12.5px;
+            min-height: 40px;
+            line-height: 1.4;
             flex-shrink: 0;
         }
         .rec-urgency {
@@ -631,14 +630,14 @@
         .urgency-low { background: rgba(16,185,129,0.2); color: var(--accent-green); }
         .urgency-info { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
         .disclaimer {
-            font-size: 10.5px;
+            font-size: 11px;
             color: var(--text-muted);
-            padding: 8px 10px;
+            padding: 10px 12px;
             background: var(--glass);
             border-radius: 8px;
-            margin-top: 8px;
+            margin-top: 10px;
             border-left: 3px solid var(--accent-purple);
-            line-height: 1.35;
+            line-height: 1.4;
             flex-shrink: 0;
         }
         /* ── Language Switcher ── */
