@@ -239,6 +239,65 @@
             color: var(--text-muted);
             font-weight: 500;
         }
+
+        /* ── Scenario Switcher (Kịch bản Ao Nuôi & Neon Glow) ── */
+        .scenario-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+        .scenario-btn {
+            position: relative;
+            padding: 9px 18px;
+            background: rgba(16, 22, 54, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.2px;
+            outline: none;
+        }
+        .scenario-btn:hover {
+            background: rgba(30, 42, 86, 0.85);
+            color: #ffffff;
+            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+        .scenario-btn:active {
+            transform: translateY(0);
+        }
+        /* ── Glowing Active State when Selected ── */
+        .scenario-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #7c3aed 100%);
+            color: #ffffff !important;
+            border: 1px solid #38bdf8;
+            font-weight: 700;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.75), 0 0 35px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            animation: activeNeonPulse 2.5s infinite ease-in-out;
+        }
+        @keyframes activeNeonPulse {
+            0%, 100% {
+                box-shadow: 0 0 18px rgba(56, 189, 248, 0.7), 0 0 35px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 28px rgba(56, 189, 248, 0.95), 0 0 45px rgba(124, 58, 237, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            }
+        }
         /* ── Top Stats ── */
         .stats-grid {
             display: grid;
@@ -1502,13 +1561,13 @@
 
         <!-- ── Scenario Switcher (Visible in Demo mode) ── -->
         <div class="scenario-bar" id="scenario-controls">
-            <button class="scenario-btn" onclick="setScenario('normal')" data-i18n="scenario.normal">Normal</button>
-            <button class="scenario-btn" onclick="setScenario('rapid_ph_rise')" data-i18n="scenario.rapid_rise">Rapid Rise</button>
-            <button class="scenario-btn" onclick="setScenario('rapid_ph_drop')" data-i18n="scenario.rapid_drop">Rapid Drop</button>
-            <button class="scenario-btn" onclick="setScenario('heavy_rain')" data-i18n="scenario.heavy_rain">Heavy Rain</button>
-            <button class="scenario-btn" onclick="setScenario('heat_event')" data-i18n="scenario.heat_event">Heat Event</button>
-            <button class="scenario-btn" onclick="setScenario('sensor_anomaly')" data-i18n="scenario.sensor_anomaly">Sensor Anomaly</button>
-            <button class="scenario-btn active" onclick="setScenario('competition_demo')" data-i18n="scenario.competition_demo">Competition Demo</button>
+            <button class="scenario-btn" onclick="setScenario('normal', this)" data-i18n="scenario.normal">Normal</button>
+            <button class="scenario-btn" onclick="setScenario('rapid_ph_rise', this)" data-i18n="scenario.rapid_rise">Rapid Rise</button>
+            <button class="scenario-btn" onclick="setScenario('rapid_ph_drop', this)" data-i18n="scenario.rapid_drop">Rapid Drop</button>
+            <button class="scenario-btn" onclick="setScenario('heavy_rain', this)" data-i18n="scenario.heavy_rain">Heavy Rain</button>
+            <button class="scenario-btn" onclick="setScenario('heat_event', this)" data-i18n="scenario.heat_event">Heat Event</button>
+            <button class="scenario-btn" onclick="setScenario('sensor_anomaly', this)" data-i18n="scenario.sensor_anomaly">Sensor Anomaly</button>
+            <button class="scenario-btn active" onclick="setScenario('competition_demo', this)" data-i18n="scenario.competition_demo">Competition Demo</button>
         </div>
 
         <!-- ── Top Stats Grid ── -->
