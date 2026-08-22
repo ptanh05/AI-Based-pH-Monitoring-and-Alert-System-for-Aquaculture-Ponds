@@ -235,6 +235,15 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def ensure_initialized_middleware(request: Request, call_next):
+    """Ensure AI pipeline is initialized and step simulation on serverless invocations."""
+    if request.url.path.startswith("/api") or request.url.path == "/":
+        ensure_system_initialized()
+    response = await call_next(request)
+    return response
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     traceback.print_exc()
