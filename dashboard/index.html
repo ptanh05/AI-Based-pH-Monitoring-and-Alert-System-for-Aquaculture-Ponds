@@ -117,6 +117,55 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+        .action-btn:hover {
+            background: rgba(30, 41, 75, 0.85);
+            color: var(--text-primary);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-1.5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        .sound-btn {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.35);
+            color: #f87171;
+            font-weight: 600;
+        }
+        .sound-btn.muted {
+            background: rgba(100, 116, 139, 0.12);
+            border-color: rgba(100, 116, 139, 0.25);
+            color: var(--text-muted);
+        }
+        .sound-btn.alarming {
+            background: rgba(239, 68, 68, 0.35);
+            border-color: #ef4444;
+            color: #ffffff;
+            animation: soundAlarmBuzzer 0.8s infinite alternate ease-in-out;
+        }
+        @keyframes soundAlarmBuzzer {
+            0% { box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); transform: scale(1); }
+            100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.95); transform: scale(1.06); }
+        }
         .theme-toggle-btn {
             display: flex;
             align-items: center;
@@ -1536,6 +1585,7 @@
             </div>
         </div>
         <div class="header-right">
+            <button class="action-btn sound-btn" id="sound-toggle-btn" onclick="toggleAudioAlarm()" data-i18n="sound.enabled">🔔 Còi báo: BẬT</button>
             <button class="action-btn dt-btn" onclick="openDigitalTwinModal()" data-i18n="dt.btn">🧬 Bản Sao Số What-If</button>
             <button class="action-btn chat-btn" onclick="toggleChatAdvisor()" data-i18n="chat.btn">💬 Trợ Lý AI</button>
             <button class="action-btn export-pdf-btn" onclick="window.open('/api/export/report', '_blank')" data-i18n="export.pdf">📄 Xuất Báo Cáo PDF</button>
@@ -1910,10 +1960,115 @@
             btn.className = 'lang-btn' + (I18N.currentLang === lang.code ? ' active' : '');
             btn.dataset.lang = lang.code;
             btn.innerHTML = `${lang.flag}<span class="lang-tooltip">${lang.name}</span>`;
-            btn.onclick = () => I18N.setLang(lang.code);
+            btn.onclick = () => {
+                I18N.setLang(lang.code);
+                updateSoundButtonUI(false);
+            };
             container.appendChild(btn);
         });
     })();
+
+    // ══════ WEB AUDIO ALARM BUZZER SYSTEM ══════
+    let audioCtx = null;
+    let isSoundEnabled = (localStorage.getItem('aqua-sound-enabled') !== 'false');
+    let lastAlarmSoundTime = 0;
+
+    function getAudioContext() {
+        if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                audioCtx = new AudioContextClass();
+            }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
+    }
+
+    // Unlock Web Audio context on user interaction anywhere on the dashboard
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            getAudioContext();
+        }, { once: false, passive: true });
+    });
+
+    function toggleAudioAlarm() {
+        isSoundEnabled = !isSoundEnabled;
+        localStorage.setItem('aqua-sound-enabled', isSoundEnabled ? 'true' : 'false');
+        updateSoundButtonUI(false);
+        if (isSoundEnabled) {
+            getAudioContext();
+            playBeepTone(880, 0.15, 'sine', 0.2); // Short pleasant confirmation beep
+        }
+    }
+
+    function updateSoundButtonUI(isAlarming = false) {
+        const btn = document.getElementById('sound-toggle-btn');
+        if (!btn) return;
+        if (!isSoundEnabled) {
+            btn.className = 'action-btn sound-btn muted';
+            btn.innerHTML = '🔕 ' + I18N.t('sound.muted');
+        } else if (isAlarming) {
+            btn.className = 'action-btn sound-btn alarming';
+            btn.innerHTML = '🚨 ' + I18N.t('sound.alarming');
+        } else {
+            btn.className = 'action-btn sound-btn';
+            btn.innerHTML = '🔔 ' + I18N.t('sound.enabled');
+        }
+    }
+
+    // Initialize sound button UI on load
+    updateSoundButtonUI(false);
+
+    function playBeepTone(freq, duration = 0.15, type = 'sawtooth', volume = 0.2) {
+        try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+            gain.gain.setValueAtTime(volume, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start();
+            osc.stop(ctx.currentTime + duration);
+        } catch (e) {
+            console.warn('Audio playback error:', e);
+        }
+    }
+
+    function triggerEmergencyAlarmSound(alertLevel) {
+        if (!isSoundEnabled) {
+            updateSoundButtonUI(false);
+            return;
+        }
+
+        const now = Date.now();
+        if (now - lastAlarmSoundTime < 3200) return;
+        lastAlarmSoundTime = now;
+
+        updateSoundButtonUI(true);
+
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        if (alertLevel === 'CRITICAL') {
+            // High-urgency triple siren buzzer for critical pH breach (<7.0 or >8.5)
+            playBeepTone(880, 0.2, 'sawtooth', 0.25);
+            setTimeout(() => playBeepTone(1100, 0.2, 'sawtooth', 0.25), 220);
+            setTimeout(() => playBeepTone(1320, 0.35, 'sawtooth', 0.3), 460);
+        } else if (alertLevel === 'HIGH_RISK' || alertLevel === 'WARNING') {
+            // Dual warning chime for early alert
+            playBeepTone(660, 0.18, 'sine', 0.2);
+            setTimeout(() => playBeepTone(880, 0.25, 'sine', 0.2), 220);
+        }
+    }
 
     // ══════ CHART SETUP ══════
     const ctx = document.getElementById('ph-chart').getContext('2d');
@@ -2197,23 +2352,32 @@
             const alertTextEl = document.getElementById('alert-text');
 
             if (alertCard) {
-                const isAbnormal = (status && status !== 'NORMAL');
+                const isBreach = (ph !== null && ph !== undefined && (ph < 7.0 || ph > 8.5));
+                const isCritical = ['CRITICAL', 'ALERT_LOW_PH', 'ALERT_HIGH_PH'].includes(status) || isBreach || risk >= 70;
+                const isHighRisk = (status === 'HIGH_RISK') || risk >= 40;
+                const isAbnormal = (status && status !== 'NORMAL') || current.has_early_warning || risk >= 25;
+
                 let severityClass = 'normal';
                 let icon = '✅';
                 let subKey = 'alert.normal_sub';
 
-                if (['CRITICAL', 'ALERT_LOW_PH', 'ALERT_HIGH_PH'].includes(status)) {
+                if (isCritical) {
                     severityClass = 'critical';
                     icon = '🚨';
                     subKey = 'alert.critical_sub';
-                } else if (status === 'HIGH_RISK') {
+                    triggerEmergencyAlarmSound('CRITICAL');
+                } else if (isHighRisk) {
                     severityClass = 'high';
                     icon = '⚠️';
                     subKey = 'alert.critical_sub';
+                    triggerEmergencyAlarmSound('HIGH_RISK');
                 } else if (isAbnormal) {
                     severityClass = 'warning';
                     icon = '⚡';
                     subKey = 'alert.warning_sub';
+                    triggerEmergencyAlarmSound('WARNING');
+                } else {
+                    updateSoundButtonUI(false);
                 }
 
                 alertCard.className = 'card alert-card ' + severityClass;
@@ -2230,8 +2394,10 @@
                     alertSubEl.dataset.i18n = subKey;
                 }
                 if (alertTextEl) {
-                    if (isAbnormal && current.warning_message) {
+                    if ((isAbnormal || isBreach) && current.warning_message) {
                         alertTextEl.textContent = safeTranslate(current.warning_message);
+                    } else if (isBreach) {
+                        alertTextEl.textContent = safeTranslate(`Cảnh báo: pH (${ph.toFixed(2)}) vượt ngoài ngưỡng an toàn (7.0 - 8.5)!`);
                     } else {
                         alertTextEl.textContent = safeTranslate('All parameters within safe limits.');
                     }

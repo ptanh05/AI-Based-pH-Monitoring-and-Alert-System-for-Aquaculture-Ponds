@@ -173,6 +173,11 @@ const I18N = {
             'drift.alignment': 'Distribution Alignment:',
             'drift.retrain_btn': '🔄 Adapt Model at Edge',
 
+            // Sound Alarm
+            'sound.enabled': 'Alarm: ON',
+            'sound.muted': 'Alarm: OFF',
+            'sound.alarming': 'ALARM ACTIVE',
+
             // Language & Theme
             'lang.label': 'Language',
             'theme.light': 'Light Mode',
@@ -333,6 +338,12 @@ const I18N = {
             'drift.alignment': 'Độ khớp dữ liệu:',
             'drift.retrain_btn': '🔄 Tự Học Lại Tại Biên',
 
+            // Sound Alarm
+            'sound.enabled': 'Còi Báo: BẬT',
+            'sound.muted': 'Còi Báo: TẮT',
+            'sound.alarming': 'ĐANG BÁO ĐỘNG',
+
+            // Language & Theme
             'lang.label': 'Ngôn ngữ',
             'theme.light': 'Giao diện Sáng',
             'theme.dark': 'Giao diện Tối',
@@ -492,6 +503,11 @@ const I18N = {
             'drift.alignment': '数据匹配度:',
             'drift.retrain_btn': '🔄 边缘模型自适应重训',
 
+            // Sound Alarm
+            'sound.enabled': '警报音: 开启',
+            'sound.muted': '警报音: 关闭',
+            'sound.alarming': '警报响铃中',
+
             'lang.label': '语言',
             'theme.light': '浅色模式',
             'theme.dark': '深色模式',
@@ -650,6 +666,11 @@ const I18N = {
             'drift.title': 'データ安定性＆継続学習',
             'drift.alignment': 'データ適合率:',
             'drift.retrain_btn': '🔄 エッジモデル自動適応',
+
+            // Sound Alarm
+            'sound.enabled': '警報音: ON',
+            'sound.muted': '警報音: OFF',
+            'sound.alarming': '警報作動中',
 
             'lang.label': '言語',
             'theme.light': 'ライトモード',
