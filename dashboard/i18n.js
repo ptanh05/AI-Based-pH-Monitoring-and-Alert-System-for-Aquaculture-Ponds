@@ -750,14 +750,43 @@ const I18N = {
             { reg: /^Follow your farm's established emergency water-management procedure\./i, replace: 'Thực hiện quy trình khẩn cấp theo tiêu chuẩn kỹ thuật của trang trại.' },
             { reg: /^Increase monitoring frequency until conditions stabilise\./i, replace: 'Tăng tần suất đo kiểm tra cho đến khi chất lượng nước ổn định trở lại.' },
 
+            // Actuators & Automation reasons
+            { reg: /^Auto:\s*pH is balanced/i, replace: 'Tự động: pH đã cân bằng' },
+            { reg: /^Auto:\s*Low pH detected\s*[-–]\s*dispensing lime/i, replace: 'Tự động: Phát hiện pH thấp - đang xả vôi' },
+            { reg: /^Auto:\s*Low DO\s*\/\s*high risk\s*[-–]\s*running aerator/i, replace: 'Tự động: DO thấp / rủi ro cao - đang chạy quạt nước' },
+            { reg: /^Auto:\s*Water circulation needed/i, replace: 'Tự động: Cần tuần hoàn trao đổi nước' },
+            { reg: /^Manual override/i, replace: 'Điều khiển thủ công' },
+            { reg: /^Manual mode:\s*Idle/i, replace: 'Chế độ thủ công: Đang nghỉ' },
+            { reg: /^Manual mode:\s*Active/i, replace: 'Chế độ thủ công: Đang chạy' },
+            { reg: /^Manual:\s*User forced OFF/i, replace: 'Thủ công: Người dùng đã tắt' },
+            { reg: /^Manual:\s*User forced ON/i, replace: 'Thủ công: Người dùng đã bật' },
+
+            // Computer Vision & Fish behavior tags
+            { reg: /Normal uniform schooling/i, replace: 'Đàn bơi phân tán đều' },
+            { reg: /High surface crowding \(Oxygen stress\)/i, replace: 'Tụ tập mặt nước mật độ cao (Thiếu Oxy)' },
+            { reg: /Erratic swimming \(pH shock \/ toxicity\)/i, replace: 'Bơi hỗn loạn bất thường (Sốc pH / Độc tính)' },
+            { reg: /Lethargic bottom resting/i, replace: 'Nằm đáy đờ đẫn (Thiếu năng lượng / Lạnh)' },
+            { reg: /Low Feeding Response/i, replace: 'Phản ứng ăn yếu / Bỏ ăn' },
+            { reg: /Optimal Feeding Activity/i, replace: 'Hoạt động bắt mồi tích cực' },
+            { reg: /Surface Crowding/i, replace: 'Tụ tập mặt nước' },
+            { reg: /Erratic Swimming/i, replace: 'Bơi hỗn loạn' },
+            { reg: /Low Feeding/i, replace: 'Bỏ ăn' },
+            { reg: /Normal Schooling/i, replace: 'Bơi bình thường' },
+            { reg: /^LOW \(Normal\)/i, replace: 'THẤP (Bình thường)' },
+            { reg: /^MODERATE \(Watching\)/i, replace: 'TRUNG BÌNH (Đang theo dõi)' },
+            { reg: /^HIGH \(Severe Stress\)/i, replace: 'CAO (Căng thẳng sinh học nặng)' },
+
+            // Digital Twin summaries
+            { reg: /Intervention scenario achieves\s*([\d.]+)%\s*risk reduction\.\s*Expected pH stabilizes at\s*([\d.]+)\s*\(vs\s*([\d.]+)\s*baseline\)\./i, replace: 'Kịch bản can thiệp giảm $1% rủi ro. pH dự kiến ổn định ở mức $2 (so với $3 nếu không can thiệp).' },
+
             // Disclaimers & Alert Prefixes
             { reg: /^These are suggested actions for decision support only\..*/i, replace: 'Các gợi ý này chỉ mang tính chất hỗ trợ ra quyết định. Không thay thế hướng dẫn chuyên môn thủy sản. Luôn tham khảo ý kiến kỹ thuật viên và tuân thủ quy trình trang trại.' },
-            { reg: /^CRITICAL: (.*)/i, replace: 'NGUY CẤP: $1' },
-            { reg: /^HIGH RISK: (.*)/i, replace: 'RỦI RO CAO: $1' },
-            { reg: /^PREDICTIVE WARNING: (.*)/i, replace: 'CẢNH BÁO DỰ ĐOÁN: $1' },
-            { reg: /^LOW pH ALERT: (.*)/i, replace: 'CẢNH BÁO pH THẤP: $1' },
-            { reg: /^HIGH pH ALERT: (.*)/i, replace: 'CẢNH BÁO pH CAO: $1' },
-            { reg: /^Waiting: (.*)/i, replace: 'Đang chờ: $1' },
+            { reg: /^CRITICAL:\s*(.*)/i, replace: 'NGUY CẤP: $1' },
+            { reg: /^HIGH RISK:\s*(.*)/i, replace: 'RỦI RO CAO: $1' },
+            { reg: /^PREDICTIVE WARNING:\s*(.*)/i, replace: 'CẢNH BÁO DỰ ĐOÁN: $1' },
+            { reg: /^LOW pH ALERT:\s*(.*)/i, replace: 'CẢNH BÁO pH THẤP: $1' },
+            { reg: /^HIGH pH ALERT:\s*(.*)/i, replace: 'CẢNH BÁO pH CAO: $1' },
+            { reg: /^Waiting:\s*(.*)/i, replace: 'Đang chờ: $1' },
         ],
         zh: [
             { reg: /^Water quality conditions appear normal\./i, replace: '水质状况正常。' },

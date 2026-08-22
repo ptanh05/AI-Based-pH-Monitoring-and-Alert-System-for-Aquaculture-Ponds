@@ -1712,23 +1712,23 @@
     <header class="app-header">
         <div class="app-title">
             <div>
-                <h1 data-i18n="app.title">AI Aquaculture Guardian</h1>
-                <div class="subtitle" data-i18n="app.subtitle">AI-Powered Early Warning for Sustainable Aquaculture</div>
+                <h1 data-i18n="app.title">AI Giám Sát Thủy Sản</h1>
+                <div class="subtitle" data-i18n="app.subtitle">Hệ Thống Cảnh Báo Sớm Bằng AI Cho Nuôi Trồng Thủy Sản Bền Vững</div>
             </div>
         </div>
         <div class="header-right">
-            <button class="action-btn sound-btn" id="sound-toggle-btn" onclick="toggleAudioAlarm()" data-i18n="sound.enabled">🔔 Còi báo: BẬT</button>
+            <button class="action-btn sound-btn" id="sound-toggle-btn" onclick="toggleAudioAlarm()" data-i18n="sound.enabled">🔔 Còi Báo: BẬT</button>
             <button class="action-btn dt-btn" onclick="openDigitalTwinModal()" data-i18n="dt.btn">🧬 Bản Sao Số What-If</button>
             <button class="action-btn chat-btn" onclick="toggleChatAdvisor()" data-i18n="chat.btn">💬 Trợ Lý AI</button>
             <button class="action-btn export-pdf-btn" onclick="window.open('/api/export/report', '_blank')" data-i18n="export.pdf">📄 Xuất Báo Cáo PDF</button>
             <button class="action-btn export-csv-btn" onclick="window.location.href='/api/export/csv'" data-i18n="export.csv">📊 Xuất CSV</button>
             <button class="action-btn notif-btn" onclick="openNotifModal()" data-i18n="notif.btn">📲 Cảnh báo Telegram</button>
-            <span class="header-badge badge-sim" id="data-source-badge" data-i18n="badge.simulated">DATA SOURCE: SIMULATED (Synthetic)</span>
-            <span class="header-badge badge-monitoring"><span class="status-dot"></span> <span data-i18n="header.monitoring">MONITORING</span></span>
+            <span class="header-badge badge-sim" id="data-source-badge" data-i18n="badge.simulated">NGUỒN DỮ LIỆU: MÔ PHỎNG (Tổng hợp)</span>
+            <span class="header-badge badge-monitoring"><span class="status-dot"></span> <span data-i18n="header.monitoring">ĐANG GIÁM SÁT</span></span>
             <div class="lang-switcher" id="lang-switcher"></div>
             <button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
                 <span id="theme-icon">☀️</span>
-                <span class="theme-tooltip" id="theme-tooltip" data-i18n="theme.light">Light Mode</span>
+                <span class="theme-tooltip" id="theme-tooltip" data-i18n="theme.light">Giao diện Sáng</span>
             </button>
         </div>
     </header>
@@ -1737,64 +1737,64 @@
         <!-- ── Data Source Switcher ── -->
         <div class="source-selector-bar">
             <div class="source-buttons">
-                <button class="source-btn active" id="btn-src-demo" onclick="switchDataSource('demo')" data-i18n="source.demo">🎯 DEMO MODE (Simulator)</button>
-                <button class="source-btn" id="btn-src-real" onclick="switchDataSource('real_validation')" data-i18n="source.real">🌊 REAL DATA VALIDATION (Mendeley)</button>
-                <button class="source-btn" id="btn-src-live" onclick="switchDataSource('live_sensor')" data-i18n="source.live">📡 LIVE SENSOR</button>
+                <button class="source-btn active" id="btn-src-demo" onclick="switchDataSource('demo')" data-i18n="source.demo">🎯 CHẾ ĐỘ DEMO (Mô phỏng)</button>
+                <button class="source-btn" id="btn-src-real" onclick="switchDataSource('real_validation')" data-i18n="source.real">🌊 XÁC THỰC DỮ LIỆU THỰC (Mendeley)</button>
+                <button class="source-btn" id="btn-src-live" onclick="switchDataSource('live_sensor')" data-i18n="source.live">📡 CẢM BIẾN TRỰC TIẾP</button>
             </div>
             <div class="source-provenance" id="source-provenance-text" data-i18n="source.provenance.demo">
-                Source: PHSimulator (Deterministic Competition Scenarios)
+                Nguồn: PHSimulator (Kịch bản cuộc thi xác định)
             </div>
         </div>
 
         <!-- ── Scenario Switcher (Visible in Demo mode) ── -->
         <div class="scenario-bar" id="scenario-controls">
-            <button class="scenario-btn" onclick="setScenario('normal', this)" data-i18n="scenario.normal">Normal</button>
-            <button class="scenario-btn" onclick="setScenario('rapid_ph_rise', this)" data-i18n="scenario.rapid_rise">Rapid Rise</button>
-            <button class="scenario-btn" onclick="setScenario('rapid_ph_drop', this)" data-i18n="scenario.rapid_drop">Rapid Drop</button>
-            <button class="scenario-btn" onclick="setScenario('heavy_rain', this)" data-i18n="scenario.heavy_rain">Heavy Rain</button>
-            <button class="scenario-btn" onclick="setScenario('heat_event', this)" data-i18n="scenario.heat_event">Heat Event</button>
-            <button class="scenario-btn" onclick="setScenario('sensor_anomaly', this)" data-i18n="scenario.sensor_anomaly">Sensor Anomaly</button>
-            <button class="scenario-btn active" onclick="setScenario('competition_demo', this)" data-i18n="scenario.competition_demo">Competition Demo</button>
+            <button class="scenario-btn" onclick="setScenario('normal', this)" data-i18n="scenario.normal">Bình thường</button>
+            <button class="scenario-btn" onclick="setScenario('rapid_ph_rise', this)" data-i18n="scenario.rapid_rise">Tăng nhanh</button>
+            <button class="scenario-btn" onclick="setScenario('rapid_ph_drop', this)" data-i18n="scenario.rapid_drop">Giảm nhanh</button>
+            <button class="scenario-btn" onclick="setScenario('heavy_rain', this)" data-i18n="scenario.heavy_rain">Mưa lớn</button>
+            <button class="scenario-btn" onclick="setScenario('heat_event', this)" data-i18n="scenario.heat_event">Nắng nóng</button>
+            <button class="scenario-btn" onclick="setScenario('sensor_anomaly', this)" data-i18n="scenario.sensor_anomaly">Lỗi cảm biến</button>
+            <button class="scenario-btn active" onclick="setScenario('competition_demo', this)" data-i18n="scenario.competition_demo">Demo cuộc thi</button>
         </div>
 
         <!-- ── Top Stats Grid ── -->
         <div class="stats-grid">
             <div class="stat-card" id="card-pond">
-                <div class="label" data-i18n="stat.pond">Pond</div>
-                <div class="value" style="color:var(--accent-cyan)" id="pond-name">POND-01</div>
-                <div class="sub" id="sensor-sub" data-i18n="stat.sensor_active">pH Sensor Active</div>
+                <div class="label" data-i18n="stat.pond">Ao</div>
+                <div class="value" style="color:var(--accent-cyan)" id="pond-name">AO-01</div>
+                <div class="sub" id="sensor-sub" data-i18n="stat.sensor_active">Cảm biến pH đang hoạt động</div>
             </div>
             <div class="stat-card" id="card-ph">
-                <div class="label" data-i18n="stat.current_ph">Current pH</div>
+                <div class="label" data-i18n="stat.current_ph">pH Hiện tại</div>
                 <div class="value" id="current-ph" style="color:var(--accent-green)">—</div>
-                <div class="sub" id="ph-status" data-i18n="stat.optimal">Optimal (7.0 - 8.5)</div>
+                <div class="sub" id="ph-status" data-i18n="stat.optimal">Tối ưu (7.0 - 8.5)</div>
             </div>
             <div class="stat-card" id="card-forecast">
-                <div class="label" data-i18n="stat.forecast_ph">Forecast pH</div>
+                <div class="label" data-i18n="stat.forecast_ph">pH Dự đoán</div>
                 <div class="value" id="forecast-ph" style="color:var(--accent-blue)">—</div>
-                <div class="sub" id="forecast-sub" data-i18n="stat.ai_projection">AI multi-step projection</div>
+                <div class="sub" id="forecast-sub" data-i18n="stat.ai_projection">Dự đoán đa bước bằng AI</div>
             </div>
             <div class="stat-card risk-gauge" id="card-risk">
-                <div class="label" data-i18n="stat.risk_score">Risk Score</div>
+                <div class="label" data-i18n="stat.risk_score">Điểm Rủi Ro</div>
                 <div class="risk-number" id="risk-score">0</div>
-                <div class="sub" id="risk-level" data-i18n="risk.low">LOW</div>
+                <div class="sub" id="risk-level" data-i18n="risk.low">THẤP</div>
                 <div class="risk-bar"><div class="risk-fill" id="risk-fill" style="width:0%;background:var(--accent-green)"></div></div>
             </div>
             <!-- Multi-sensor parameters -->
             <div class="stat-card" id="card-temp">
-                <div class="label" data-i18n="stat.water_temp">Water Temp</div>
+                <div class="label" data-i18n="stat.water_temp">Nhiệt Độ Nước</div>
                 <div class="value" id="val-temp" style="color:var(--accent-yellow); font-size:22px">27.0 °C</div>
-                <div class="sub" data-i18n="stat.tropical_range">Tropical Tilapia Range</div>
+                <div class="sub" data-i18n="stat.tropical_range">Phạm vi cá rô phi nhiệt đới</div>
             </div>
             <div class="stat-card" id="card-do">
-                <div class="label" data-i18n="stat.dissolved_o2">Dissolved O₂</div>
+                <div class="label" data-i18n="stat.dissolved_o2">Oxy Hòa Tan</div>
                 <div class="value" id="val-do" style="color:var(--accent-cyan); font-size:22px">8.2 mg/L</div>
-                <div class="sub" data-i18n="stat.optical_probe">Optical DO Probe</div>
+                <div class="sub" data-i18n="stat.optical_probe">Đầu dò DO quang học</div>
             </div>
             <div class="stat-card" id="card-turb">
-                <div class="label" data-i18n="stat.turbidity">Turbidity</div>
+                <div class="label" data-i18n="stat.turbidity">Độ Đục</div>
                 <div class="value" id="val-turb" style="color:var(--accent-orange); font-size:22px">3.5 NTU</div>
-                <div class="sub" data-i18n="stat.clarity_index">Clarity Index</div>
+                <div class="sub" data-i18n="stat.clarity_index">Chỉ số độ trong</div>
             </div>
         </div>
 
@@ -1804,7 +1804,7 @@
                 <!-- Chart -->
                 <div class="card">
                     <div class="chart-header-row">
-                        <h2 data-i18n="chart.title">📊 Water Quality Monitoring & Multi-Step AI Forecast</h2>
+                        <h2 data-i18n="chart.title">📊 Giám Sát Chất Lượng Nước & Dự Đoán AI Đa Bước</h2>
                         <div class="chart-window-controls">
                             <span class="window-label" data-i18n="chart.window">Khung nhìn:</span>
                             <button class="win-btn" data-size="15" onclick="setChartWindow(15)" data-i18n="chart.win_15">15 điểm</button>
@@ -1835,25 +1835,25 @@
                 </div>
                 <!-- Risk Components -->
                 <div class="card">
-                    <h2 data-i18n="risk.components.title">🎯 Aquaculture Risk Score Components (0–100)</h2>
+                    <h2 data-i18n="risk.components.title">🎯 Thành Phần Điểm Rủi Ro Thủy Sản (0–100)</h2>
                     <div id="risk-components">
                         <div class="risk-comp">
-                            <span class="risk-comp-label" data-i18n="risk.current_ph">Current pH (30%)</span>
+                            <span class="risk-comp-label" data-i18n="risk.current_ph">pH Hiện tại (30%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-current" style="width:0%;background:var(--accent-blue)"></div></div>
                             <span class="risk-comp-value" id="rcv-current">0</span>
                         </div>
                         <div class="risk-comp">
-                            <span class="risk-comp-label" data-i18n="risk.ai_forecast">AI Forecast (30%)</span>
+                            <span class="risk-comp-label" data-i18n="risk.ai_forecast">Dự đoán AI (30%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-forecast" style="width:0%;background:var(--accent-cyan)"></div></div>
                             <span class="risk-comp-value" id="rcv-forecast">0</span>
                         </div>
                         <div class="risk-comp">
-                            <span class="risk-comp-label" data-i18n="risk.trend">Trend / RoC (20%)</span>
+                            <span class="risk-comp-label" data-i18n="risk.trend">Xu hướng / Tốc độ (20%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-trend" style="width:0%;background:var(--accent-yellow)"></div></div>
                             <span class="risk-comp-value" id="rcv-trend">0</span>
                         </div>
                         <div class="risk-comp">
-                            <span class="risk-comp-label" data-i18n="risk.anomaly">Anomaly (20%)</span>
+                            <span class="risk-comp-label" data-i18n="risk.anomaly">Bất thường (20%)</span>
                             <div class="risk-comp-bar"><div class="risk-comp-fill" id="rc-anomaly" style="width:0%;background:var(--accent-orange)"></div></div>
                             <span class="risk-comp-value" id="rcv-anomaly">0</span>
                         </div>
@@ -1945,26 +1945,26 @@
 
                 <!-- Why -->
                 <div class="card explain-card">
-                    <h2 data-i18n="explain.title">🔍 Explainable AI ("Why?")</h2>
+                    <h2 data-i18n="explain.title">🔍 AI Có Thể Giải Thích ("Tại sao?")</h2>
                     <p id="explain-summary"></p>
                     <ul class="reason-list" id="reason-list"></ul>
                 </div>
                 <!-- Recommendations -->
                 <div class="card recommend-card">
-                    <h2 data-i18n="recommend.title">💡 Decision Support (Actionable Guidance)</h2>
+                    <h2 data-i18n="recommend.title">💡 Hỗ Trợ Quyết Định (Hướng Dẫn Hành Động)</h2>
                     <div id="rec-list"></div>
                     <div class="disclaimer" id="rec-disclaimer"></div>
                 </div>
                 <!-- AI Engine -->
                 <div class="card">
-                    <h2 data-i18n="ai.status.title">🤖 AI & Edge Inference Status</h2>
+                    <h2 data-i18n="ai.status.title">🤖 Trạng Thái AI & Suy Luận Biên</h2>
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label" data-i18n="ai.model">Model</div>
+                            <div class="info-label" data-i18n="ai.model">Mô hình</div>
                             <div class="info-value" id="model-type">RandomForest</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-i18n="ai.inference">Inference Engine</div>
+                            <div class="info-label" data-i18n="ai.inference">Engine Suy luận</div>
                             <div class="info-value" id="inference-backend">OpenVINO / Sklearn</div>
                         </div>
                         <div class="info-item">
@@ -1972,7 +1972,7 @@
                             <div class="info-value" id="drift-status-badge" style="color:var(--accent-green)">🟢 Ổn định (100%)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-i18n="ai.history">History Buffer</div>
+                            <div class="info-label" data-i18n="ai.history">Bộ đệm lịch sử</div>
                             <div class="info-value" id="history-size">0</div>
                         </div>
                     </div>
@@ -2116,7 +2116,7 @@
         </div>
     </footer>
 
-    <script src="i18n.js?v=20260820_4"></script>
+    <script src="i18n.js?v=20260822_6"></script>
     <script>
     // ══════ GLOBAL STATE & TIMELINE DATA ══════
     var allHistory = {
