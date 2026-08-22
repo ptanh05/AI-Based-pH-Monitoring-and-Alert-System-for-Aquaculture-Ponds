@@ -2141,13 +2141,16 @@
     }
 
     // ══════ IOT ACTUATORS & AUTOMATION ══════
-    let currentActuatorMode = 'AUTO';
+    let currentActuatorMode = localStorage.getItem('aqua-actuator-mode') || 'AUTO';
 
     async function updateActuators() {
         try {
             const data = await fetchJSON('/api/actuators');
             if (!data) return;
-            currentActuatorMode = data.mode || 'AUTO';
+
+            // Keep user preference lock from localStorage if available
+            const savedMode = localStorage.getItem('aqua-actuator-mode');
+            currentActuatorMode = savedMode || data.mode || 'AUTO';
 
             const autoBtn = document.getElementById('mode-btn-auto');
             const manualBtn = document.getElementById('mode-btn-manual');
@@ -2183,19 +2186,44 @@
     }
 
     async function setActuatorMode(mode) {
+        currentActuatorMode = mode;
+        localStorage.setItem('aqua-actuator-mode', mode);
+
+        // Immediate UI lock
+        const autoBtn = document.getElementById('mode-btn-auto');
+        const manualBtn = document.getElementById('mode-btn-manual');
+        if (autoBtn) autoBtn.classList.toggle('active', mode === 'AUTO');
+        if (manualBtn) manualBtn.classList.toggle('active', mode === 'MANUAL');
+
+        // Immediately update toggle enabled/disabled state
+        ['aerator', 'pump', 'lime'].forEach(id => {
+            const toggleEl = document.getElementById(`toggle-${id}`);
+            if (toggleEl) toggleEl.disabled = (mode === 'AUTO');
+        });
+
         try {
             await fetch('/api/actuators/mode', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ mode: mode })
             });
-            await updateActuators();
         } catch (e) {
             console.error('Set mode error:', e);
         }
     }
 
     async function toggleActuator(deviceId, state) {
+        // Immediate local state update for responsiveness
+        const itemEl = document.getElementById(`device-card-${deviceId}`);
+        const badgeEl = document.getElementById(`status-badge-${deviceId}`);
+        if (itemEl) itemEl.classList.toggle('active', state);
+        if (badgeEl) {
+            badgeEl.className = 'device-badge ' + (state ? 'running' : 'idle');
+            const badgeKey = state ? 'actuators.running' : 'actuators.idle';
+            badgeEl.dataset.i18n = badgeKey;
+            badgeEl.textContent = I18N.t(badgeKey);
+        }
+
         try {
             await fetch('/api/actuators/toggle', {
                 method: 'POST',

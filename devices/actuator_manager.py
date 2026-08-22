@@ -8,7 +8,13 @@ Manages automated and manual control of:
 """
 
 import time
+import json
+import os
 from typing import Dict, Any, List
+
+STATE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "actuator_state.json")
+TMP_STATE_FILE = "/tmp/actuator_state.json"
+
 
 class ActuatorManager:
     def __init__(self):
@@ -48,14 +54,53 @@ class ActuatorManager:
                 "mode": "AUTO"
             }
         ]
+        self._load_state()
+
+    def _load_state(self):
+        for path in [STATE_FILE, TMP_STATE_FILE]:
+            try:
+                if os.path.exists(path):
+                    with open(path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    if "mode" in data and data["mode"] in ("AUTO", "MANUAL"):
+                        self.mode = data["mode"]
+                    if "devices" in data and isinstance(data["devices"], dict):
+                        for k, v in data["devices"].items():
+                            if k in self.devices:
+                                self.devices[k]["is_on"] = bool(v.get("is_on", self.devices[k]["is_on"]))
+                                if "reason" in v:
+                                    self.devices[k]["reason"] = v["reason"]
+                    return
+            except Exception:
+                pass
+
+    def _save_state(self):
+        payload = {
+            "mode": self.mode,
+            "devices": {
+                k: {"is_on": v["is_on"], "reason": v["reason"]}
+                for k, v in self.devices.items()
+            },
+            "updated_at": time.time(),
+        }
+        for path in [STATE_FILE, TMP_STATE_FILE]:
+            try:
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(payload, f, indent=2)
+                return
+            except Exception:
+                pass
 
     def set_mode(self, mode: str) -> str:
         if mode.upper() in ("AUTO", "MANUAL"):
             self.mode = mode.upper()
             self._add_log("system", f"Chuyển sang chế độ {self.mode}", "Người dùng thao tác")
+            self._save_state()
         return self.mode
 
     def toggle_device(self, device_id: str, state: bool = None, reason: str = "") -> bool:
+        self._load_state()
         if device_id in self.devices:
             dev = self.devices[device_id]
             new_state = (not dev["is_on"]) if state is None else state
@@ -64,11 +109,13 @@ class ActuatorManager:
                 dev["last_toggle"] = time.time()
                 dev["reason"] = reason or ("Bật thủ công" if new_state else "Tắt thủ công")
                 self._add_log(device_id, "ON" if new_state else "OFF", dev["reason"])
+                self._save_state()
             return dev["is_on"]
         return False
 
     def evaluate_conditions(self, current_data: Dict[str, Any]):
         """Evaluate AI conditions in AUTO mode and trigger actuators accordingly."""
+        self._load_state()
         if self.mode != "AUTO":
             return
 
@@ -84,7 +131,6 @@ class ActuatorManager:
             if not self.devices["aerator"]["is_on"]:
                 self.toggle_device("aerator", True, "Tự động: Oxy giảm hoặc Rủi ro tăng")
         elif do_val >= 7.8 and risk < 15.0 and status == "NORMAL":
-            # Keep aerator in eco mode but allow periodic runs
             pass
 
         # 2. Water Pump evaluation
@@ -104,6 +150,7 @@ class ActuatorManager:
                 self.toggle_device("lime", False, "Tự động: pH đã cân bằng")
 
     def get_status(self) -> Dict[str, Any]:
+        self._load_state()
         total_kw = sum(d["power_kw"] for d in self.devices.values() if d["is_on"])
         active_count = sum(1 for d in self.devices.values() if d["is_on"])
         return {
@@ -124,6 +171,7 @@ class ActuatorManager:
         })
         if len(self.logs) > 50:
             self.logs = self.logs[-50:]
+
 
 # Global actuator manager instance
 actuator_manager = ActuatorManager()
