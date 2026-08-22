@@ -223,6 +223,7 @@ app = FastAPI(
     title="AI Aquaculture Guardian API",
     description="AI-powered Early Warning System for Sustainable Aquaculture",
     version="2.0.0",
+    redirect_slashes=False,
     lifespan=None if IS_SERVERLESS else lifespan,
 )
 
@@ -680,28 +681,61 @@ async def get_benchmark():
     result["engine"] = monitoring_system.inference_engine.get_info().get("backend", "unknown")
     return result
 
+@app.get("/api/scenario")
 @app.post("/api/scenario")
-async def set_scenario(scenario: str = "competition_demo", seed: int = 42):
+async def set_scenario(
+    request: Request,
+    scenario: Optional[str] = None,
+    seed: Optional[int] = None,
+):
     global monitoring_system, is_running, recent_readings, system_thread, current_data_source, use_simulator
+    sc_name = scenario or "competition_demo"
+    sc_seed = seed if seed is not None else 42
+
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                sc_name = body.get("scenario", sc_name)
+                sc_seed = body.get("seed", sc_seed)
+        except Exception:
+            pass
+
     is_running = False
-    time.sleep(0.3)
+    time.sleep(0.05)
     recent_readings = []
     current_data_source = "demo"
     use_simulator = True
     monitoring_system = PHMonitoringSystem(
-        scenario=scenario, seed=seed, reading_interval_seconds=0.8,
+        scenario=sc_name, seed=sc_seed, reading_interval_seconds=0.8,
     )
-    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
-    system_thread.start()
+
+    # Seed initial 20 readings for immediate display on serverless
+    base_time = datetime.now() - timedelta(minutes=20)
+    for i in range(20):
+        ts = base_time + timedelta(minutes=i)
+        try:
+            _, ph = monitoring_system.simulator.generate_reading()
+            process_ph_reading(ts, ph)
+        except Exception:
+            process_ph_reading(ts, 7.5)
+
+    if not IS_SERVERLESS:
+        is_running = True
+        system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
+        system_thread.start()
+
     return {
         "success": True,
-        "scenario": scenario,
-        "seed": seed,
+        "scenario": sc_name,
+        "seed": sc_seed,
         "available_scenarios": PHSimulator.available_scenarios(),
     }
 
+@app.get("/api/retrain-model")
 @app.post("/api/retrain-model")
 async def retrain_model():
+    ensure_system_initialized()
     if not monitoring_system:
         raise HTTPException(status_code=503, detail="System not initialized")
     success = monitoring_system.forecaster.train()
@@ -710,22 +744,39 @@ async def retrain_model():
         "model_info": monitoring_system.forecaster.get_model_info(),
     }
 
+@app.get("/api/submit-ph")
 @app.post("/api/submit-ph")
-async def submit_ph(input_data: ManualPHInput):
+async def submit_ph(
+    request: Request,
+    ph_value: Optional[float] = None,
+    timestamp: Optional[str] = None,
+):
     global manual_ph_queue, use_simulator
+    val = ph_value
+    ts = timestamp
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                val = body.get("ph_value", val)
+                ts = body.get("timestamp", ts)
+        except Exception:
+            pass
+
     if use_simulator:
         return {
             "success": False,
             "message": "System is in auto mode. Switch to manual: POST /api/set-mode?mode=manual",
         }
-    if not (0.0 <= input_data.ph_value <= 14.0):
+    if val is None or not (0.0 <= val <= 14.0):
         raise HTTPException(status_code=400, detail="pH must be 0-14")
     manual_ph_queue.append({
-        "ph_value": input_data.ph_value,
-        "timestamp": input_data.timestamp or datetime.now().isoformat(),
+        "ph_value": val,
+        "timestamp": ts or datetime.now().isoformat(),
     })
-    return {"success": True, "ph_value": input_data.ph_value}
+    return {"success": True, "ph_value": val}
 
+@app.get("/api/set-mode")
 @app.post("/api/set-mode")
 async def set_mode(mode: str = "auto"):
     """Legacy endpoint for switching auto/manual mode."""
@@ -780,28 +831,45 @@ async def get_data_sources():
     }
 
 
+@app.get("/api/select-source")
 @app.post("/api/select-source")
-async def select_source(source: str = "demo"):
+async def select_source(
+    request: Request,
+    source: Optional[str] = None,
+):
     """Switch active data source mode (demo | real_validation | live_sensor)."""
     global current_data_source, use_simulator, is_running, recent_readings, system_thread
-    source = source.lower()
-    if source not in ["demo", "real_validation", "live_sensor"]:
+    src = source or "demo"
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                src = body.get("source", src)
+        except Exception:
+            pass
+
+    src = src.lower()
+    if src not in ["demo", "real_validation", "live_sensor"]:
         raise HTTPException(status_code=400, detail="Invalid source. Must be 'demo', 'real_validation', or 'live_sensor'")
 
     is_running = False
-    time.sleep(1.0)
-    current_data_source = source
+    time.sleep(0.05)
+    current_data_source = src
     recent_readings = []
 
-    if source == "demo":
+    if src == "demo":
         use_simulator = True
-    elif source == "real_validation":
+    elif src == "real_validation":
         use_simulator = True
     else:  # live_sensor
         use_simulator = False
 
-    system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
-    system_thread.start()
+    ensure_system_initialized()
+
+    if not IS_SERVERLESS and use_simulator:
+        is_running = True
+        system_thread = threading.Thread(target=run_monitoring_system, daemon=True)
+        system_thread.start()
 
     return {
         "success": True,
