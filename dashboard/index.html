@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Aquaculture Guardian</title>
     <meta name="description" content="AI-powered Early Warning System for Sustainable Aquaculture">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg-primary: #0a0e27;
-            --bg-secondary: #111638;
-            --bg-card: #161b40;
-            --bg-card-hover: #1c2252;
+            --bg-primary: #070a1e;
+            --bg-secondary: #0e1338;
+            --bg-card: rgba(16, 22, 54, 0.75);
+            --bg-card-hover: rgba(22, 30, 72, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(59, 130, 246, 0.4);
+            
             --accent-blue: #3b82f6;
             --accent-cyan: #06b6d4;
             --accent-green: #10b981;
@@ -20,19 +23,26 @@
             --accent-orange: #f97316;
             --accent-red: #ef4444;
             --accent-purple: #8b5cf6;
-            --text-primary: #f1f5f9;
+            --accent-pink: #ec4899;
+            
+            --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            --border: #1e2548;
-            --glass: rgba(255,255,255,0.03);
-            --chart-grid: rgba(30,37,72,0.5);
+            --glass: rgba(255, 255, 255, 0.035);
+            --glass-card: rgba(14, 20, 50, 0.72);
+            --chart-grid: rgba(255, 255, 255, 0.06);
             --chart-tick: #64748b;
+            
+            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 0 1px 1px rgba(255, 255, 255, 0.05);
         }
         [data-theme="light"] {
-            --bg-primary: #f1f5f9;
+            --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --bg-card-hover: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-card-hover: #ffffff;
+            --border: #e2e8f0;
+            --border-hover: #93c5fd;
+            
             --accent-blue: #2563eb;
             --accent-cyan: #0891b2;
             --accent-green: #059669;
@@ -40,33 +50,43 @@
             --accent-orange: #ea580c;
             --accent-red: #dc2626;
             --accent-purple: #7c3aed;
+            --accent-pink: #db2777;
+            
             --text-primary: #0f172a;
-            --text-secondary: #334155;
+            --text-secondary: #475569;
             --text-muted: #64748b;
-            --border: #cbd5e1;
-            --glass: rgba(0,0,0,0.03);
-            --chart-grid: rgba(203, 213, 225, 0.6);
-            --chart-tick: #475569;
+            --glass: rgba(0, 0, 0, 0.03);
+            --glass-card: rgba(255, 255, 255, 0.92);
+            --chart-grid: rgba(0, 0, 0, 0.06);
+            --chart-tick: #64748b;
+            
+            --shadow-card: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.05);
         }
-        * { margin:0; padding:0; box-sizing:border-box; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+        * { margin:0; padding:0; box-sizing:border-box; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at 10% 12%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+                        radial-gradient(circle at 90% 88%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
+                        radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 65%),
+                        var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            letter-spacing: -0.01em;
         }
         .app-header {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            background: rgba(11, 16, 44, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            padding: 16px 32px;
+            padding: 14px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
         }
         .app-title {
             display: flex;
@@ -75,38 +95,45 @@
         }
         .app-title h1 {
             font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #818cf8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.3));
         }
         .app-title .subtitle {
-            font-size: 11px;
+            font-size: 11.5px;
             color: var(--text-muted);
-            letter-spacing: 0.5px;
+            font-weight: 500;
+            margin-top: 1px;
         }
         .header-right {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
         .theme-toggle-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 36px;
-            height: 30px;
-            background: var(--bg-primary);
+            height: 32px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 9px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             transition: all 0.25s ease;
             position: relative;
         }
         .theme-toggle-btn:hover {
-            background: var(--bg-card-hover);
-            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.06);
             border-color: var(--accent-blue);
         }
         .theme-toggle-btn .theme-tooltip {
@@ -119,50 +146,55 @@
             color: var(--text-secondary);
             font-size: 10px;
             padding: 3px 8px;
-            border-radius: 4px;
+            border-radius: 5px;
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s;
             z-index: 200;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .theme-toggle-btn:hover .theme-tooltip {
             opacity: 1;
         }
         .header-badge {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
         .badge-sim {
-            background: rgba(139,92,246,0.15);
-            color: var(--accent-purple);
-            border: 1px solid rgba(139,92,246,0.3);
+            background: rgba(139, 92, 246, 0.12);
+            color: #c084fc;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
         }
         .badge-real {
-            background: rgba(6,182,212,0.15);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(6,182,212,0.3);
+            background: rgba(6, 182, 212, 0.12);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
         }
         .badge-monitoring {
-            background: rgba(16,185,129,0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(16,185,129,0.3);
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
         }
         .status-dot {
             width: 8px; height: 8px;
             border-radius: 50%;
             background: var(--accent-green);
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulseGlow 2s infinite ease-in-out;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
         }
         .container {
             max-width: 1560px;
@@ -175,12 +207,14 @@
             align-items: center;
             justify-content: space-between;
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 12px 20px;
             margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 12px;
+            box-shadow: var(--shadow-card);
         }
         .source-buttons {
             display: flex;
@@ -188,64 +222,93 @@
         }
         .source-btn {
             padding: 8px 16px;
-            background: var(--bg-primary);
+            background: rgba(15, 23, 42, 0.5);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 9px;
             color: var(--text-secondary);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
         }
-        .source-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
-        .source-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+        .source-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: rgba(255, 255, 255, 0.15); }
+        .source-btn.active { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: white; border-color: #38bdf8; box-shadow: 0 0 15px rgba(37, 99, 235, 0.45); }
         .source-provenance {
-            font-size: 11px;
+            font-size: 11.5px;
             color: var(--text-muted);
+            font-weight: 500;
         }
         /* ── Top Stats ── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
         .stat-card {
             background: var(--bg-card);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 18px;
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .stat-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+            opacity: 0.85;
+            transition: height 0.3s ease, opacity 0.3s ease;
+        }
+        .stat-card:hover { background: var(--bg-card-hover); transform: translateY(-3px); border-color: rgba(59, 130, 246, 0.35); box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.15); }
+        .stat-card:hover::before { height: 4px; opacity: 1; }
+
+        #card-pond::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+        #card-ph::before { background: linear-gradient(90deg, #10b981, #06b6d4); }
+        #card-forecast::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+        #card-risk::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+        #card-temp::before { background: linear-gradient(90deg, #f59e0b, #f97316); }
+        #card-do::before { background: linear-gradient(90deg, #06b6d4, #10b981); }
+        #card-turb::before { background: linear-gradient(90deg, #f97316, #ef4444); }
+
         .stat-card .label {
             font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.8px;
             margin-bottom: 6px;
         }
         .stat-card .value {
+            font-family: 'JetBrains Mono', monospace;
             font-size: 26px;
             font-weight: 700;
+            letter-spacing: -0.5px;
+            font-feature-settings: "tnum";
         }
         .stat-card .sub {
-            font-size: 11px;
+            font-size: 11.5px;
             color: var(--text-secondary);
             margin-top: 4px;
+            font-weight: 500;
         }
         /* ── Risk Gauge ── */
         .risk-gauge { text-align: center; }
-        .risk-gauge .risk-number { font-size: 32px; font-weight: 800; }
+        .risk-gauge .risk-number { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
         .risk-gauge .risk-bar {
-            width: 100%; height: 6px;
-            background: var(--bg-primary);
-            border-radius: 3px;
+            width: 100%; height: 7px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
             margin-top: 8px;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .risk-gauge .risk-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease, background 0.5s ease; }
+        .risk-gauge .risk-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease, background 0.5s ease; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
         /* ── Main Grid ── */
         .main-grid {
             display: grid;
@@ -256,15 +319,20 @@
         @media (max-width: 1050px) { .main-grid { grid-template-columns: 1fr; } }
         .card {
             background: var(--bg-card);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
         }
         .card h2 {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 13.5px;
+            font-weight: 700;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.8px;
@@ -1445,22 +1513,22 @@
 
         <!-- ── Top Stats Grid ── -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" id="card-pond">
                 <div class="label" data-i18n="stat.pond">Pond</div>
                 <div class="value" style="color:var(--accent-cyan)" id="pond-name">POND-01</div>
                 <div class="sub" id="sensor-sub" data-i18n="stat.sensor_active">pH Sensor Active</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="card-ph">
                 <div class="label" data-i18n="stat.current_ph">Current pH</div>
                 <div class="value" id="current-ph" style="color:var(--accent-green)">—</div>
                 <div class="sub" id="ph-status" data-i18n="stat.optimal">Optimal (7.0 - 8.5)</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="card-forecast">
                 <div class="label" data-i18n="stat.forecast_ph">Forecast pH</div>
                 <div class="value" id="forecast-ph" style="color:var(--accent-blue)">—</div>
                 <div class="sub" id="forecast-sub" data-i18n="stat.ai_projection">AI multi-step projection</div>
             </div>
-            <div class="stat-card risk-gauge">
+            <div class="stat-card risk-gauge" id="card-risk">
                 <div class="label" data-i18n="stat.risk_score">Risk Score</div>
                 <div class="risk-number" id="risk-score">0</div>
                 <div class="sub" id="risk-level" data-i18n="risk.low">LOW</div>
