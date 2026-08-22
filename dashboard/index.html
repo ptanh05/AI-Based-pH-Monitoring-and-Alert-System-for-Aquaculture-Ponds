@@ -1528,8 +1528,21 @@
 
     <script src="i18n.js?v=20260820_4"></script>
     <script>
-    // Initialize global chart variable
-    let phChart = null;
+    // ══════ GLOBAL STATE & TIMELINE DATA ══════
+    var allHistory = {
+        labels: [],
+        actual: [],
+        forecast: [],
+        upper: [],
+        lower: [],
+        risk: []
+    };
+    var MAX_HISTORY = 1000;
+    var visibleWindowSize = 30; // 30 points default
+    var isLiveMode = true;
+    var sliderOffset = 0;
+    var currentSource = "demo";
+    var phChart = null;
 
     // Safe dynamic translation helper
     function safeTranslate(text) {
@@ -1549,8 +1562,6 @@
     if (globalI18N && typeof globalI18N.init === 'function') {
         globalI18N.init();
     }
-
-    let currentSource = "demo";
 
     // ══════ THEME TOGGLE SETUP ══════
     let currentTheme = localStorage.getItem('aqua-theme') || 'dark';
@@ -1735,19 +1746,6 @@
     async function fetchJSON(url) {
         try { const r = await fetch(url); return await r.json(); } catch(e) { return null; }
     }
-
-    let allHistory = {
-        labels: [],
-        actual: [],
-        forecast: [],
-        upper: [],
-        lower: [],
-        risk: []
-    };
-    const MAX_HISTORY = 1000;
-    let visibleWindowSize = 30; // 30 points default
-    let isLiveMode = true;
-    let sliderOffset = 0;
 
     function renderChartWindow() {
         if (!phChart || !phChart.data) return;

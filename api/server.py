@@ -897,15 +897,51 @@ class ActuatorToggleRequest(BaseModel):
 async def get_actuators_status():
     return actuator_manager.get_status()
 
+@app.get("/api/actuators/mode")
 @app.post("/api/actuators/mode")
-async def set_actuator_mode(req: ActuatorModeRequest):
-    new_mode = actuator_manager.set_mode(req.mode)
+async def set_actuator_mode(
+    request: Request,
+    mode: Optional[str] = None,
+):
+    req_mode = mode or "AUTO"
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                req_mode = body.get("mode", req_mode)
+        except Exception:
+            pass
+
+    new_mode = actuator_manager.set_mode(req_mode)
     return {"success": True, "mode": new_mode}
 
+@app.get("/api/actuators/toggle")
 @app.post("/api/actuators/toggle")
-async def toggle_actuator(req: ActuatorToggleRequest):
-    new_state = actuator_manager.toggle_device(req.device_id, req.state, req.reason or "Thao tác từ Dashboard")
-    return {"success": True, "device_id": req.device_id, "is_on": new_state}
+async def toggle_actuator(
+    request: Request,
+    device_id: Optional[str] = None,
+    state: Optional[bool] = None,
+    reason: Optional[str] = None,
+):
+    req_device_id = device_id
+    req_state = state
+    req_reason = reason or "Thao tác từ Dashboard"
+
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                req_device_id = body.get("device_id", req_device_id)
+                req_state = body.get("state", req_state)
+                req_reason = body.get("reason", req_reason)
+        except Exception:
+            pass
+
+    if not req_device_id:
+        return {"success": False, "error": "device_id is required"}
+
+    new_state = actuator_manager.toggle_device(req_device_id, req_state, req_reason)
+    return {"success": True, "device_id": req_device_id, "is_on": new_state}
 
 
 # ── Export Endpoints (CSV & HTML/PDF Report) ──

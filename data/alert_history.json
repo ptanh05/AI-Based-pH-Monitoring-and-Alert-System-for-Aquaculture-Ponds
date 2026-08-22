@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-08-22T22:13:02.160593",
-  "total_alerts": 419,
+  "last_updated": "2026-08-22T22:24:12.600736",
+  "total_alerts": 421,
   "alerts": [
     {
       "id": 1,
@@ -4191,6 +4191,26 @@
       "threshold_low": 7.0,
       "threshold_high": 8.5,
       "message": "LOW pH ALERT: pH = 6.90 (below safe threshold 7.0)"
+    },
+    {
+      "id": 420,
+      "timestamp": "2026-08-22T22:07:12.591740",
+      "ph_value": 6.9,
+      "alert_type": "ALERT_LOW_PH",
+      "predicted_ph": 6.9,
+      "threshold_low": 7.0,
+      "threshold_high": 8.5,
+      "message": "LOW pH ALERT: pH = 6.90 (below safe threshold 7.0)"
+    },
+    {
+      "id": 421,
+      "timestamp": "2026-08-22T22:20:12.591740",
+      "ph_value": 6.87,
+      "alert_type": "ALERT_LOW_PH",
+      "predicted_ph": 6.87,
+      "threshold_low": 7.0,
+      "threshold_high": 8.5,
+      "message": "LOW pH ALERT: pH = 6.87 (below safe threshold 7.0)"
     }
   ]
 }
