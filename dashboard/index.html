@@ -1573,6 +1573,138 @@
             cursor: pointer;
             font-weight: 600;
         }
+
+        /* ── Glassmorphic Footer (Datasets & Provenance) ── */
+        .app-footer {
+            margin-top: 48px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 42px 32px 28px;
+            position: relative;
+            z-index: 10;
+        }
+        .footer-inner {
+            max-width: 1560px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.6fr 1.3fr 1.3fr 1.2fr;
+            gap: 32px;
+        }
+        @media (max-width: 1100px) {
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 680px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+        .footer-col h4 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.2px;
+        }
+        .footer-col p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .footer-link-item a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+        .footer-link-item a:hover {
+            color: var(--accent-cyan);
+            transform: translateX(3px);
+            text-decoration: none;
+        }
+        .footer-link-item a .link-badge {
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(6, 182, 212, 0.12);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            white-space: nowrap;
+        }
+        .footer-dataset-card {
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-top: 10px;
+            transition: border-color 0.2s;
+        }
+        .footer-dataset-card:hover {
+            border-color: var(--accent-cyan);
+        }
+        .footer-dataset-card .ds-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer-dataset-card .ds-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .footer-bottom {
+            max-width: 1560px;
+            margin: 28px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .footer-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -1867,6 +1999,122 @@
             </div>
         </div>
     </div>
+
+    <!-- ══ APP FOOTER (DATASETS & PROVENANCE) ══ -->
+    <footer class="app-footer">
+        <div class="footer-inner">
+            <!-- Col 1: Project Info & Provenance -->
+            <div class="footer-col">
+                <h4>🐟 AI Aquaculture Guardian</h4>
+                <p>Hệ thống IoT AI giám sát và cảnh báo sớm độ pH trong ao nuôi thủy sản thông minh. Kết hợp mô hình học máy đa bước, bản sao số (Digital Twin) và thị giác máy tính theo thời gian thực.</p>
+                <div class="footer-dataset-card">
+                    <div class="ds-title">
+                        <span>🌊 Mendeley Data DOI</span>
+                        <a href="https://doi.org/10.17632/8s73jfvgr5.2" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; font-size:11px">10.17632/8s73jfvgr5.2 ↗</a>
+                    </div>
+                    <div class="ds-meta">37,284 Tilapia IoT Records • Montería 2024</div>
+                </div>
+            </div>
+
+            <!-- Col 2: Datasets & Research Links -->
+            <div class="footer-col">
+                <h4>📚 Nguồn Dữ Liệu & Nghiên Cứu</h4>
+                <ul class="footer-links">
+                    <li class="footer-link-item">
+                        <a href="https://data.mendeley.com/datasets/8s73jfvgr5/2" target="_blank" rel="noopener noreferrer">
+                            <span>🌐 Mendeley Tilapia Dataset</span>
+                            <span class="link-badge">CC BY 4.0</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="/api/real-data/validation" target="_blank">
+                            <span>📊 Kiểm thử sai số 3 chiều</span>
+                            <span class="link-badge">JSON API</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="/api/real-data/multisensor" target="_blank">
+                            <span>🧪 Phân tích tương quan Đa cảm biến</span>
+                            <span class="link-badge">Multi-Sensor</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="/api/real-data/status" target="_blank">
+                            <span>🔬 Chất lượng Dữ liệu Thực nghiệm</span>
+                            <span class="link-badge">Data Quality</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Col 3: API & System Documentation -->
+            <div class="footer-col">
+                <h4>📑 API & Xuất Dữ Liệu</h4>
+                <ul class="footer-links">
+                    <li class="footer-link-item">
+                        <a href="/docs" target="_blank">
+                            <span>⚡ Swagger REST API Docs</span>
+                            <span class="link-badge">FastAPI</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="/api/export/csv" target="_blank">
+                            <span>📥 Tải dữ liệu ao nuôi dạng CSV</span>
+                            <span class="link-badge">CSV</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="/api/export/report" target="_blank">
+                            <span>📄 Báo cáo Giám sát Toàn diện PDF/HTML</span>
+                            <span class="link-badge">Report</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="/api/model-metrics" target="_blank">
+                            <span>🤖 Chỉ số Mô hình AI & Suy luận</span>
+                            <span class="link-badge">Metrics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Col 4: Repository & Tech Stack -->
+            <div class="footer-col">
+                <h4>🚀 Mã Nguồn & Công Nghệ</h4>
+                <ul class="footer-links">
+                    <li class="footer-link-item">
+                        <a href="https://github.com/ptanh05/AI-Based-pH-Monitoring-and-Alert-System-for-Aquaculture-Ponds" target="_blank" rel="noopener noreferrer">
+                            <span>🐙 GitHub Repository</span>
+                            <span class="link-badge">v2.0</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="javascript:void(0)" onclick="openDigitalTwinModal()">
+                            <span>🧬 Bản sao số What-If Sandbox</span>
+                            <span class="link-badge">Simulation</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="javascript:void(0)" onclick="openNotifModal()">
+                            <span>📲 Cổng cảnh báo Telegram Bot</span>
+                            <span class="link-badge">Alerts</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>
+                © 2026 <strong>AI Aquaculture Guardian</strong>. Phục vụ Nghiên cứu & Giám sát Nuôi trồng Thủy sản Bền vững.
+            </div>
+            <div class="footer-badges">
+                <span class="footer-badge-pill">⚡ Intel OpenVINO™ Optimized</span>
+                <span class="footer-badge-pill">🌊 Mendeley DOI: 10.17632/8s73jfvgr5.2</span>
+                <span class="footer-badge-pill">🔒 CC BY 4.0 Open Dataset</span>
+            </div>
+        </div>
+    </footer>
 
     <script src="i18n.js?v=20260820_4"></script>
     <script>
